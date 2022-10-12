@@ -49,5 +49,5 @@ filterwarnings = [
     "ignore::DeprecationWarning:flask_sqlalchemy.*:"
 ]
 testpaths = [
-    "tests/test_markdown",
+    "tests/markdown",
 ]

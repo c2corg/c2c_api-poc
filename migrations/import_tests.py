@@ -16,6 +16,6 @@ for sub_dir, folders, files in os.walk("../v6_api/c2corg_api/tests"):
             shutil.copyfile(source, dest)
 
 subprocess.run(["mv", "tests/__init__.py", "tests/__init__LEGACY.py"], check=True)
-subprocess.run(["mv", "tests/markdown", "tests/test_markdown"], check=True)
+subprocess.run(["rm", "tests/markdown/__init__.py"], check=True)
 
 subprocess.run(["black", "."], check=True)

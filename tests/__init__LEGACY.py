@@ -36,28 +36,24 @@ from c2corg_api.search import configure_es_from_config
 log = logging.getLogger(__name__)
 
 curdir = os.path.dirname(os.path.abspath(__file__))
-configfile = os.path.realpath(os.path.join(curdir, '../../test.ini'))
+configfile = os.path.realpath(os.path.join(curdir, "../../test.ini"))
 settings = get_appsettings(configfile)
 
-alembic_scripts_folder = os.path.realpath(
-    os.path.join(curdir, '../../alembic_migration'))
+alembic_scripts_folder = os.path.realpath(os.path.join(curdir, "../../alembic_migration"))
 
-if settings['noauthorization']:
-    log.warning('Authorization disabled for these tests')
+if settings["noauthorization"]:
+    log.warning("Authorization disabled for these tests")
 
 
 def get_engine():
-    return engine_from_config(settings, 'sqlalchemy.')
+    return engine_from_config(settings, "sqlalchemy.")
 
 
 def _get_alembic_config():
     alembic_config = Config()
-    alembic_config.set_main_option(
-        'script_location', alembic_scripts_folder)
-    alembic_config.set_main_option(
-        'sqlalchemy.url', settings['sqlalchemy.url'])
-    alembic_config.set_main_option(
-        'version_table_schema', 'alembic')
+    alembic_config.set_main_option("script_location", alembic_scripts_folder)
+    alembic_config.set_main_option("sqlalchemy.url", settings["sqlalchemy.url"])
+    alembic_config.set_main_option("version_table_schema", "alembic")
     return alembic_config
 
 
@@ -67,98 +63,107 @@ global_passwords = {}
 
 
 def _add_global_test_data(session):
-    global_passwords['contributor'] = 'super pass'
-    global_passwords['contributor2'] = 'better pass'
-    global_passwords['moderator'] = 'even better pass'
-    global_passwords['robot'] = 'bombproof pass'
+    global_passwords["contributor"] = "super pass"
+    global_passwords["contributor2"] = "better pass"
+    global_passwords["moderator"] = "even better pass"
+    global_passwords["robot"] = "bombproof pass"
 
     contributor_profile = UserProfile(
-        categories=['amateur'],
+        categories=["amateur"],
         locales=[
-            DocumentLocale(title='', description='Me', lang='en'),
-            DocumentLocale(title='', description='Moi', lang='fr')],
-        geometry=DocumentGeometry(geom='SRID=3857;POINT(635956 5723604)'))
+            DocumentLocale(title="", description="Me", lang="en"),
+            DocumentLocale(title="", description="Moi", lang="fr"),
+        ],
+        geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
+    )
 
     contributor = User(
-        name='Contributor',
-        username='contributor', email='contributor@camptocamp.org',
-        forum_username='contributor', password='super pass',
-        email_validated=True, profile=contributor_profile)
+        name="Contributor",
+        username="contributor",
+        email="contributor@camptocamp.org",
+        forum_username="contributor",
+        password="super pass",
+        email_validated=True,
+        profile=contributor_profile,
+    )
 
-    contributor2_profile = UserProfile(
-        categories=['amateur'],
-        locales=[DocumentLocale(title='...', lang='en')])
+    contributor2_profile = UserProfile(categories=["amateur"], locales=[DocumentLocale(title="...", lang="en")])
 
     contributor2 = User(
-        name='Contributor 2',
-        username='contributor2', email='contributor2@camptocamp.org',
-        forum_username='contributor2',
-        password='better pass', email_validated=True,
-        profile=contributor2_profile)
+        name="Contributor 2",
+        username="contributor2",
+        email="contributor2@camptocamp.org",
+        forum_username="contributor2",
+        password="better pass",
+        email_validated=True,
+        profile=contributor2_profile,
+    )
 
-    contributor3_profile = UserProfile(
-        categories=['amateur'],
-        locales=[DocumentLocale(title='...', lang='en')])
+    contributor3_profile = UserProfile(categories=["amateur"], locales=[DocumentLocale(title="...", lang="en")])
 
     contributor3 = User(
-        name='Contributor 3',
-        username='contributor3', email='contributor3@camptocamp.org',
-        forum_username='contributor3',
-        password='poor pass', email_validated=True,
-        profile=contributor3_profile)
+        name="Contributor 3",
+        username="contributor3",
+        email="contributor3@camptocamp.org",
+        forum_username="contributor3",
+        password="poor pass",
+        email_validated=True,
+        profile=contributor3_profile,
+    )
 
-    moderator_profile = UserProfile(
-        categories=['mountain_guide'],
-        locales=[DocumentLocale(title='', lang='en')])
+    moderator_profile = UserProfile(categories=["mountain_guide"], locales=[DocumentLocale(title="", lang="en")])
 
     moderator = User(
-        name='Moderator',
-        username='moderator', email='moderator@camptocamp.org',
-        forum_username='moderator',
-        moderator=True, password='even better pass',
-        email_validated=True, profile=moderator_profile)
+        name="Moderator",
+        username="moderator",
+        email="moderator@camptocamp.org",
+        forum_username="moderator",
+        moderator=True,
+        password="even better pass",
+        email_validated=True,
+        profile=moderator_profile,
+    )
 
-    robot_profile = UserProfile(
-        locales=[DocumentLocale(title='', lang='en')])
+    robot_profile = UserProfile(locales=[DocumentLocale(title="", lang="en")])
 
     robot = User(
-        name='Robot',
-        username='robot', email='robot@camptocamp.org',
-        forum_username='robot',
-        robot=True, password='bombproof pass',
-        email_validated=True, profile=robot_profile)
+        name="Robot",
+        username="robot",
+        email="robot@camptocamp.org",
+        forum_username="robot",
+        robot=True,
+        password="bombproof pass",
+        email_validated=True,
+        profile=robot_profile,
+    )
 
     users = [robot, moderator, contributor, contributor2, contributor3]
     session.add_all(users)
     session.flush()
 
-    domain = 'www.somewhere.com'
-    sso_key = SsoKey(
-        domain=domain,
-        key=domain
-    )
+    domain = "www.somewhere.com"
+    sso_key = SsoKey(domain=domain, key=domain)
     session.add(sso_key)
 
     sso_external_id = SsoExternalId(
         domain=domain,
-        external_id='1',
+        external_id="1",
         user=contributor,
-        token='token',
+        token="token",
         expire=utc.localize(datetime.datetime.utcnow()),
     )
     session.add(sso_external_id)
 
     session.flush()
 
-    key = settings['jwtauth.master_secret']
-    algorithm = 'HS256'
+    key = settings["jwtauth.master_secret"]
+    algorithm = "HS256"
     now = datetime.datetime.utcnow()
     exp = now + datetime.timedelta(weeks=10)
 
     for user in [robot, moderator, contributor, contributor2, contributor3]:
         claims = create_claims(user, exp)
-        token = jwt.encode(claims, key=key, algorithm=algorithm). \
-            decode('utf-8')
+        token = jwt.encode(claims, key=key, algorithm=algorithm).decode("utf-8")
         add_or_retrieve_token(token, exp, user.id)
         global_userids[user.username] = user.id
         global_tokens[user.username] = token
@@ -171,7 +176,7 @@ def setup_package():
     DBSession.configure(bind=engine)
 
     alembic_config = _get_alembic_config()
-    downgrade(alembic_config, 'base')
+    downgrade(alembic_config, "base")
     initializedb.setup_db(alembic_config, DBSession)
 
     # set up ElasticSearch
@@ -194,18 +199,15 @@ def teardown_package():
     # tear down database
     if not keep:
         alembic_config = _get_alembic_config()
-        downgrade(alembic_config, 'base')
+        downgrade(alembic_config, "base")
         initializees.drop_index()
 
 
 class AssertionsMixin(object):
-
     def assertCoodinateEquals(self, coord1, coord2):  # noqa
-        self.assertEqual(len(coord1), len(coord2), 'not the same dimension')
+        self.assertEqual(len(coord1), len(coord2), "not the same dimension")
         for i in range(0, len(coord1)):
-            self.assertAlmostEqual(
-                coord1[i], coord2[i],
-                msg='{} does not almost equal {}'.format(coord1[i], coord2[i]))
+            self.assertAlmostEqual(coord1[i], coord2[i], msg="{} does not almost equal {}".format(coord1[i], coord2[i]))
 
 
 class BaseTestCase(unittest.TestCase, AssertionsMixin):
@@ -277,26 +279,23 @@ class BaseTestCase(unittest.TestCase, AssertionsMixin):
         self.connection.close()
 
     def app_post_json(self, *args, **kwargs):
-        return self.app_send_json('post', *args, **kwargs)
+        return self.app_send_json("post", *args, **kwargs)
 
     def app_put_json(self, *args, **kwargs):
-        return self.app_send_json('put', *args, **kwargs)
+        return self.app_send_json("put", *args, **kwargs)
 
     def app_send_json(self, action, *args, **kwargs):
         kwargs = dict(kwargs)
         status = 200
-        if 'status' in kwargs:
-            status = kwargs['status']
-            del kwargs['status']
-        kwargs['expect_errors'] = True
+        if "status" in kwargs:
+            status = kwargs["status"]
+            del kwargs["status"]
+        kwargs["expect_errors"] = True
 
-        res = getattr(self.app, action + '_json')(*args, **kwargs)
-        if status != '*' and res.status_code != status:
-            errors = res.body if res.status_code == 400 else ''
-            self.fail('Bad response: %s (not %d) : %s' % (
-                res.status,
-                status,
-                errors))
+        res = getattr(self.app, action + "_json")(*args, **kwargs)
+        if status != "*" and res.status_code != status:
+            errors = res.body if res.status_code == 400 else ""
+            self.fail("Bad response: %s (not %d) : %s" % (res.status, status, errors))
         return res
 
 
@@ -307,9 +306,8 @@ def reset_queue(queue_config):
 
 
 def reset_cache_key():
-    cache_version = settings['cache_version']
-    caching.CACHE_VERSION = '{0}-{1}-{2}'.format(
-        cache_version, int(time.time()), randint(0, 10**9))
+    cache_version = settings["cache_version"]
+    caching.CACHE_VERSION = "{0}-{1}-{2}".format(cache_version, int(time.time()), randint(0, 10**9))
     caching_common.cache_status = caching_common.CacheStatus()
 
 

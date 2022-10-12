@@ -6,7 +6,7 @@ class TestHealthRest(BaseTestRest):
         super(TestHealthRest, self).setUp()
 
     def test_get(self):
-        r = self.app.get('/health', status=200)
+        r = self.app.get("/health", status=200)
 
         data = r.json
 

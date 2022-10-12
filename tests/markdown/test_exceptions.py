@@ -16,17 +16,11 @@ class FailingProcessor(BlockProcessor):
 
 class FailingExtension(Extension):
     def extendMarkdown(self, md):  # noqa: N802
-        md.parser.blockprocessors.register(
-            FailingProcessor(md.parser),
-            'c2c_failing',
-            10.0001
-        )
+        md.parser.blockprocessors.register(FailingProcessor(md.parser), "c2c_failing", 10.0001)
 
 
 def fake_get_markdown_parser(*args, **kwargs):
-    return markdown.Markdown(output_format='xhtml5',
-                             extensions=[FailingExtension()],
-                             enable_attributes=False)
+    return markdown.Markdown(output_format="xhtml5", extensions=[FailingExtension()], enable_attributes=False)
 
 
 class TestFormat(unittest.TestCase):
@@ -36,6 +30,7 @@ class TestFormat(unittest.TestCase):
     test-case verifies that, if some extension raises an exception, the
     appropriate default message (_PARSER_EXCEPTION_MESSAGE) is returned.
     """
+
     def setUp(self):
         self.real_get_markdown_parser = c2c_markdown._get_markdown_parser
         c2c_markdown._get_markdown_parser = fake_get_markdown_parser

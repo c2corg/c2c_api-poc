@@ -5,12 +5,11 @@ from c2corg_api.markdown import parse_code
 
 
 def read_file(path):
-    with open(path, 'r', encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 class TestFormat(unittest.TestCase):
-
     def test_all(self):
         def do_test(test_id, text, expected):
             result = parse_code(text)

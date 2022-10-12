@@ -1,8 +1,7 @@
 from c2corg_api.tests.views import BaseTestRest
 
 
-class _TestFundraiserMixin():
-
+class _TestFundraiserMixin:
     def get(self, prefix, document_id):
         url = f"{prefix}/{document_id}"
         return self.app.get(url).json
@@ -13,9 +12,7 @@ class _TestFundraiserMixin():
         assert "document_id" not in document
 
         headers = self.add_authorization_header(username=username)
-        response = self.app_post_json(
-            prefix, document, headers=headers, status=status
-        ).json
+        response = self.app_post_json(prefix, document, headers=headers, status=status).json
 
         if status == 200:
             return self.get(prefix, response["document_id"])
@@ -26,10 +23,7 @@ class _TestFundraiserMixin():
         prefix = _type_to_prefix(document)
         url = f"{prefix}/{document['document_id']}"
 
-        payload = {
-            'message': 'Update',
-            'document': document
-        }
+        payload = {"message": "Update", "document": document}
 
         headers = self.add_authorization_header(username=username)
         self.app_put_json(url, payload, headers=headers, status=200)
@@ -39,66 +33,65 @@ class _TestFundraiserMixin():
 
 
 class TestCreation(BaseTestRest, _TestFundraiserMixin):
-
     def test_area(self):
-        area = self.post(_build_area(), username='moderator')
+        area = self.post(_build_area(), username="moderator")
         assert area["fundraiser_url"] == "url"
 
     def test_waypoint(self):
         # Add an area that will contains the waypoint
-        self.post(_build_area(), username='moderator')
+        self.post(_build_area(), username="moderator")
 
         doc = _build_waypoint()
 
-        waypoint = self.post(doc, username='moderator')
+        waypoint = self.post(doc, username="moderator")
         assert waypoint["fundraiser_url"] == "url"
         assert waypoint["can_have_fundraiser"] is True
         assert waypoint["areas"][0]["fundraiser_url"] == "url"
 
-        waypoint = self.post(doc, username='contributor')
+        waypoint = self.post(doc, username="contributor")
         assert waypoint["fundraiser_url"] is None
         assert waypoint["can_have_fundraiser"] is True
         assert waypoint["areas"][0]["fundraiser_url"] == "url"
 
         doc = _build_waypoint(waypoint_type="summit")
-        result = self.post(doc, username='moderator')
+        result = self.post(doc, username="moderator")
         assert result["fundraiser_url"] == "url"
         assert result["can_have_fundraiser"] is False
         assert result["areas"][0]["fundraiser_url"] == "url"
 
         doc = _build_waypoint(equipment_ratings=["P3"])
-        result = self.post(doc, username='moderator')
+        result = self.post(doc, username="moderator")
         assert result["fundraiser_url"] == "url"
         assert result["can_have_fundraiser"] is False
         assert result["areas"][0]["fundraiser_url"] == "url"
 
     def test_route(self):
         # Add an area that will contains the waypoint
-        self.post(_build_area(), username='moderator')
-        wp = self.post(_build_waypoint(), username='moderator')
+        self.post(_build_area(), username="moderator")
+        wp = self.post(_build_waypoint(), username="moderator")
 
-        result = self.post(_build_route(wp), username='moderator')
+        result = self.post(_build_route(wp), username="moderator")
         assert result["fundraiser_url"] == "url"
         assert result["can_have_fundraiser"] is True
         assert result["areas"][0]["fundraiser_url"] == "url"
         assert result["associations"]["waypoints"][0]["fundraiser_url"] == "url"  # noqa
         assert result["associations"]["waypoints"][0]["can_have_fundraiser"] is True  # noqa
 
-        result = self.post(_build_route(wp), username='contributor')
+        result = self.post(_build_route(wp), username="contributor")
         assert result["fundraiser_url"] is None
         assert result["can_have_fundraiser"] is True
         assert result["areas"][0]["fundraiser_url"] == "url"
         assert result["associations"]["waypoints"][0]["fundraiser_url"] == "url"  # noqa
 
         doc = _build_route(wp, activities=["skitouring"])
-        result = self.post(doc, username='moderator')
+        result = self.post(doc, username="moderator")
         assert result["fundraiser_url"] == "url"
         assert result["can_have_fundraiser"] is False
         assert result["areas"][0]["fundraiser_url"] == "url"
         assert result["associations"]["waypoints"][0]["fundraiser_url"] == "url"  # noqa
 
         doc = _build_route(wp, activities=["skitouring"])
-        result = self.post(doc, username='contributor')
+        result = self.post(doc, username="contributor")
         assert result["fundraiser_url"] is None
         assert result["can_have_fundraiser"] is False
         assert result["areas"][0]["fundraiser_url"] == "url"
@@ -106,33 +99,32 @@ class TestCreation(BaseTestRest, _TestFundraiserMixin):
 
 
 class TestEdition(BaseTestRest, _TestFundraiserMixin):
-
     def test_area(self):
-        area = self.post(_build_area(), username='moderator')
+        area = self.post(_build_area(), username="moderator")
 
         area["fundraiser_url"] = "other url"
         del area["geometry"]
-        area = self.put(area, username='contributor')
+        area = self.put(area, username="contributor")
         assert area["fundraiser_url"] == "url"
 
         area["fundraiser_url"] = "other url"
-        area = self.put(area, username='moderator')
+        area = self.put(area, username="moderator")
         assert area["fundraiser_url"] == "other url"
 
     def test_waypoint(self):
-        area = self.post(_build_area(), username='moderator')
-        waypoint = self.post(_build_waypoint(), username='moderator')
+        area = self.post(_build_area(), username="moderator")
+        waypoint = self.post(_build_waypoint(), username="moderator")
 
         waypoint["fundraiser_url"] = "other url"
-        waypoint = self.put(waypoint, username='contributor')
+        waypoint = self.put(waypoint, username="contributor")
         assert waypoint["fundraiser_url"] == "url"
 
         waypoint["fundraiser_url"] = "other url"
-        waypoint = self.put(waypoint, username='moderator')
+        waypoint = self.put(waypoint, username="moderator")
         assert waypoint["fundraiser_url"] == "other url"
 
         area["fundraiser_url"] = "other url for area"
-        self.put(area, username='moderator')
+        self.put(area, username="moderator")
         waypoint = self.get("/waypoints", waypoint["document_id"])
         assert waypoint["areas"][0]["fundraiser_url"] == "other url for area"
 
@@ -162,25 +154,25 @@ class TestEdition(BaseTestRest, _TestFundraiserMixin):
         assert waypoint["can_have_fundraiser"] is True
 
     def test_route(self):
-        area = self.post(_build_area(), username='moderator')
-        waypoint = self.post(_build_waypoint(), username='moderator')
-        route = self.post(_build_route(waypoint), username='moderator')
+        area = self.post(_build_area(), username="moderator")
+        waypoint = self.post(_build_waypoint(), username="moderator")
+        route = self.post(_build_route(waypoint), username="moderator")
 
         route["fundraiser_url"] = "other url"
-        route = self.put(route, username='contributor')
+        route = self.put(route, username="contributor")
         assert route["fundraiser_url"] == "url"
 
         route["fundraiser_url"] = "other url"
-        route = self.put(route, username='moderator')
+        route = self.put(route, username="moderator")
         assert route["fundraiser_url"] == "other url"
 
         area["fundraiser_url"] = "other url for area"
-        self.put(area, username='moderator')
+        self.put(area, username="moderator")
         route = self.get("/routes", route["document_id"])
         assert route["areas"][0]["fundraiser_url"] == "other url for area"
 
         waypoint["fundraiser_url"] = "other url for waypoint"
-        waypoint = self.put(waypoint, username='moderator')
+        waypoint = self.put(waypoint, username="moderator")
         route = self.get("/routes", route["document_id"])
         assert route["associations"]["waypoints"][0]["fundraiser_url"] == "other url for waypoint"  # noqa
 
@@ -210,7 +202,7 @@ class TestEdition(BaseTestRest, _TestFundraiserMixin):
 
 class TestHistory(BaseTestRest, _TestFundraiserMixin):
     def get_versions(self, document):
-        document_id = document['document_id']
+        document_id = document["document_id"]
         prefix = _type_to_prefix(document)
 
         history = self.app.get(f"/document/{document_id}/history/en").json
@@ -231,55 +223,49 @@ class TestHistory(BaseTestRest, _TestFundraiserMixin):
         self._test_history(_build_route(waypoint))
 
     def _test_history(self, document):
-        document = self.post(document, username='moderator')
+        document = self.post(document, username="moderator")
 
         document["fundraiser_url"] = "other url"
-        document = self.put(document, username='moderator')
+        document = self.put(document, username="moderator")
 
         versions = self.get_versions(document)
-        assert versions[0]['document']['fundraiser_url'] == "url"
-        assert versions[1]['document']['fundraiser_url'] == "other url"
+        assert versions[0]["document"]["fundraiser_url"] == "url"
+        assert versions[1]["document"]["fundraiser_url"] == "other url"
 
         return document
 
 
 def _type_to_prefix(document):
     return {
-        'r': '/routes',
-        'a': '/areas',
-        'w': '/waypoints',
-    }[document['type']]
+        "r": "/routes",
+        "a": "/areas",
+        "w": "/waypoints",
+    }[document["type"]]
 
 
 def _build_area():
     return {
-        'area_type': 'range',
-        'geometry': {
-            'id': 5678, 'version': 6789,
-            'geom_detail': '{"type":"Polygon","coordinates":[[[0,0],[0,2],[2,2],[2,0],[0,0]]]}'  # noqa
+        "area_type": "range",
+        "geometry": {
+            "id": 5678,
+            "version": 6789,
+            "geom_detail": '{"type":"Polygon","coordinates":[[[0,0],[0,2],[2,2],[2,0],[0,0]]]}',  # noqa
         },
-        'locales': [
-            {'lang': 'en', 'title': 'Chartreuse'}
-        ],
-        'fundraiser_url': 'url',
-        'type': 'a'
+        "locales": [{"lang": "en", "title": "Chartreuse"}],
+        "fundraiser_url": "url",
+        "type": "a",
     }
 
 
 def _build_waypoint(**kwargs):
     doc = {
-        'waypoint_type': 'climbing_outdoor',
-        'equipment_ratings': ["P1+"],
-        'geometry': {
-            'id': 5678, 'version': 6789,
-            'geom': '{"type":"Point","coordinates":[1, 1]}'
-        },
-        'locales': [
-            {'lang': 'en', 'title': 'Chartreuse'}
-        ],
+        "waypoint_type": "climbing_outdoor",
+        "equipment_ratings": ["P1+"],
+        "geometry": {"id": 5678, "version": 6789, "geom": '{"type":"Point","coordinates":[1, 1]}'},
+        "locales": [{"lang": "en", "title": "Chartreuse"}],
         "elevation": 4,
-        'fundraiser_url': 'url',
-        'type': 'w'
+        "fundraiser_url": "url",
+        "type": "w",
     }
 
     return {**doc, **kwargs}
@@ -287,19 +273,12 @@ def _build_waypoint(**kwargs):
 
 def _build_route(waypoint, **kwargs):
     doc = {
-        'activities': ['rock_climbing'],
-        'associations': {
-            'waypoints': [waypoint]
-        },
-        'geometry': {
-            'id': 5678, 'version': 6789,
-            'geom': '{"type":"Point","coordinates":[1, 1]}'
-        },
-        'locales': [
-            {'lang': 'en', 'title': 'Chartreuse'}
-        ],
-        'fundraiser_url': 'url',
-        'type': 'r'
+        "activities": ["rock_climbing"],
+        "associations": {"waypoints": [waypoint]},
+        "geometry": {"id": 5678, "version": 6789, "geom": '{"type":"Point","coordinates":[1, 1]}'},
+        "locales": [{"lang": "en", "title": "Chartreuse"}],
+        "fundraiser_url": "url",
+        "type": "r",
     }
 
     return {**doc, **kwargs}

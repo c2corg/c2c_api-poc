@@ -15,37 +15,30 @@ from c2corg_api.tests.views import BaseTestRest
 
 
 class TestLangs(BaseTestRest):
-
     def setUp(self):
         BaseTestRest.setUp(self)
 
         waypoint = Waypoint(
-            waypoint_type='summit', elevation=2000,
-            geometry=DocumentGeometry(
-                geom='SRID=3857;POINT(635956 5723604)')
-            )
+            waypoint_type="summit", elevation=2000, geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)")
+        )
 
         outing = Outing(
-            activities=['skitouring'],
+            activities=["skitouring"],
             date_start=date(2016, 1, 1),
             date_end=date(2016, 1, 1),
-            geometry=DocumentGeometry(geom='SRID=3857;POINT(0 0)')
+            geometry=DocumentGeometry(geom="SRID=3857;POINT(0 0)"),
         )
 
-        article = Article(
-            categories=['site_info'],
-            activities=['hiking'],
-            article_type='collab'
-        )
+        article = Article(categories=["site_info"], activities=["hiking"], article_type="collab")
 
         for lang in default_langs:
-            locale = OutingLocale(lang=lang, title=f'Title in {lang}')
+            locale = OutingLocale(lang=lang, title=f"Title in {lang}")
             outing.locales.append(locale)
 
-            locale = DocumentLocale(lang=lang, title=f'Title in {lang}')
+            locale = DocumentLocale(lang=lang, title=f"Title in {lang}")
             article.locales.append(locale)
 
-            locale = WaypointLocale(lang=lang, title=f'Title in {lang}')
+            locale = WaypointLocale(lang=lang, title=f"Title in {lang}")
             waypoint.locales.append(locale)
 
         self.session.add(article)
@@ -56,16 +49,20 @@ class TestLangs(BaseTestRest):
         # make sure the search index is built
         force_search_index()
 
-        contributor_id = self.global_userids['contributor']
+        contributor_id = self.global_userids["contributor"]
 
         for lang in default_langs:
-            self.session.add(DocumentChange(
-                time=datetime(2016, 1, 1, 12, 0, 0),
-                user_id=contributor_id, change_type='created',
-                document_id=waypoint.document_id,
-                document_type=WAYPOINT_TYPE, user_ids=[contributor_id],
-                langs=[lang]
-            ))
+            self.session.add(
+                DocumentChange(
+                    time=datetime(2016, 1, 1, 12, 0, 0),
+                    user_id=contributor_id,
+                    change_type="created",
+                    document_id=waypoint.document_id,
+                    document_type=WAYPOINT_TYPE,
+                    user_ids=[contributor_id],
+                    langs=[lang],
+                )
+            )
 
         self.session.flush()
 
@@ -80,19 +77,19 @@ class TestLangs(BaseTestRest):
     def test_get_collection(self):
         for lang in default_langs:
             body = self.app.get(f"/outings?l={lang}", status=200).json
-            self.assertNotEqual(body['total'], 0)
+            self.assertNotEqual(body["total"], 0)
 
     def test_search(self):
         for lang in default_langs:
             response = self.app.get(f"/search?q=Title&pl={lang}", status=200)
             body = response.json
-            self.assertNotEqual(body['articles']['total'], 0)
+            self.assertNotEqual(body["articles"]["total"], 0)
 
     def test_feed(self):
         for lang in default_langs:
             response = self.app.get(f"/feed?pl={lang}", status=200)
             body = response.json
-            self.assertNotEqual(len(body['feed']), 0)
+            self.assertNotEqual(len(body["feed"]), 0)
 
     def test_create(self):
         for lang in default_langs:
@@ -107,21 +104,16 @@ class TestLangs(BaseTestRest):
             assert lang == document.json["locales"][0]["lang"]
 
     def test_user_preferences(self):
-        user_id = self.global_userids['contributor']
+        user_id = self.global_userids["contributor"]
 
         for lang in default_langs:
-            request_body = {
-                'followed_only': True,
-                'activities': [],
-                'langs': [lang],
-                'areas': []
-            }
+            request_body = {"followed_only": True, "activities": [], "langs": [lang], "areas": []}
 
-            self.post_with_auth('/users/preferences', request_body)
+            self.post_with_auth("/users/preferences", request_body)
 
-            json = self.get_with_auth('/users/preferences').json
+            json = self.get_with_auth("/users/preferences").json
 
-            self.assertEqual([lang], json['langs'])
+            self.assertEqual([lang], json["langs"])
 
             user = self.session.query(User).get(user_id)
             user.ratelimit_times = 0
@@ -129,10 +121,10 @@ class TestLangs(BaseTestRest):
     def test_preferred_lang(self):
         for lang in default_langs:
 
-            body = {'lang': lang}
+            body = {"lang": lang}
             self.post_with_auth("/users/update_preferred_language", body)
 
-            user_id = self.global_userids['contributor']
+            user_id = self.global_userids["contributor"]
 
             user = self.session.query(User).get(user_id)
             self.session.expunge(user)
