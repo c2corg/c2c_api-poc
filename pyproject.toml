@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[project]
+name = "c2c-api"
+version = "7.0.0"
+authors = [
+  { name="Charles de Beauchesne", email="charles.de.beauchesne@gmail.com" },
+]
+description = "API POC for camptocamp.org"
+readme = "README.md"
+requires-python = ">=3.7"
+
+dependencies = [
+    "black==22.8.0",
+    "Flask-Camp==0.0.5",
+    "pylint==2.15.4",
+    "pytest==7.1.3",
+]
+
+# [tool.setuptools]
+# packages = ["flask_camp"]
+
+[tool.black]
+line-length = 120
+
+[tool.pylint]
+init-hook='import sys; sys.path.append(".")'
+max-line-length = 120
+disable = "missing-module-docstring,missing-class-docstring,missing-function-docstring"
+generated-members = [
+    ".*database\\.session\\..*",
+]
+
+[tool.pylint.tests]
+disable = "invalid-name,protected-access,too-many-public-methods,too-few-public-methods"
+
+[tool.pytest.ini_options]
+log_format = "%(asctime)s.%(msecs)03d %(levelname)s %(message)s"
+log_date_format = "%H:%M:%S"
+addopts = "--cov=flask_camp --cov-report html --cov-report term --no-cov-on-fail --cov-fail-under=99.5"
+filterwarnings = [
+    "ignore::DeprecationWarning:flask_sqlalchemy.*:"
+]
