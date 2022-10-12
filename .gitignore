@@ -3,6 +3,7 @@ build/
 dist/
 *.egg-info/
 *.egg
+__pycache__/
 
 # Unit test / coverage reports
 htmlcov/
