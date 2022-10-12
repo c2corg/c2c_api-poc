@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+
+########################################################################
+# postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}
+
+# export db_host = localhost
+# export db_port = 5432
+# export db_user = www-data
+# export db_password = www-data
+
+  postgresql_c2c:
+    image: docker.io/c2corg/c2corg_pgsql:anon-2018-11-02
+    environment:
+      PGDATA: '/c2corg_anon'
+    ports:
+      - 5432:5432
+
+  pg_ui:
+    image: dpage/pgadmin4:4.0
+    depends_on:
+      - postgresql_c2c
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+
+      # do not require auth
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - 5050:80
