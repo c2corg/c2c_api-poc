@@ -28,6 +28,7 @@ def convert_test_file(filename):
     code = re.sub(r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def", code)
     code = re.sub(r"self\.app\.get\(", "self.get(", code)
     code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n", code)
+    code = re.sub(r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n", code)
 
     if filename.endswith("__init__.py"):
         code = re.sub("# package\n*", "", code)
@@ -58,6 +59,7 @@ def convert_test_folder(folder):
                 subprocess.run(["cp", filename, dest], check=True)
 
 
-reimport_all()
+# reimport_all()
 convert_test_folder("c2corg_api/tests/legacy/markdown")
 convert_test_file("c2corg_api/tests/legacy/views/test_health.py")
+convert_test_file("c2corg_api/tests/legacy/views/test_cooker.py")

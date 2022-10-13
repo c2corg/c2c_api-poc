@@ -74,3 +74,11 @@ class BaseTestRest(ClientInterface):
         assert (
             response.status_code in expected_status
         ), f"Status error: {response.status_code} i/o {expected_status}\n{response.data}"
+
+    ####
+
+    def app_post_json(self, url, json, **kwargs):
+        return self.app_send_json("post", url, json, **kwargs)
+
+    def app_send_json(self, action, url, json, **kwargs):
+        return getattr(self, action)(url=url, json=json, **kwargs)
