@@ -37,9 +37,10 @@ disable = "missing-module-docstring,missing-class-docstring,missing-function-doc
 generated-members = [
     ".*database\\.session\\..*",
 ]
+ignore = "c2corg/tests/legacy"
 
 [tool.pylint.tests]
-disable = "invalid-name,protected-access,too-many-public-methods,too-few-public-methods"
+disable = "invalid-name,protected-access,too-many-public-methods,too-few-public-methods,attribute-defined-outside-init"
 
 [tool.pytest.ini_options]
 log_format = "%(asctime)s.%(msecs)03d %(levelname)s %(message)s"

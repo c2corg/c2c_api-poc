@@ -25,10 +25,37 @@ def convert_test_file(filename):
     with open(filename, "r", encoding="utf-8") as f:
         code = "".join(f.readlines())
 
+    def comment(pattern, code):
+        return re.sub(f"({pattern})", r"# \1", code)
+
+    code = code.replace("# -*- coding: utf-8 -*-\n", "")
+
+    # remove useless lines
     code = re.sub(r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def", code)
-    code = re.sub(r"self\.app\.get\(", "self.get(", code)
+
+    # clean unit tests code
+    code = re.sub(r"def setUp\(self\):.*\n", r"def setup_method(self):\n", code)
+    code = re.sub(r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n", code)
+    code = re.sub(r"\.setUp\(self\)", r".setup_method(self)", code)
+    code = re.sub(r"\.tearDown\(self\)", r".teardown_method(self)", code)
+
     code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n", code)
     code = re.sub(r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n", code)
+    code = re.sub(r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n", code)
+
+    # replace imports
+    code = code.replace("from c2corg_api.models.user import User", "from flask_camp.models import User")
+
+    # replace test API
+    code = re.sub(r"self\.app\.get\(", "self.get(", code)
+
+    # rename some properties
+    code = code.replace("email_validated", "email_is_validated")
+
+    # for now, comment these imports
+    code = comment(r"from c2corg_api.scripts.*\n", code)
+    code = comment(r"from c2corg_api.search.*\n", code)
+    code = comment(r"from c2corg_api.models.*\n", code)
 
     if filename.endswith("__init__.py"):
         code = re.sub("# package\n*", "", code)
@@ -63,3 +90,4 @@ def convert_test_folder(folder):
 convert_test_folder("c2corg_api/tests/legacy/markdown")
 convert_test_file("c2corg_api/tests/legacy/views/test_health.py")
 convert_test_file("c2corg_api/tests/legacy/views/test_cooker.py")
+convert_test_file("c2corg_api/tests/legacy/views/test_user.py")

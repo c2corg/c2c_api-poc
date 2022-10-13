@@ -1,23 +1,35 @@
 from flask_camp.client import ClientInterface
+from sqlalchemy.orm import sessionmaker
+
 from c2corg_api.app import create_app
 
 
 class BaseTestRest(ClientInterface):
 
+    settings = None  # TODO ?
     client = None
 
     @classmethod
     def setup_class(cls):
+
         cls.app, cls.api = create_app(TESTING=True)
+        cls.Session = sessionmaker()
 
     def setup_method(self):
         with self.app.app_context():
             self.api.database.create_all()
 
+            self.connection = self.api.database.engine.connect()
+            self.session = self.Session(bind=self.connection)
+
         with self.app.test_client() as client:
             self.client = client
 
     def teardown_method(self):
+
+        self.session.close()
+        self.connection.close()
+
         with self.app.app_context():
             self.api.database.drop_all()
 
