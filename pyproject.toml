@@ -33,7 +33,7 @@ line-length = 120
 [tool.pylint]
 init-hook='import sys; sys.path.append(".")'
 max-line-length = 120
-disable = "missing-module-docstring,missing-class-docstring,missing-function-docstring"
+disable = "missing-module-docstring,missing-class-docstring,missing-function-docstring,fixme"
 generated-members = [
     ".*database\\.session\\..*",
 ]
@@ -49,5 +49,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:flask_sqlalchemy.*:"
 ]
 testpaths = [
-    "tests/markdown",
+    "c2corg_api/tests/markdown",
+    "c2corg_api/tests/views",
 ]

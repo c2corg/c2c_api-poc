@@ -1,5 +1,3 @@
-from flask import Flask
-from flask_camp import RestApi
+from c2corg_api.app import create_app
 
-app = Flask(__name__)
-api = RestApi(app=app)
+app, api = create_app()
