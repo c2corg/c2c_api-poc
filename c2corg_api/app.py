@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_camp import RestApi
 
 from c2corg_api.views import health as health_view
@@ -8,7 +8,10 @@ from c2corg_api.views.legacy.users import register as register_view
 
 
 def before_user_creation(user):
-    user.ui_preferences = {"lang": "fr"}
+    body = request.get_json()
+
+    lang = body.get("lang", "fr")
+    user.ui_preferences = {"lang": lang}
 
 
 def create_app(**config):

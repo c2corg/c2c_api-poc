@@ -52,7 +52,7 @@ def _add_redis_status(status):
     success = False
 
     try:
-        redis_keys = current_api.memory_cache._client.dbsize()
+        redis_keys = current_api.memory_cache.client.dbsize()
         success = True
     except Exception:  # pylint:  disable=broad-except
         current_app.logger.exception("Getting redis keys failed")

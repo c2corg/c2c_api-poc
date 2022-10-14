@@ -2,9 +2,12 @@ from flask import request
 from flask_camp import allow
 from flask_camp.views.account import users
 
+from c2corg_api.schemas import schema
+
 rule = "/users/register"
 
 
+@schema("users_register.json")
 @allow("anonymous")
 def post():
 
@@ -16,6 +19,9 @@ def post():
         "email": data.get("email"),
         "password": data.get("password"),
     }
+
+    if "lang" in data:
+        body["lang"] = data["lang"]
 
     request._cached_json = (body, body)
 
