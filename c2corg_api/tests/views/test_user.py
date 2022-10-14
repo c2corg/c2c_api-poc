@@ -101,7 +101,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "Max Mustermann",
+            "name": "test",
             "password": "super secret",
             "email_validated": True,
             "email": "some_user@camptocamp.org",
@@ -120,7 +120,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "Max Mustermann",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -138,7 +138,7 @@ class TestUserRest(BaseUserTestRest):
             "username": "test",
             "forum_username": "test",
             "lang": "en",
-            "name": "Max Mustermann",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -155,7 +155,7 @@ class TestUserRest(BaseUserTestRest):
             "username": "test",
             "forum_username": "test",
             "lang": "nn",
-            "name": "Max Mustermann",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -186,7 +186,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "Contributor",
-            "name": "Max Mustermann",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -198,8 +198,8 @@ class TestUserRest(BaseUserTestRest):
     def test_register_discourse_up(self, _send_email):
         request_body = {
             "username": "test",
-            "forum_username": "testf",
-            "name": "Max Mustermann",
+            "forum_username": "test",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -207,18 +207,18 @@ class TestUserRest(BaseUserTestRest):
 
         # First succeed in creating a new user
         body = self.app_post_json(url, request_body, status=200).json
-        self.assertBodyEqual(body, "username", "test")
-        self.assertBodyEqual(body, "forum_username", "testf")
-        self.assertBodyEqual(body, "name", "Max Mustermann")
-        self.assertBodyEqual(body, "email", "some_user@camptocamp.org")
-        self.assertNotIn("password", body)
-        self.assertIn("id", body)
+        assert body.get("username") == "test"
+        assert body.get("forum_username") == "test"
+        assert body.get("name") == "test"
+        assert body.get("email") == "some_user@camptocamp.org"
+        assert "password" not in body
+        assert "id" in body
         user_id = body.get("id")
         user = self.session.query(User).get(user_id)
-        self.assertIsNotNone(user)
+        assert user is not None
         assert user.email_is_validated is False
         profile = self.session.query(UserProfile).get(user_id)
-        self.assertIsNotNone(profile)
+        assert profile is not None
         assert len(profile.versions) == 1
         _send_email.check_call_once()
 
@@ -235,7 +235,7 @@ class TestUserRest(BaseUserTestRest):
         profile = self.session.query(UserProfile).get(user_id)
         assert len(profile.versions) == 1
         user = self.session.query(User).get(user_id)
-        self.assertTrue(user.email_is_validated)
+        assert user.email_is_validated is True
 
         # Now reject non unique attributes
         body = self.app_post_json(url, request_body, status=400).json
@@ -263,21 +263,21 @@ class TestUserRest(BaseUserTestRest):
         """Tests that user accounts are only indexed once they are confirmed."""
         request_body = {
             "username": "test",
-            "forum_username": "testf",
-            "name": "Max Mustermann",
+            "forum_username": "test",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
         url = self._prefix + "/register"
 
         body = self.app_post_json(url, request_body, status=200).json
-        self.assertIn("id", body)
+        assert "id" in body
         user_id = body.get("id")
 
         # check that the profile is not inserted in the search index
         sync_es(self.session)
         search_doc = search_documents[USERPROFILE_TYPE].get(id=user_id, index=elasticsearch_config["index"], ignore=404)
-        self.assertIsNone(search_doc)
+        assert search_doc is None
 
         # Simulate confirmation email validation
         nonce = self.extract_nonce(_send_email, "validate_register_email")
@@ -287,9 +287,9 @@ class TestUserRest(BaseUserTestRest):
         # check that the profile is inserted in the index after confirmation
         self.sync_es()
         search_doc = search_documents[USERPROFILE_TYPE].get(id=user_id, index=elasticsearch_config["index"])
-        self.assertIsNotNone(search_doc)
+        assert search_doc is not None
 
-        self.assertIsNotNone(search_doc["doc_type"])
+        assert search_doc["doc_type"] is not None
         assert search_doc["title_fr"] == "Max Mustermann testf"
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
@@ -297,8 +297,8 @@ class TestUserRest(BaseUserTestRest):
         self.set_discourse_down()
         request_body = {
             "username": "test",
-            "forum_username": "testf",
-            "name": "Max Mustermann",
+            "forum_username": "test",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -337,10 +337,10 @@ class TestUserRest(BaseUserTestRest):
 
         self.session.expunge(user)
         user = self.session.query(User).get(user_id)
-        self.assertIsNone(user.validation_nonce)
+        assert user.validation_nonce is None
         modified_encoded_password = user.password
 
-        self.assertTrue(initial_encoded_password != modified_encoded_password)
+        assert initial_encoded_password != modified_encoded_password
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
     def test_forgot_password_discourse_down(self, _send_email):
@@ -377,8 +377,8 @@ class TestUserRest(BaseUserTestRest):
 
         request_body = {
             "username": "test",
-            "forum_username": "testf",
-            "name": "Max Mustermann",
+            "forum_username": "test",
+            "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -447,12 +447,12 @@ class TestUserRest(BaseUserTestRest):
 
     def test_login_success_discourse_up(self):
         body = self.login("moderator", status=200).json
-        self.assertTrue("token" in body)
+        assert "token" in body
 
     def test_login_success_discourse_down(self):
         # Topoguide login allowed even if Discourse is down.
         body = self.login("moderator", status=200).json
-        self.assertTrue("token" in body)
+        assert "token" in body
 
     def test_login_blocked_account(self):
         contributor = self.session.query(User).get(self.global_userids["contributor"])
@@ -472,7 +472,7 @@ class TestUserRest(BaseUserTestRest):
         redirect1 = self.discourse_client.redirect(moderator, sso, sig)
 
         body = self.login("moderator", sso=sso, sig=sig, discourse=True).json
-        self.assertTrue("token" in body)
+        assert "token" in body
         redirect2 = body["redirect"]
 
         assert redirect1 == redirect2
@@ -506,7 +506,7 @@ class TestUserRest(BaseUserTestRest):
 
         token2 = body["token"]
         body = self.get_json_with_token("/users/account", token2, status=200)
-        self.assertBodyEqual(body, "name", "Contributor")
+        assert body.get("name") == "Contributor"
 
     def test_renew_token_different_success(self):
         # Tokens created in the same second are identical
@@ -521,7 +521,7 @@ class TestUserRest(BaseUserTestRest):
         assert token1 != token2
 
         body = self.get_json_with_token("/users/account", token2, status=200)
-        self.assertBodyEqual(body, "name", "Contributor")
+        assert body.get("name") == "Contributor"
 
         self.post_json_with_token("/users/logout", token1)
         self.post_json_with_token("/users/logout", token2)

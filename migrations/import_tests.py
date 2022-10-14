@@ -11,6 +11,10 @@ replacements = [
     # remove useless lines
     (r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def"),
 
+    # not very pythonic
+    (r"self\.assertTrue\((initial_encoded_password) != (modified_encoded_password)\)", r"assert \1 != \2"),
+    (r'self\.assertTrue\(("\w+") in (\w+)\)',r'assert \1 in \2'),
+
     # clean unit tests code
     (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
     (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
@@ -19,6 +23,13 @@ replacements = [
     (r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n"),
     (r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n"),
     (r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n"),
+    (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
+    (r'self\.assertBodyEqual\((\w+), "(\w+)", "([\w @_.]+)"\)',r'assert \1.get("\2") == "\3"'),
+    (r"self\.assertIn\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 in \2\n"),
+    (r"self\.assertNotIn\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 not in \2\n"),
+    (r"self\.assertIsNone\(([^,\n]*)\)\n", r"assert \1 is None\n"),
+    (r"self\.assertIsNotNone\(([^,\n]*)\)\n", r"assert \1 is not None\n"),
+    (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
     (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
 
     # imports
@@ -42,7 +53,12 @@ replacements = [
     (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
     (r'(.)Shorter than minimum length 3', "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
     (r'(.)Contain invalid character\(s\)', "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance [\'name\']"),
-    (r"already used forum_username", "A user still exists with this name")
+    (r"already used forum_username", "A user still exists with this name"),
+
+    # sometime used as forum name -> back to test
+    ('"testf"', '"test"'),
+    ('"Max Mustermann"', '"test"'),
+
 ]
 
 def reimport_all():
