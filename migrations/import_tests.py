@@ -42,6 +42,7 @@ replacements = [
     (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
     (r'(.)Shorter than minimum length 3', "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
     (r'(.)Contain invalid character\(s\)', "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance [\'name\']"),
+    (r"already used forum_username", "A user still exists with this name")
 ]
 
 def reimport_all():

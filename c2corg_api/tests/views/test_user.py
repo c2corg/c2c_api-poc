@@ -192,7 +192,7 @@ class TestUserRest(BaseUserTestRest):
         }
         url = self._prefix + "/register"
         json = self.app_post_json(url, request_body, status=400).json
-        assert json["description"] == "already used forum_username"
+        assert json["description"] == "A user still exists with this name"
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
     def test_register_discourse_up(self, _send_email):

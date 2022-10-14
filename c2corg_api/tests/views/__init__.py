@@ -1,4 +1,5 @@
 from flask_camp.client import ClientInterface
+from flask_camp.models import User
 from sqlalchemy.orm import sessionmaker
 
 from c2corg_api.app import create_app
@@ -22,6 +23,8 @@ class BaseTestRest(ClientInterface):
             self.connection = self.api.database.engine.connect()
             self.session = self.Session(bind=self.connection)
 
+            self._add_global_test_data()
+
         with self.app.test_client() as client:
             self.client = client
 
@@ -34,6 +37,14 @@ class BaseTestRest(ClientInterface):
             self.api.database.drop_all()
 
         self.api.memory_cache.flushall()
+
+    def _add_global_test_data(self):
+        contributor = User(name="contributor")
+        contributor.set_password("super pass")
+        contributor.set_email("contributor@camptocamp.org")
+
+        self.session.add(contributor)
+        self.session.commit()
 
     @staticmethod
     def _convert_kwargs(kwargs):
