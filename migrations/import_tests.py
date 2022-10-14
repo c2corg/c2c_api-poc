@@ -40,6 +40,7 @@ def convert_test_file(filename):
     code = re.sub(r"\.tearDown\(self\)", r".teardown_method(self)", code)
 
     code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n", code)
+    code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n", code)
     code = re.sub(r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n", code)
     code = re.sub(r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n", code)
 
@@ -50,13 +51,18 @@ def convert_test_file(filename):
     code = re.sub(r"self\.app\.get\(", "self.get(", code)
 
     # rename some properties
-    code = code.replace("email_validated", "email_is_validated")
+    code = code.replace("user.email_validated", "user.email_is_validated")
+    code = code.replace("user.lang", 'user.ui_preferences["lang"]')
 
     # for now, comment these imports
     code = comment(r"from c2corg_api.scripts.*\n", code)
     code = comment(r"from c2corg_api.search.*\n", code)
     code = comment(r"from c2corg_api.models.*\n", code)
 
+    # targetesd replace
+    code = code.replace("class TestFormat(unittest.TestCase):", "class TestFormat:")
+
+    # remove empty init file
     if filename.endswith("__init__.py"):
         code = re.sub("# package\n*", "", code)
         if len(code) == 0:
@@ -68,6 +74,8 @@ def convert_test_file(filename):
 
     with open(filename, "w", encoding="utf-8") as f:
         f.write(code)
+
+    subprocess.run(["black", filename], check=True)
 
 
 def convert_test_folder(folder):

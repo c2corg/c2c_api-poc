@@ -23,7 +23,7 @@ def fake_get_markdown_parser(*args, **kwargs):
     return markdown.Markdown(output_format="xhtml5", extensions=[FailingExtension()], enable_attributes=False)
 
 
-class TestFormat(unittest.TestCase):
+class TestFormat:
     """
     parse_code() function should never raise an exception. All sensitive
     functions (parsing and cleaning) are inside a try-catch block. This

@@ -16,7 +16,10 @@
 
 
 class APIDiscourseClient(object):
-    def __init__(self, settings): ...
+    def __init__(self, settings):
+        ...
+
+
 #         self.settings = settings
 #         self.timeout = int(settings["url.timeout"])
 #         self.discourse_base_url = settings["discourse.url"]

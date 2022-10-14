@@ -9,11 +9,11 @@ def read_file(path):
         return f.read()
 
 
-class TestFormat(unittest.TestCase):
+class TestFormat:
     def test_all(self):
         def do_test(test_id, text, expected):
             result = parse_code(text)
-            self.assertEqual(expected.rstrip(), result.rstrip(), test_id)
+            assert expected.rstrip() == result.rstrip(), test_id
 
         def process_folder(path):
             for item in os.listdir(path):

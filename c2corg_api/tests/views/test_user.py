@@ -103,7 +103,7 @@ class TestUserRest(BaseUserTestRest):
             "forum_username": "test",
             "name": "Max Mustermann",
             "password": "super secret",
-            "email_is_validated": True,
+            "email_validated": True,
             "email": "some_user@camptocamp.org",
         }
         url = self._prefix + "/register"
@@ -129,7 +129,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
         user = self.session.query(User).get(user_id)
-        assert user.lang == "fr"
+        assert user.ui_preferences["lang"] == "fr"
         _send_email.check_call_once()
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
@@ -147,7 +147,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
         user = self.session.query(User).get(user_id)
-        assert user.lang == "en"
+        assert user.ui_preferences["lang"] == "en"
         _send_email.check_call_once()
 
     def test_register_invalid_lang(self):
@@ -222,7 +222,7 @@ class TestUserRest(BaseUserTestRest):
         assert len(profile.versions) == 1
         _send_email.check_call_once()
 
-        assert user.lang == "fr"
+        assert user.ui_preferences["lang"] == "fr"
         # Simulate confirmation email validation
         nonce = self.extract_nonce(_send_email, "validate_register_email")
         url_api_validation = "/users/validate_register_email/%s" % nonce
