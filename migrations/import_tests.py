@@ -4,6 +4,45 @@ import re
 import shutil
 import subprocess
 
+replacements = [
+    (r"# package\n*", ""),
+    (r"# -\*- coding: utf-8 -\*-\n", ""),
+
+    # remove useless lines
+    (r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def"),
+
+    # clean unit tests code
+    (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
+    (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
+    (r"\.setUp\(self\)", r".setup_method(self)"),
+    (r"\.tearDown\(self\)", r".teardown_method(self)"),
+    (r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n"),
+    (r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n"),
+    (r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n"),
+    (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
+
+    # imports
+    (r"from c2corg_api\.models\.user import User", "from flask_camp.models import User"),
+
+    # replace test API
+    (r"self\.app\.get\(", "self.get("),
+
+    # rename some properties
+    (r"user\.email_validated", "user.email_is_validated"),
+    (r"user\.lang", 'user.ui_preferences["lang"]'),
+    (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
+
+    # for now, comment these imports
+    (r"(from c2corg_api.scripts.*\n)", r"# \1"),
+    (r"(from c2corg_api.search.*\n)", r"# \1"),
+    (r"(from c2corg_api.models.*\n)", r"# \1"),
+
+    # targeted replace
+    (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
+    (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
+    (r'(.)Shorter than minimum length 3', "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
+    (r'(.)Contain invalid character\(s\)', "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance [\'name\']"),
+]
 
 def reimport_all():
     subprocess.run(["rm", "-rf", "tests/legacy"], check=True)
@@ -18,53 +57,18 @@ def reimport_all():
                 dest = os.path.join(dest_dir, file)
                 shutil.copyfile(source, dest)
 
-    subprocess.run(["black", "c2corg_api/tests/legacy"], check=True)
+    subprocess.run(["black", "c2corg_api/tests"], check=True)
 
 
 def convert_test_file(filename):
     with open(filename, "r", encoding="utf-8") as f:
         code = "".join(f.readlines())
 
-    def comment(pattern, code):
-        return re.sub(f"({pattern})", r"# \1", code)
-
-    code = code.replace("# -*- coding: utf-8 -*-\n", "")
-
-    # remove useless lines
-    code = re.sub(r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def", code)
-
-    # clean unit tests code
-    code = re.sub(r"def setUp\(self\):.*\n", r"def setup_method(self):\n", code)
-    code = re.sub(r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n", code)
-    code = re.sub(r"\.setUp\(self\)", r".setup_method(self)", code)
-    code = re.sub(r"\.tearDown\(self\)", r".teardown_method(self)", code)
-
-    code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n", code)
-    code = re.sub(r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n", code)
-    code = re.sub(r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n", code)
-    code = re.sub(r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n", code)
-
-    # replace imports
-    code = code.replace("from c2corg_api.models.user import User", "from flask_camp.models import User")
-
-    # replace test API
-    code = re.sub(r"self\.app\.get\(", "self.get(", code)
-
-    # rename some properties
-    code = code.replace("user.email_validated", "user.email_is_validated")
-    code = code.replace("user.lang", 'user.ui_preferences["lang"]')
-
-    # for now, comment these imports
-    code = comment(r"from c2corg_api.scripts.*\n", code)
-    code = comment(r"from c2corg_api.search.*\n", code)
-    code = comment(r"from c2corg_api.models.*\n", code)
-
-    # targetesd replace
-    code = code.replace("class TestFormat(unittest.TestCase):", "class TestFormat:")
+    for pattern, new_value in replacements:
+        code = re.sub(pattern, new_value, code)
 
     # remove empty init file
     if filename.endswith("__init__.py"):
-        code = re.sub("# package\n*", "", code)
         if len(code) == 0:
             return
 
@@ -74,8 +78,6 @@ def convert_test_file(filename):
 
     with open(filename, "w", encoding="utf-8") as f:
         f.write(code)
-
-    subprocess.run(["black", filename], check=True)
 
 
 def convert_test_folder(folder):
@@ -94,8 +96,11 @@ def convert_test_folder(folder):
                 subprocess.run(["cp", filename, dest], check=True)
 
 
-# reimport_all()
-convert_test_folder("c2corg_api/tests/legacy/markdown")
+
+# # reimport_all()
+# convert_test_folder("c2corg_api/tests/legacy/markdown")
 convert_test_file("c2corg_api/tests/legacy/views/test_health.py")
 convert_test_file("c2corg_api/tests/legacy/views/test_cooker.py")
 convert_test_file("c2corg_api/tests/legacy/views/test_user.py")
+
+subprocess.run(["black", "c2corg_api/tests"], check=True)

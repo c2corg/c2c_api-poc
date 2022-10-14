@@ -20,13 +20,13 @@ from unittest.mock import Mock, MagicMock, patch
 
 forum_username_tests = {
     # min length
-    "a": "Shorter than minimum length 3",
+    "a": r"'a' does not match '^[^ @\\/?&]{3,64}$' on instance ['name']",
     "a" * 3: False,
     # max length (colander schema validation)
     "a" * 26: "Longer than maximum length 25",
     "a" * 25: False,
     # valid characters
-    "test/test": "Contain invalid character(s)",
+    "test/test": r"'test/test' does not match '^[^ @\\/?&]{3,64}$' on instance ['name']",
     "test.test-test_test": False,
     # first char
     "-test": "First character is invalid",
@@ -169,7 +169,7 @@ class TestUserRest(BaseUserTestRest):
         for forum_username, value in forum_username_tests.items():
             i += 1
             request_body = {
-                "username": "test{}".format(i),
+                "username": forum_username,
                 "forum_username": forum_username,
                 "name": "Max Mustermann{}".format(i),
                 "password": "super secret",
@@ -179,7 +179,7 @@ class TestUserRest(BaseUserTestRest):
                 self.app_post_json(url, request_body, status=200).json
             else:
                 json = self.app_post_json(url, request_body, status=400).json
-                assert json["errors"][0]["description"] == value
+                assert json["description"] == value
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
     def test_register_forum_username_unique(self, _send_email):
@@ -192,7 +192,7 @@ class TestUserRest(BaseUserTestRest):
         }
         url = self._prefix + "/register"
         json = self.app_post_json(url, request_body, status=400).json
-        assert json["errors"][0]["description"] == "already used forum_username"
+        assert json["description"] == "already used forum_username"
 
     @patch("c2corg_api.emails.email_service.EmailService._send_email")
     def test_register_discourse_up(self, _send_email):

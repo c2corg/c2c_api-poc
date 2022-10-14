@@ -15,7 +15,7 @@ def post():
     data = request.get_json()
 
     body = {
-        "name": data.get("username"),
+        "name": data.get("forum_username"),
         "email": data.get("email"),
         "password": data.get("password"),
     }
