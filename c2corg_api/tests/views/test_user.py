@@ -5,8 +5,7 @@
 
 # from c2corg_api.models.token import Token
 from flask_camp.models import User
-
-# from c2corg_api.models.user_profile import UserProfile, USERPROFILE_TYPE
+from c2corg_api.models.legacy.user_profile import UserProfile, USERPROFILE_TYPE
 
 from c2corg_api.tests.views import BaseTestRest
 from c2corg_api.security.discourse_client import APIDiscourseClient, get_discourse_client, set_discourse_client
@@ -87,7 +86,7 @@ class BaseUserTestRest(BaseTestRest):
             data,
         )
 
-    def extract_nonce(self, _send_mail, key):
+    def extract_nonce_TO_BE_DELETED(self, _send_mail, key):
         match = self.extract_urls(_send_mail.call_args_list[0][1]["body"])
         validation_url = match[0]
         fragment = urlparse(validation_url).fragment
@@ -96,7 +95,7 @@ class BaseUserTestRest(BaseTestRest):
 
 
 class TestUserRest(BaseUserTestRest):
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_always_register_non_validated_users(self, _send_email):
         request_body = {
             "username": "test",
@@ -111,11 +110,11 @@ class TestUserRest(BaseUserTestRest):
         # First succeed in creating a new user
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         assert user.email_is_validated is False
         _send_email.check_call_once()
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_default_lang(self, _send_email):
         request_body = {
             "username": "test",
@@ -128,11 +127,11 @@ class TestUserRest(BaseUserTestRest):
 
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         assert user.ui_preferences["lang"] == "fr"
         _send_email.check_call_once()
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_passed_lang(self, _send_email):
         request_body = {
             "username": "test",
@@ -146,7 +145,7 @@ class TestUserRest(BaseUserTestRest):
 
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         assert user.ui_preferences["lang"] == "en"
         _send_email.check_call_once()
 
@@ -162,7 +161,7 @@ class TestUserRest(BaseUserTestRest):
         url = self._prefix + "/register"
         self.app_post_json(url, request_body, status=400).json
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_forum_username_validity(self, _send_email):
         url = self._prefix + "/register"
         i = 0
@@ -181,7 +180,7 @@ class TestUserRest(BaseUserTestRest):
                 json = self.app_post_json(url, request_body, status=400).json
                 assert json["description"] == value
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_forum_username_unique(self, _send_email):
         request_body = {
             "username": "test",
@@ -194,7 +193,7 @@ class TestUserRest(BaseUserTestRest):
         json = self.app_post_json(url, request_body, status=400).json
         assert json["description"] == "A user still exists with this name"
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_discourse_up(self, _send_email):
         request_body = {
             "username": "test",
@@ -214,10 +213,10 @@ class TestUserRest(BaseUserTestRest):
         assert "password" not in body
         assert "id" in body
         user_id = body.get("id")
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         assert user is not None
         assert user.email_is_validated is False
-        profile = self.session.query(UserProfile).get(user_id)
+        profile = self.query_get(UserProfile, user_id=user_id)
         assert profile is not None
         assert len(profile.versions) == 1
         _send_email.check_call_once()
@@ -230,11 +229,11 @@ class TestUserRest(BaseUserTestRest):
 
         # Need to expunge the profile and user so that the latest
         # version (the one from the view) is actually picked up.
-        self.session.expunge(profile)
-        self.session.expunge(user)
-        profile = self.session.query(UserProfile).get(user_id)
+        self.expunge(profile)
+        self.expunge(user)
+        profile = self.query_get(UserProfile, user_id=user_id)
         assert len(profile.versions) == 1
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         assert user.email_is_validated is True
 
         # Now reject non unique attributes
@@ -258,7 +257,7 @@ class TestUserRest(BaseUserTestRest):
         }
         body = self.app_post_json(url, request_utf8, status=200).json
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_search_index(self, _send_email):
         """Tests that user accounts are only indexed once they are confirmed."""
         request_body = {
@@ -292,7 +291,7 @@ class TestUserRest(BaseUserTestRest):
         assert search_doc["doc_type"] is not None
         assert search_doc["title_fr"] == "Max Mustermann testf"
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_discourse_down(self, _send_email):
         self.set_discourse_down()
         request_body = {
@@ -318,10 +317,10 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, {"email": "non_existing_oeuhsaeuh@camptocamp.org"}, status=400).json
         self.assertErrorsContain(body, "email", "No user with this email")
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_forgot_password_discourse_up(self, _send_email):
         user_id = self.global_userids["contributor"]
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         initial_encoded_password = user.password
 
         url = "/users/request_password_change"
@@ -335,18 +334,18 @@ class TestUserRest(BaseUserTestRest):
 
         self.app_post_json(url_api_validation, {"password": "new pass"}, status=200)
 
-        self.session.expunge(user)
-        user = self.session.query(User).get(user_id)
+        self.expunge(user)
+        user = self.query_get(User, user_id=user_id)
         assert user.validation_nonce is None
         modified_encoded_password = user.password
 
         assert initial_encoded_password != modified_encoded_password
 
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_forgot_password_discourse_down(self, _send_email):
         self.set_discourse_down()
         user_id = self.global_userids["contributor"]
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
 
         url = "/users/request_password_change"
         self.app_post_json(url, {"email": user.email}, status=200).json
@@ -362,7 +361,7 @@ class TestUserRest(BaseUserTestRest):
 
     def test_forgot_password_blocked_account(self):
         user_id = self.global_userids["contributor"]
-        user = self.session.query(User).get(user_id)
+        user = self.query_get(User, user_id=user_id)
         user.blocked = True
         self.session.flush()
 
@@ -370,7 +369,7 @@ class TestUserRest(BaseUserTestRest):
         self.app_post_json(url, {"email": user.email}, status=403)
 
     # @mark.jobs
-    @patch("c2corg_api.emails.email_service.EmailService._send_email")
+    @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_purge_accounts(self, _send_email):
         from c2corg_api.jobs.purge_non_activated_accounts import purge_account
         from datetime import datetime

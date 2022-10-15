@@ -2,7 +2,8 @@ from flask_camp.client import ClientInterface
 from flask_camp.models import User
 from sqlalchemy.orm import sessionmaker
 
-from c2corg_api.app import create_app
+from c2corg_api.app import create_app, before_user_creation
+from c2corg_api.models.legacy.user_profile import UserProfile
 
 
 class BaseTestRest(ClientInterface):
@@ -43,8 +44,11 @@ class BaseTestRest(ClientInterface):
         contributor.set_password("super pass")
         contributor.set_email("contributor@camptocamp.org")
 
-        self.session.add(contributor)
-        self.session.commit()
+        self.api.database.session.add(contributor)
+
+        before_user_creation(contributor, body={})
+
+        self.api.database.session.commit()
 
     @staticmethod
     def _convert_kwargs(kwargs):
@@ -98,10 +102,35 @@ class BaseTestRest(ClientInterface):
             response.status_code in expected_status
         ), f"Status error: {response.status_code} i/o {expected_status}\n{response.data}"
 
-    ####
+    ######### dedicated function for legacy tests
 
     def app_post_json(self, url, json, **kwargs):
         return self.app_send_json("post", url, json, **kwargs)
 
     def app_send_json(self, action, url, json, **kwargs):
         return getattr(self, action)(url=url, json=json, **kwargs)
+
+    def query_get(self, klass, **kwargs):
+        parameter_name, parameter_value = list(kwargs.items())[0]
+
+        if klass is User:
+            return self.session.query(User).get(parameter_value)
+
+        if klass is UserProfile:
+            with self.app.app_context():
+                return UserProfile(parameter_value)
+
+        raise TypeError("TODO...")
+
+    def extract_nonce(self, _send_mail, key):
+        return _send_mail.call_args_list[0][0][1]
+
+    def expunge(self, item):
+        if isinstance(item, UserProfile):
+            return
+            self.session.expunge(item._user)
+        else:
+            self.session.expunge(item)
+
+    def assertErrorsContain(self, body, error_name):
+        assert body["status"] != "ok"

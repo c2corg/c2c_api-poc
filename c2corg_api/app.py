@@ -1,13 +1,16 @@
 import re
 
 from flask import Flask, request
-from flask_camp import RestApi
+from flask_camp import RestApi, current_api
+from flask_camp.models import Document
 from werkzeug.exceptions import BadRequest
 
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 
 from c2corg_api.views.legacy.users import register as register_view
+from c2corg_api.views.legacy.users import validate_register_email as validate_register_email_view
+
 
 # https://github.com/discourse/discourse/blob/master/app/models/username_validator.rb
 def check_user_name(value):
@@ -27,13 +30,20 @@ def check_user_name(value):
         raise BadRequest("Ended by confusing suffix")
 
 
-def before_user_creation(user):
-    body = request.get_json()
+def before_user_creation(user, body=None):
+    # TODO legacy : remove body parameter
+    body = body if body is not None else request.get_json()
 
     lang = body.get("lang", "fr")
     user.ui_preferences = {"lang": lang}
 
     check_user_name(user.name)
+
+    # create the profile page. This function adds the page in the session
+    user_page = Document.create(comment="Creation of user page", data="Hello!", author=user)
+
+    current_api.database.session.flush()
+    user.id = user_page.id
 
 
 def create_app(**config):
@@ -52,6 +62,6 @@ def create_app(**config):
 
     # define v6 interface
     api.add_modules(app, health_view, cooker_view, url_prefix="")
-    api.add_modules(app, register_view, url_prefix="")
+    api.add_modules(app, register_view, validate_register_email_view, url_prefix="")
 
     return app, api
