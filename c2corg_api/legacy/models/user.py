@@ -16,3 +16,15 @@ class User:
     @property
     def lang(self):
         return self._user.ui_preferences["lang"]
+
+    @property
+    def password(self):
+        return self._user.password_hash
+
+    @property
+    def email(self):
+        return self._user._email
+
+    @property
+    def validation_nonce(self):
+        return self._user._login_token

@@ -16,6 +16,7 @@ from c2corg_api.views import cooker as cooker_view
 
 from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
 from c2corg_api.legacy.views.users import register as register_view
+from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
 
 
@@ -125,6 +126,13 @@ def create_app(**config):
 
     # define v6 interface
     api.add_modules(app, health_view, cooker_view, url_prefix="")
-    api.add_modules(app, register_view, validate_register_email_view, request_password_change_view, url_prefix="")
+    api.add_modules(
+        app,
+        register_view,
+        validate_register_email_view,
+        request_password_change_view,
+        validate_new_password_view,
+        url_prefix="",
+    )
 
     return app, api

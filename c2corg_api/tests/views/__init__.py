@@ -13,11 +13,12 @@ from c2corg_api.search import search
 class BaseTestRest(ClientInterface):
 
     client = None
+    global_userids = {}
 
     @classmethod
     def setup_class(cls):
 
-        cls.app, cls.api = create_app(TESTING=True)
+        cls.app, cls.api = create_app(TESTING=True, SECRET_KEY="not secret")
         cls.Session = sessionmaker()
 
     def setup_method(self):
@@ -46,12 +47,15 @@ class BaseTestRest(ClientInterface):
         contributor = User(name="contributor")
         contributor.set_password("super pass")
         contributor.set_email("contributor@camptocamp.org")
+        contributor.validate_email(contributor._email_token)
 
         self.api.database.session.add(contributor)
 
         before_user_creation(contributor, body={})
 
         self.api.database.session.commit()
+
+        self.global_userids[contributor.name] = contributor.id
 
     @staticmethod
     def _convert_kwargs(kwargs):
@@ -144,7 +148,10 @@ class BaseTestRest(ClientInterface):
         raise TypeError("TODO...")
 
     def extract_nonce(self, _send_mail, key):
-        return _send_mail.call_args_list[0][0][1]
+        message = _send_mail.call_args_list[0][0][0]
+        body = message.body
+        token = body.split("=")[1]
+        return token
 
     def expunge(self, item):
         if isinstance(item, UserProfile):

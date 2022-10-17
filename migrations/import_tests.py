@@ -53,7 +53,7 @@ replacements = [
     (r"already used forum_username", "A user still exists with this name"),
     (
         r'@patch\("c2corg_api.emails.email_service.EmailService._send_email"\)',
-        '@patch("flask_camp._services._send_mail.SendMail.send_account_creation")',
+        '@patch("flask_camp._services._send_mail.SendMail.send")',
     ),
     # Function that are totally replace
     (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
