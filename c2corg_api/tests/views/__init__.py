@@ -136,6 +136,8 @@ class BaseTestRest(ClientInterface):
     def expunge(self, item):
         if isinstance(item, UserProfile):
             return
+            # self.session.expunge(item._user)
+        elif isinstance(item, LegacyUser):
             self.session.expunge(item._user)
         else:
             self.session.expunge(item)
