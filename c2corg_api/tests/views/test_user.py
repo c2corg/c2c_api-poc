@@ -1,11 +1,11 @@
-# from c2corg_api.scripts.es.sync import sync_es
-# from c2corg_api.search import search_documents, elasticsearch_config
+from c2corg_api.legacy.scripts.es.sync import sync_es
+from c2corg_api.legacy.search import search_documents, elasticsearch_config
 
 # from pytest import mark
 
 # from c2corg_api.models.token import Token
-from c2corg_api.models.legacy.user import User
-from c2corg_api.models.legacy.user_profile import UserProfile, USERPROFILE_TYPE
+from c2corg_api.legacy.models.user import User
+from c2corg_api.legacy.models.user_profile import UserProfile, USERPROFILE_TYPE
 
 from c2corg_api.tests.views import BaseTestRest
 from c2corg_api.security.discourse_client import APIDiscourseClient, get_discourse_client, set_discourse_client
@@ -275,7 +275,7 @@ class TestUserRest(BaseUserTestRest):
 
         # check that the profile is not inserted in the search index
         sync_es(self.session)
-        search_doc = search_documents[USERPROFILE_TYPE].get(id=user_id, index=elasticsearch_config["index"], ignore=404)
+        search_doc = self.search_document(USERPROFILE_TYPE, id=user_id, index=elasticsearch_config["index"], ignore=404)
         assert search_doc is None
 
         # Simulate confirmation email validation
@@ -285,7 +285,7 @@ class TestUserRest(BaseUserTestRest):
 
         # check that the profile is inserted in the index after confirmation
         self.sync_es()
-        search_doc = search_documents[USERPROFILE_TYPE].get(id=user_id, index=elasticsearch_config["index"])
+        search_doc = self.search_document(USERPROFILE_TYPE, id=user_id, index=elasticsearch_config["index"])
         assert search_doc is not None
 
         assert search_doc["doc_type"] is not None

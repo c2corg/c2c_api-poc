@@ -22,6 +22,8 @@ dependencies = [
     "pytest==7.1.3",
     "pytest-cov==3.0.0",
     "pymdown-extensions==8.2",
+
+    "pydiscourse @ https://github.com/c2corg/pydiscourse/archive/ea03a3a.zip",
 ]
 
 [tool.setuptools]

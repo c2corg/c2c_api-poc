@@ -1,0 +1,1 @@
+USERPROFILE_TYPE = "profile"

@@ -4,13 +4,20 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from c2corg_api.app import create_app, before_user_creation, ProfilePageLink
-from c2corg_api.models.legacy.user import User as LegacyUser
-from c2corg_api.models.legacy.user_profile import UserProfile
+from c2corg_api.legacy.search import search_documents
+from c2corg_api.legacy.models.user import User as LegacyUser
+from c2corg_api.legacy.models.user_profile import UserProfile
 
 
 class BaseTestRest(ClientInterface):
 
-    settings = None  # TODO ?
+    settings = {  # TODO
+        "url.timeout": 666,
+        "discourse.url": "https://dev.forum.camptocamp.org",
+        "discourse.public_url": "https://dev.forum.camptocamp.org",
+        "discourse.api_key": "a key",
+    }
+
     client = None
 
     @classmethod
@@ -144,3 +151,10 @@ class BaseTestRest(ClientInterface):
 
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"
+
+    def search_document(self, document_type, *args, **kwargs):
+        with self.app.app_context():
+            return search_documents[document_type].get(*args, **kwargs)
+
+    def sync_es(self):
+        pass

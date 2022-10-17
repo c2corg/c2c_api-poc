@@ -32,14 +32,15 @@ replacements = [
     (r"self\.app\.get\(", "self.get("),
     (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
     (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
+    (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
     # rename some properties
     (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
-    # remap old models
-    (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.models.legacy.user_profile "),
-    (r"from c2corg_api\.models\.user ", "from c2corg_api.models.legacy.user "),
+    # remap old models to legacy model
+    (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
+    (r"from c2corg_api\.models\.user ", "from c2corg_api.legacy.models.user "),
+    (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
+    (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
     # for now, comment these imports
-    (r"(from c2corg_api.scripts.*\n)", r"# \1"),
-    (r"(from c2corg_api.search.*\n)", r"# \1"),
     (r"(from c2corg_api.models.token.*\n)", r"# \1"),
     # targeted replace
     (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),

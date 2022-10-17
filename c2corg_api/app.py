@@ -3,9 +3,12 @@ import re
 from flask import Flask, request
 from flask_camp import RestApi, current_api
 from flask_camp.models import Document, BaseModel, User
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, ForeignKey, Integer, delete
 from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest
+
+from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.search import DocumentSearch
 
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
@@ -53,8 +56,23 @@ def before_user_creation(user, body=None):
     check_user_name(user.name)
 
     # create the profile page. This function adds the page in the session
-    user_page = Document.create(comment="Creation of user page", data="Hello!", author=user)
+    user_page = Document.create(comment="Creation of user page", data={"type": USERPROFILE_TYPE}, author=user)
     current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
+
+
+def before_document_save(document):
+    if document.last_version is None:  # document as been merged
+        delete(DocumentSearch).where(DocumentSearch.id == document.id)
+        return
+
+    version = document.last_version
+
+    search_item = DocumentSearch.get(id=document.id)
+    if search_item is None:  # means the document is not yet created
+        search_item = DocumentSearch(id=document.id)
+        current_api.database.session.add(search_item)
+
+    search_item.document_type = version.data.get("type")
 
 
 def create_app(**config):
@@ -66,6 +84,7 @@ def create_app(**config):
     api = RestApi(
         app=app,
         before_user_creation=before_user_creation,
+        before_document_save=before_document_save,
         url_prefix="/v7",
     )
 
