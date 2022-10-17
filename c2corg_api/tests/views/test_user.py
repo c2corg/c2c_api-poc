@@ -4,7 +4,7 @@
 # from pytest import mark
 
 # from c2corg_api.models.token import Token
-from flask_camp.models import User
+from c2corg_api.models.legacy.user import User
 from c2corg_api.models.legacy.user_profile import UserProfile, USERPROFILE_TYPE
 
 from c2corg_api.tests.views import BaseTestRest
@@ -111,7 +111,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
         user = self.query_get(User, user_id=user_id)
-        assert user.email_is_validated is False
+        assert user.email_validated is False
         _send_email.check_call_once()
 
     @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
@@ -128,7 +128,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
         user = self.query_get(User, user_id=user_id)
-        assert user.ui_preferences["lang"] == "fr"
+        assert user.lang == "fr"
         _send_email.check_call_once()
 
     @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
@@ -146,7 +146,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         user_id = body.get("id")
         user = self.query_get(User, user_id=user_id)
-        assert user.ui_preferences["lang"] == "en"
+        assert user.lang == "en"
         _send_email.check_call_once()
 
     def test_register_invalid_lang(self):
@@ -215,13 +215,13 @@ class TestUserRest(BaseUserTestRest):
         user_id = body.get("id")
         user = self.query_get(User, user_id=user_id)
         assert user is not None
-        assert user.email_is_validated is False
+        assert user.email_validated is False
         profile = self.query_get(UserProfile, user_id=user_id)
         assert profile is not None
         assert len(profile.versions) == 1
         _send_email.check_call_once()
 
-        assert user.ui_preferences["lang"] == "fr"
+        assert user.lang == "fr"
         # Simulate confirmation email validation
         nonce = self.extract_nonce(_send_email, "validate_register_email")
         url_api_validation = "/users/validate_register_email/%s" % nonce
@@ -234,7 +234,7 @@ class TestUserRest(BaseUserTestRest):
         profile = self.query_get(UserProfile, user_id=user_id)
         assert len(profile.versions) == 1
         user = self.query_get(User, user_id=user_id)
-        assert user.email_is_validated is True
+        assert user.email_validated is True
 
         # Now reject non unique attributes
         body = self.app_post_json(url, request_body, status=400).json

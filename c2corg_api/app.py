@@ -2,7 +2,9 @@ import re
 
 from flask import Flask, request
 from flask_camp import RestApi, current_api
-from flask_camp.models import Document
+from flask_camp.models import Document, BaseModel, User
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest
 
 from c2corg_api.views import health as health_view
@@ -30,6 +32,17 @@ def check_user_name(value):
         raise BadRequest("Ended by confusing suffix")
 
 
+# Make the link between the user and the profile page in DB
+class ProfilePageLink(BaseModel):
+    id = Column(Integer, primary_key=True)
+
+    document_id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=False, unique=True)
+    document = relationship(Document, cascade="all,delete")
+
+    user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=False, unique=True)
+    user = relationship(User, cascade="all,delete")
+
+
 def before_user_creation(user, body=None):
     # TODO legacy : remove body parameter
     body = body if body is not None else request.get_json()
@@ -41,9 +54,7 @@ def before_user_creation(user, body=None):
 
     # create the profile page. This function adds the page in the session
     user_page = Document.create(comment="Creation of user page", data="Hello!", author=user)
-
-    current_api.database.session.flush()
-    user.id = user_page.id
+    current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
 
 
 def create_app(**config):

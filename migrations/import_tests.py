@@ -28,18 +28,15 @@ replacements = [
     (r"self\.assertIsNotNone\(([^,\n]*)\)\n", r"assert \1 is not None\n"),
     (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
     (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
-    # imports
-    (r"from c2corg_api\.models\.user import User", "from flask_camp.models import User"),
     # replace test API
     (r"self\.app\.get\(", "self.get("),
     (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
     (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
     # rename some properties
-    (r"user\.email_validated", "user.email_is_validated"),
-    (r"user\.lang", 'user.ui_preferences["lang"]'),
     (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
     # remap old models
-    (r"from c2corg_api.models.user_profile", r"from c2corg_api.models.legacy.user_profile"),
+    (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.models.legacy.user_profile "),
+    (r"from c2corg_api\.models\.user ", "from c2corg_api.models.legacy.user "),
     # for now, comment these imports
     (r"(from c2corg_api.scripts.*\n)", r"# \1"),
     (r"(from c2corg_api.search.*\n)", r"# \1"),

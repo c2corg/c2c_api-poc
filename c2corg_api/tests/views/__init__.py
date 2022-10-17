@@ -1,8 +1,10 @@
 from flask_camp.client import ClientInterface
 from flask_camp.models import User
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
-from c2corg_api.app import create_app, before_user_creation
+from c2corg_api.app import create_app, before_user_creation, ProfilePageLink
+from c2corg_api.models.legacy.user import User as LegacyUser
 from c2corg_api.models.legacy.user_profile import UserProfile
 
 
@@ -113,8 +115,14 @@ class BaseTestRest(ClientInterface):
     def query_get(self, klass, **kwargs):
         parameter_name, parameter_value = list(kwargs.items())[0]
 
-        if klass is User:
-            return self.session.query(User).get(parameter_value)
+        if klass is LegacyUser:
+            query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
+            with self.app.app_context():
+                result = self.api.database.session.execute(query)
+                user_id = list(result)[0][0]
+
+            user = self.session.query(User).get(user_id)
+            return LegacyUser.from_user(user)
 
         if klass is UserProfile:
             with self.app.app_context():
