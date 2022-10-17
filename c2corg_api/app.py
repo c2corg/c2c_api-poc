@@ -14,9 +14,9 @@ from c2corg_api.security.discourse_client import get_discourse_client
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 
-from c2corg_api.views.legacy.users import request_password_change as request_password_change_view
-from c2corg_api.views.legacy.users import register as register_view
-from c2corg_api.views.legacy.users import validate_register_email as validate_register_email_view
+from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
+from c2corg_api.legacy.views.users import register as register_view
+from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
 
 
 # https://github.com/discourse/discourse/blob/master/app/models/username_validator.rb
