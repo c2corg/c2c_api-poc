@@ -61,6 +61,8 @@ replacements = [
     ('"testf"', '"test"'),
     ('"Max Mustermann"', '"test"'),
     ('"Max Mustermann testf"', '"test"'),
+    # errors in v6_api
+    ("sso_sync", "sync_sso"),
 ]
 
 

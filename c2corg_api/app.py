@@ -1,6 +1,6 @@
 import re
 
-from flask import Flask, request
+from flask import Flask, request, current_app
 from flask_camp import RestApi, current_api
 from flask_camp.models import Document, BaseModel, User
 from sqlalchemy import Column, ForeignKey, Integer, delete, select
@@ -9,6 +9,7 @@ from werkzeug.exceptions import BadRequest
 
 from c2corg_api.models import USERPROFILE_TYPE
 from c2corg_api.search import DocumentSearch
+from c2corg_api.security.discourse_client import get_discourse_client
 
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
@@ -77,13 +78,16 @@ def before_document_save(document):
     search_item.document_type = version.data.get("type")
 
 
-def on_email_validation(user):
+def on_email_validation(user, sync_sso=True):
     query = select(ProfilePageLink.document_id).where(ProfilePageLink.user_id == user.id)
     result = current_api.database.session.execute(query)
     document_id = list(result)[0][0]
     profile_document = Document.get(id=document_id)
 
     before_document_save(profile_document)
+
+    if sync_sso is True:  # TODO: needs forum in dev env
+        get_discourse_client(current_app.config).sync_sso(user, user._email)
 
 
 def cooker(document, get_document):
@@ -93,8 +97,19 @@ def cooker(document, get_document):
 def create_app(**config):
     app = Flask(__name__, static_folder=None)
 
+    # defaulting
+    app.config.update(
+        {
+            "url.timeout": 666,
+            "discourse.url": "https://dev.forum.camptocamp.org",
+            "discourse.public_url": "https://dev.forum.camptocamp.org",
+            "discourse.api_key": "a key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        }
+    )
+
+    app.config.from_prefixed_env()
     app.config.from_mapping(config)
-    app.config.update({"SQLALCHEMY_TRACK_MODIFICATIONS": False})
 
     api = RestApi(
         app=app,

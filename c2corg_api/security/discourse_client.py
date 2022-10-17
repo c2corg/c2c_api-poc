@@ -53,12 +53,12 @@ class APIDiscourseClient(object):
             self.discourse_username_cache[userid] = discourse_username
         return discourse_username
 
-    def sync_sso(self, user):
+    def sync_sso(self, user, email):
         result = self.client.sync_sso(
             sso_secret=self.sso_key,
             name=user.name,
-            username=user.forum_username,
-            email=user.email,
+            username=user.name,
+            email=email,
             external_id=user.id,
             **{"custom.user_field_1": str(user.id)}
         )

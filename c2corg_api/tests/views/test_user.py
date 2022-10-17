@@ -62,7 +62,7 @@ class BaseUserTestRest(BaseTestRest):
         mock = Mock()
         mock.redirect_without_nonce = MagicMock(return_value="https://discourse_redirect")
         mock.redirect = MagicMock()
-        mock.sso_sync = MagicMock()
+        mock.sync_sso = MagicMock()
         self.set_discourse_client_mock(mock)
 
     def set_discourse_down(self):
@@ -70,7 +70,7 @@ class BaseUserTestRest(BaseTestRest):
         mock = APIDiscourseClient(self.settings)
         mock.redirect_without_nonce = MagicMock(return_value="https://discourse_redirect", side_effect=Exception)
         mock.redirect = MagicMock(side_effect=Exception)
-        mock.sso_sync = MagicMock(side_effect=Exception)
+        mock.sync_sso = MagicMock(side_effect=Exception)
         self.set_discourse_client_mock(mock)
 
     def extract_urls(self, data):

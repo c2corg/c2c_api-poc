@@ -12,13 +12,6 @@ from c2corg_api.search import search
 
 class BaseTestRest(ClientInterface):
 
-    settings = {  # TODO
-        "url.timeout": 666,
-        "discourse.url": "https://dev.forum.camptocamp.org",
-        "discourse.public_url": "https://dev.forum.camptocamp.org",
-        "discourse.api_key": "a key",
-    }
-
     client = None
 
     @classmethod
@@ -78,7 +71,13 @@ class BaseTestRest(ClientInterface):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
-        r = self.client.post(url, **kwargs)
+        try:
+            r = self.client.post(url, **kwargs)
+        except:
+            if expected_status == 500:
+                return None
+            raise
+
         self.assert_status_code(r, expected_status)
 
         return r
@@ -87,7 +86,13 @@ class BaseTestRest(ClientInterface):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
-        r = self.client.put(url, **kwargs)
+        try:
+            r = self.client.put(url, **kwargs)
+        except:
+            if expected_status == 500:
+                return None
+            raise
+
         self.assert_status_code(r, expected_status)
 
         return r
@@ -171,3 +176,7 @@ class BaseTestRest(ClientInterface):
 
     def sync_es(self):
         pass
+
+    @property
+    def settings(self):
+        return self.app.config
