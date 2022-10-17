@@ -7,6 +7,7 @@ from c2corg_api.app import create_app, before_user_creation, ProfilePageLink
 from c2corg_api.legacy.search import search_documents
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.user_profile import UserProfile
+from c2corg_api.search import search
 
 
 class BaseTestRest(ClientInterface):
@@ -152,9 +153,21 @@ class BaseTestRest(ClientInterface):
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"
 
-    def search_document(self, document_type, *args, **kwargs):
+    def search_document(self, document_type, id=None, index=None, ignore=None):
         with self.app.app_context():
-            return search_documents[document_type].get(*args, **kwargs)
+
+            document_ids = search(document_type=document_type, id=id)
+
+            if len(document_ids) == 0:
+                if ignore == 404:
+                    return None
+                else:
+                    raise Exception()
+
+            document_as_dict = self.api.get_cooked_document(document_ids[0])
+            data = document_as_dict["data"]
+
+            return {"doc_type": document_as_dict["data"].get("type"), "title_fr": data["locales"]["fr"]["title"]}
 
     def sync_es(self):
         pass

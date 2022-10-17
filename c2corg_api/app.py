@@ -3,7 +3,7 @@ import re
 from flask import Flask, request
 from flask_camp import RestApi, current_api
 from flask_camp.models import Document, BaseModel, User
-from sqlalchemy import Column, ForeignKey, Integer, delete
+from sqlalchemy import Column, ForeignKey, Integer, delete, select
 from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest
 
@@ -56,7 +56,9 @@ def before_user_creation(user, body=None):
     check_user_name(user.name)
 
     # create the profile page. This function adds the page in the session
-    user_page = Document.create(comment="Creation of user page", data={"type": USERPROFILE_TYPE}, author=user)
+    data = {"type": USERPROFILE_TYPE, "locales": {"fr": {"title": user.name}}}
+
+    user_page = Document.create(comment="Creation of user page", data=data, author=user)
     current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
 
 
@@ -75,6 +77,19 @@ def before_document_save(document):
     search_item.document_type = version.data.get("type")
 
 
+def on_email_validation(user):
+    query = select(ProfilePageLink.document_id).where(ProfilePageLink.user_id == user.id)
+    result = current_api.database.session.execute(query)
+    document_id = list(result)[0][0]
+    profile_document = Document.get(id=document_id)
+
+    before_document_save(profile_document)
+
+
+def cooker(document, get_document):
+    document["legacy"] = {}
+
+
 def create_app(**config):
     app = Flask(__name__, static_folder=None)
 
@@ -83,8 +98,10 @@ def create_app(**config):
 
     api = RestApi(
         app=app,
+        cooker=cooker,
         before_user_creation=before_user_creation,
         before_document_save=before_document_save,
+        on_email_validation=on_email_validation,
         url_prefix="/v7",
     )
 

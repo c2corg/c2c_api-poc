@@ -289,7 +289,7 @@ class TestUserRest(BaseUserTestRest):
         assert search_doc is not None
 
         assert search_doc["doc_type"] is not None
-        assert search_doc["title_fr"] == "Max Mustermann testf"
+        assert search_doc["title_fr"] == "test"
 
     @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_register_discourse_down(self, _send_email):

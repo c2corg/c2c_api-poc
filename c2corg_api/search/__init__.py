@@ -1,7 +1,6 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document
 from sqlalchemy import Column, ForeignKey, String, select
-from werkzeug.exceptions import NotFound
 
 
 class DocumentSearch(BaseModel):
@@ -15,7 +14,7 @@ class DocumentSearch(BaseModel):
 
 
 def search(document_type=None, id=None):
-    query = select(Document.id).join(DocumentSearch)
+    query = select(DocumentSearch.id)
 
     if document_type is not None:
         query = query.where(DocumentSearch.document_type == document_type)

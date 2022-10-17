@@ -60,6 +60,7 @@ replacements = [
     # sometime used as forum name -> back to test
     ('"testf"', '"test"'),
     ('"Max Mustermann"', '"test"'),
+    ('"Max Mustermann testf"', '"test"'),
 ]
 
 
