@@ -63,6 +63,9 @@ replacements = [
     ('"Max Mustermann testf"', '"test"'),
     # errors in v6_api
     ("sso_sync", "sync_sso"),
+    # different behavior
+    (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
+    (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
 ]
 
 

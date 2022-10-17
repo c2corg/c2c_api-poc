@@ -14,6 +14,7 @@ from c2corg_api.security.discourse_client import get_discourse_client
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 
+from c2corg_api.views.legacy.users import request_password_change as request_password_change_view
 from c2corg_api.views.legacy.users import register as register_view
 from c2corg_api.views.legacy.users import validate_register_email as validate_register_email_view
 
@@ -124,6 +125,6 @@ def create_app(**config):
 
     # define v6 interface
     api.add_modules(app, health_view, cooker_view, url_prefix="")
-    api.add_modules(app, register_view, validate_register_email_view, url_prefix="")
+    api.add_modules(app, register_view, validate_register_email_view, request_password_change_view, url_prefix="")
 
     return app, api

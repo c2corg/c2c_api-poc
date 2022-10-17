@@ -314,8 +314,7 @@ class TestUserRest(BaseUserTestRest):
 
     def test_forgot_password_non_existing_email(self):
         url = "/users/request_password_change"
-        body = self.app_post_json(url, {"email": "non_existing_oeuhsaeuh@camptocamp.org"}, status=400).json
-        self.assertErrorsContain(body, "email", "No user with this email")
+        body = self.app_post_json(url, {"email": "non_existing_oeuhsaeuh@camptocamp.org"}, status=200).json
 
     @patch("flask_camp._services._send_mail.SendMail.send_account_creation")
     def test_forgot_password_discourse_up(self, _send_email):
