@@ -1,6 +1,8 @@
+import time
 from flask import request
 from flask_camp import allow
 from flask_camp.views.account import user_login
+from werkzeug.exceptions import Unauthorized, Forbidden
 
 # from flask_camp.models import User
 
@@ -23,8 +25,12 @@ def post():
 
     request._cached_json = (body, body)
 
-    user = user_login.post()["user"]
+    try:
+        user = user_login.post()["user"]
+    except Unauthorized:
+        raise Forbidden()
 
     user["token"] = None
+    user["expire"] = 14 * 24 * 3600 + int(round(time.time()))
 
     return user

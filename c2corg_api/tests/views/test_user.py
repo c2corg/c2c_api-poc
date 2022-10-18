@@ -498,6 +498,7 @@ class TestUserRest(BaseUserTestRest):
 
         body = self.post_json_with_token("/users/logout", token)
 
+    @pytest.mark.skip(reason="/renew is not used")
     def test_renew_success(self):
         token = self.global_tokens["contributor"]
 
@@ -509,6 +510,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.get_json_with_token("/users/account", token2, status=200)
         assert body.get("name") == "Contributor"
 
+    @pytest.mark.skip(reason="/renew is not used")
     def test_renew_token_different_success(self):
         # Tokens created in the same second are identical
         token1 = self.login("contributor").json["token"]

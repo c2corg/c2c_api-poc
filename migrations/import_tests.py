@@ -79,7 +79,11 @@ replacements = [
     (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
 ]
 
-skipped_methods = {"test_purge_tokens": "No such model in flask_camp"}
+skipped_methods = {
+    "test_purge_tokens": "No such model in flask_camp",
+    "test_renew_success": "/renew is not used",
+    "test_renew_token_different_success": "/renew is not used",
+}
 
 
 def convert_test_file(filename):

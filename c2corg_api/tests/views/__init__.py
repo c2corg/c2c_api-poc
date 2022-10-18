@@ -63,21 +63,21 @@ class BaseTestRest(ClientInterface):
         """convert request argument to flask test client argument"""
         kwargs["query_string"] = kwargs.pop("params", None)
 
-    def get(self, url, **kwargs):
+    def get(self, url, prefix="/v7", **kwargs):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
-        r = self.client.get(url, **kwargs)
+        r = self.client.get(f"{prefix}{url}", **kwargs)
         self.assert_status_code(r, expected_status)
 
         return r
 
-    def post(self, url, **kwargs):
+    def post(self, url, prefix="/v7", **kwargs):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
         try:
-            r = self.client.post(url, **kwargs)
+            r = self.client.post(f"{prefix}{url}", **kwargs)
         except:
             if expected_status == 500:
                 return None
@@ -87,12 +87,12 @@ class BaseTestRest(ClientInterface):
 
         return r
 
-    def put(self, url, **kwargs):
+    def put(self, url, prefix="/v7", **kwargs):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
         try:
-            r = self.client.put(url, **kwargs)
+            r = self.client.put(f"{prefix}{url}", **kwargs)
         except:
             if expected_status == 500:
                 return None
@@ -102,11 +102,11 @@ class BaseTestRest(ClientInterface):
 
         return r
 
-    def delete(self, url, **kwargs):
+    def delete(self, url, prefix="/v7", **kwargs):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
-        r = self.client.delete(url, **kwargs)
+        r = self.client.delete(f"{prefix}{url}", **kwargs)
         self.assert_status_code(r, expected_status)
 
         return r
@@ -124,11 +124,14 @@ class BaseTestRest(ClientInterface):
 
     ######### dedicated function for legacy tests
 
+    def post_json_with_token(self, url, token, **kwargs):
+        return self.app_send_json("post", url, {}, **kwargs)
+
     def app_post_json(self, url, json, **kwargs):
         return self.app_send_json("post", url, json, **kwargs)
 
     def app_send_json(self, action, url, json, **kwargs):
-        return getattr(self, action)(url=url, json=json, **kwargs)
+        return getattr(self, action)(url=url, prefix="", json=json, **kwargs)
 
     def query_get(self, klass, **kwargs):
         parameter_name, parameter_value = list(kwargs.items())[0]
