@@ -1,1 +1,0 @@
-[[articles/922056/fr#mtb-exposition_rating|VTT]]
