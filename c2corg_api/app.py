@@ -14,6 +14,7 @@ from c2corg_api.security.discourse_client import get_discourse_client
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 
+from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
 from c2corg_api.legacy.views.users import register as register_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
@@ -132,6 +133,7 @@ def create_app(**config):
         validate_register_email_view,
         request_password_change_view,
         validate_new_password_view,
+        login_view,
         url_prefix="",
     )
 

@@ -13,6 +13,7 @@ class BaseTestRest(ClientInterface):
 
     client = None
     global_userids = {}
+    global_passwords = {}
 
     @classmethod
     def setup_class(cls):
@@ -39,18 +40,23 @@ class BaseTestRest(ClientInterface):
         self.api.memory_cache.flushall()
 
     def _add_global_test_data(self):
-        contributor = User(name="contributor")
-        contributor.set_password("super pass")
-        contributor.set_email("contributor@camptocamp.org")
-        contributor.validate_email(contributor._email_token)
+        self._add_user("contributor", "super pass")
+        self._add_user("moderator", "super pass")
 
-        self.api.database.session.add(contributor)
+    def _add_user(self, name, password):
+        user = User(name=name)
+        user.set_password(password)
+        user.set_email(f"{name}@camptocamp.org")
+        user.validate_email(user._email_token)
 
-        before_user_creation(contributor, body={})
+        self.api.database.session.add(user)
 
-        self.api.database.session.commit()
+        before_user_creation(user, body={})
 
-        self.global_userids[contributor.name] = contributor.id
+        self.api.database.session.flush()
+
+        self.global_userids[user.name] = user.id
+        self.global_passwords[user.name] = password
 
     @staticmethod
     def _convert_kwargs(kwargs):
