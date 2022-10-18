@@ -10,6 +10,7 @@
     "python.languageServer": "Pylance",
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none",
-        "reportOptionalMemberAccess": "none"
+        "reportOptionalMemberAccess": "none",
+        "reportPrivateImportUsage": "none"
     }
 }

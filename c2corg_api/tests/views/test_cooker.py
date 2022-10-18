@@ -1,3 +1,4 @@
+import pytest
 from c2corg_api.tests.views import BaseTestRest
 
 

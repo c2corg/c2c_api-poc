@@ -79,6 +79,8 @@ replacements = [
     (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
 ]
 
+skipped_methods = {"test_purge_tokens": "No such model in flask_camp"}
+
 
 def convert_test_file(filename):
     with open(f"../v6_api/c2corg_api/tests/{filename}", "r", encoding="utf-8") as f:
@@ -89,12 +91,20 @@ def convert_test_file(filename):
     for pattern, new_value in replacements:
         code = re.sub(pattern, new_value, code)
 
+    for method, skip_reason in skipped_methods.items():
+        code = code.replace(
+            f"\n    def {method}(self",
+            f'\n    @pytest.mark.skip(reason="{skip_reason}")\n    def {method}(self',
+        )
+
     code = black.format_str(code, mode=black.Mode(line_length=120))
 
     # remove empty init file
     if filename.endswith("__init__.py"):
         if len(code) == 0:
             return
+
+    code = f"import pytest\n{code}"
 
     dest = f"c2corg_api/tests/{filename}"
     Path(os.path.dirname(dest)).mkdir(parents=True, exist_ok=True)

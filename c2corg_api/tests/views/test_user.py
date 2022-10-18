@@ -1,3 +1,4 @@
+import pytest
 from c2corg_api.legacy.scripts.es.sync import sync_es
 from c2corg_api.legacy.search import search_documents, elasticsearch_config
 
@@ -404,6 +405,7 @@ class TestUserRest(BaseUserTestRest):
         assert 0 == query.count()
 
     # @mark.jobs
+    @pytest.mark.skip(reason="No such model in flask_camp")
     def test_purge_tokens(self):
         from c2corg_api.jobs.purge_expired_tokens import purge_token
         from datetime import datetime, timedelta
