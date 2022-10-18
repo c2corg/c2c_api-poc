@@ -28,3 +28,11 @@ class User:
     @property
     def validation_nonce(self):
         return self._user._login_token
+
+    @property
+    def blocked(self):
+        return self._user.blocked
+
+    @blocked.setter
+    def blocked(self, value):
+        self._user.blocked = value

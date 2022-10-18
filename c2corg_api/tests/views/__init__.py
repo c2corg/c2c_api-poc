@@ -1,7 +1,6 @@
 from flask_camp.client import ClientInterface
 from flask_camp.models import User
 from sqlalchemy import select
-from sqlalchemy.orm import sessionmaker
 
 from c2corg_api.app import create_app, before_user_creation, ProfilePageLink
 from c2corg_api.legacy.search import search_documents
@@ -17,26 +16,22 @@ class BaseTestRest(ClientInterface):
 
     @classmethod
     def setup_class(cls):
-
         cls.app, cls.api = create_app(TESTING=True, SECRET_KEY="not secret")
-        cls.Session = sessionmaker()
 
     def setup_method(self):
-        with self.app.app_context():
-            self.api.database.create_all()
 
-            self.connection = self.api.database.engine.connect()
-            self.session = self.Session(bind=self.connection)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        self.session = self.api.database.session()
 
-            self._add_global_test_data()
+        self.api.database.create_all()
+        self._add_global_test_data()
 
-        with self.app.test_client() as client:
-            self.client = client
+        self.client = self.app.test_client()
 
     def teardown_method(self):
 
-        self.session.close()
-        self.connection.close()
+        self.app_context.pop()
 
         with self.app.app_context():
             self.api.database.drop_all()
@@ -134,16 +129,14 @@ class BaseTestRest(ClientInterface):
 
         if klass is LegacyUser:
             query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
-            with self.app.app_context():
-                result = self.api.database.session.execute(query)
-                user_id = list(result)[0][0]
+            result = self.session.execute(query)
+            user_id = list(result)[0][0]
 
             user = self.session.query(User).get(user_id)
             return LegacyUser.from_user(user)
 
         if klass is UserProfile:
-            with self.app.app_context():
-                return UserProfile(parameter_value)
+            return UserProfile(parameter_value)
 
         raise TypeError("TODO...")
 
@@ -166,20 +159,19 @@ class BaseTestRest(ClientInterface):
         assert body["status"] != "ok"
 
     def search_document(self, document_type, id=None, index=None, ignore=None):
-        with self.app.app_context():
 
-            document_ids = search(document_type=document_type, id=id)
+        document_ids = search(document_type=document_type, id=id)
 
-            if len(document_ids) == 0:
-                if ignore == 404:
-                    return None
-                else:
-                    raise Exception()
+        if len(document_ids) == 0:
+            if ignore == 404:
+                return None
+            else:
+                raise Exception()
 
-            document_as_dict = self.api.get_cooked_document(document_ids[0])
-            data = document_as_dict["data"]
+        document_as_dict = self.api.get_cooked_document(document_ids[0])
+        data = document_as_dict["data"]
 
-            return {"doc_type": document_as_dict["data"].get("type"), "title_fr": data["locales"]["fr"]["title"]}
+        return {"doc_type": document_as_dict["data"].get("type"), "title_fr": data["locales"]["fr"]["title"]}
 
     def sync_es(self):
         pass
