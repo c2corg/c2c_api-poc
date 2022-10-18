@@ -10,6 +10,10 @@ class User:
         return result
 
     @property
+    def username(self):
+        return self._user.name
+
+    @property
     def email_validated(self):
         return self._user.email_is_validated
 

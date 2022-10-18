@@ -32,13 +32,21 @@ replacements = [
     # replace test API
     (r"self\.app\.get\(", "self.get("),
     (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
+    (
+        r'query = self.session.query\(User\).filter\(User.username == "test"\)',
+        r'query = self.session.query(NewUser).filter(NewUser.name == "test")',
+    ),
     (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
     (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
     # rename some properties
     (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
+    (r"purge_account\(self\.session\)", "purge_account()"),
     # remap old models to legacy model
     (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
-    (r"from c2corg_api\.models\.user ", "from c2corg_api.legacy.models.user "),
+    (
+        r"from c2corg_api\.models\.user ",
+        "from flask_camp.models import User as NewUser\nfrom c2corg_api.legacy.models.user ",
+    ),
     (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
     (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
     # for now, comment these imports
@@ -56,7 +64,9 @@ replacements = [
         r'@patch\("c2corg_api.emails.email_service.EmailService._send_email"\)',
         '@patch("flask_camp._services._send_mail.SendMail.send")',
     ),
-    # Function that are totally replace
+    (r"from datetime import datetime\n", "from datetime import datetime, timedelta\n"),
+    (r"user.validation_nonce_expire = now", "user.creation_date = now - timedelta(days=3)"),
+    # Function that are totally replaced
     (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
     # sometime used as forum name -> back to test
     ('"testf"', '"test"'),
@@ -107,7 +117,7 @@ def convert_test_folder(folder):
                 subprocess.run(["cp", filename, dest], check=True)
 
 
-convert_test_folder("markdown")
+# convert_test_folder("markdown")
 convert_test_file("views/test_health.py")
 convert_test_file("views/test_cooker.py")
 convert_test_file("views/test_user.py")

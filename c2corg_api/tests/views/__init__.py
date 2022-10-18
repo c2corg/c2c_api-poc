@@ -128,12 +128,18 @@ class BaseTestRest(ClientInterface):
         parameter_name, parameter_value = list(kwargs.items())[0]
 
         if klass is LegacyUser:
-            query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
-            result = self.session.execute(query)
-            user_id = list(result)[0][0]
+            if parameter_name == "user_id":
+                query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
+                result = self.session.execute(query)
+                user_id = list(result)[0][0]
 
-            user = self.session.query(User).get(user_id)
-            return LegacyUser.from_user(user)
+                user = self.session.query(User).get(user_id)
+                return LegacyUser.from_user(user)
+            elif parameter_name == "username":
+                user = self.session.query(User).filter_by(User.name == parameter_value).first()
+                return LegacyUser.from_user(user)
+            else:
+                raise TypeError("TODO...")
 
         if klass is UserProfile:
             return UserProfile(parameter_value)

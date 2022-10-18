@@ -4,6 +4,7 @@ from c2corg_api.legacy.search import search_documents, elasticsearch_config
 # from pytest import mark
 
 # from c2corg_api.models.token import Token
+from flask_camp.models import User as NewUser
 from c2corg_api.legacy.models.user import User
 from c2corg_api.legacy.models.user_profile import UserProfile, USERPROFILE_TYPE
 
@@ -371,7 +372,7 @@ class TestUserRest(BaseUserTestRest):
     @patch("flask_camp._services._send_mail.SendMail.send")
     def test_purge_accounts(self, _send_email):
         from c2corg_api.jobs.purge_non_activated_accounts import purge_account
-        from datetime import datetime
+        from datetime import datetime, timedelta
 
         request_body = {
             "username": "test",
@@ -382,30 +383,30 @@ class TestUserRest(BaseUserTestRest):
         }
 
         now = datetime.utcnow()
-        query = self.session.query(User).filter(User.username == "test")
+        query = self.session.query(NewUser).filter(NewUser.name == "test")
 
         # First succeed in creating a new user
         url = "/users/register"
         self.app_post_json(url, request_body, status=200)
 
         # Then simulate a scheduled call to purge accounts
-        purge_account(self.session)
+        purge_account()
 
         # The user should still exist
         user = query.one()
 
         # Expire nonce
-        user.validation_nonce_expire = now
+        user.creation_date = now - timedelta(days=3)
         self.session.commit()
 
         # The user should be removed
-        purge_account(self.session)
+        purge_account()
         assert 0 == query.count()
 
     # @mark.jobs
     def test_purge_tokens(self):
         from c2corg_api.jobs.purge_expired_tokens import purge_token
-        from datetime import datetime
+        from datetime import datetime, timedelta
 
         body = self.login("moderator", status=200).json
         token_value = body["token"]
