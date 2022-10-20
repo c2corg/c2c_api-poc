@@ -7,9 +7,8 @@
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.formatting.provider": "black",
-    "python.languageServer": "None",
-    "commented.python.languageServer": "Pylance",
-    "commented.python.analysis.diagnosticSeverityOverrides": {
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none",
         "reportOptionalMemberAccess": "none",
         "reportPrivateImportUsage": "none"

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../flask-camp"
+		}
+	],
+	"settings": {
+		"python.languageServer": "Pylance"
+	}
+}

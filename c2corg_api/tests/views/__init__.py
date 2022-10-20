@@ -42,6 +42,10 @@ class BaseTestRest(BaseTestClass):
 
     ######### dedicated function for legacy tests
 
+    def get_json_with_contributor(self, url, status=200):
+        self.login_user("contributor", self.global_passwords["contributor"])
+        return self.get(url, prefix="", status=status).json
+
     def post_json_with_token(self, url, token, **kwargs):
         return self.app_send_json("post", url, {}, **kwargs)
 

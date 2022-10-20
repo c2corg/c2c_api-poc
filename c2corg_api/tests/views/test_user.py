@@ -186,7 +186,7 @@ class TestUserRest(BaseUserTestRest):
     def test_register_forum_username_unique(self, _send_email):
         request_body = {
             "username": "test",
-            "forum_username": "Contributor",
+            "forum_username": "contributor",
             "name": "test",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
@@ -510,7 +510,7 @@ class TestUserRest(BaseUserTestRest):
 
         token2 = body["token"]
         body = self.get_json_with_token("/users/account", token2, status=200)
-        assert body.get("name") == "Contributor"
+        assert body.get("name") == "contributor"
 
     @pytest.mark.skip(reason="/renew is not used")
     def test_renew_token_different_success(self):
@@ -526,7 +526,7 @@ class TestUserRest(BaseUserTestRest):
         assert token1 != token2
 
         body = self.get_json_with_token("/users/account", token2, status=200)
-        assert body.get("name") == "Contributor"
+        assert body.get("name") == "contributor"
 
         self.post_json_with_token("/users/logout", token1)
         self.post_json_with_token("/users/logout", token2)

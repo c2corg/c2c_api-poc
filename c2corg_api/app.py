@@ -15,6 +15,7 @@ from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
+from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import logout as logout_view
 from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
@@ -142,6 +143,7 @@ def create_app(**config):
         app,
         login_view,
         logout_view,
+        account_view,
         url_prefix="",
     )
 
