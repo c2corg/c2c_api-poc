@@ -17,6 +17,7 @@ class TestUserAccountRest(BaseUserTestRest):
         assert body.get("forum_username") == "contributor"
         assert body.get("is_profile_public") == False
 
+    @pytest.mark.skip(reason="blocked users can view their account")
     def test_read_account_info_blocked_account(self):
         contributor = self.session.query(User).get(self.global_userids["contributor"])
         contributor.blocked = True

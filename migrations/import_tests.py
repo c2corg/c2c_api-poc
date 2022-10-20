@@ -92,6 +92,7 @@ skipped_methods = {
     "test_renew_token_different_success": "/renew is not used",
     "test_login_blocked_account": "blocked users can log-in",
     "test_login_discourse_success": "sso in login payload not used anymore?",
+    "test_read_account_info_blocked_account": "blocked users can view their account",
 }
 
 
