@@ -2,42 +2,24 @@ from flask_camp.client import ClientInterface
 from flask_camp.models import User
 from sqlalchemy import select
 
-from c2corg_api.app import create_app, before_user_creation, ProfilePageLink
+from c2corg_api.app import before_user_creation, ProfilePageLink
 from c2corg_api.legacy.search import search_documents
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.user_profile import UserProfile
 from c2corg_api.search import search
+from c2corg_api.tests.conftest import BaseTestClass
 
 
-class BaseTestRest(ClientInterface):
+class BaseTestRest(BaseTestClass):
 
     client = None
     global_userids = {}
     global_passwords = {}
 
-    @classmethod
-    def setup_class(cls):
-        cls.app, cls.api = create_app(TESTING=True, SECRET_KEY="not secret")
-
     def setup_method(self):
+        super().setup_method()
 
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.session = self.api.database.session()
-
-        self.api.database.create_all()
         self._add_global_test_data()
-
-        self.client = self.app.test_client()
-
-    def teardown_method(self):
-
-        self.app_context.pop()
-
-        with self.app.app_context():
-            self.api.database.drop_all()
-
-        self.api.memory_cache.flushall()
 
     def _add_global_test_data(self):
         self._add_user("contributor", "super pass")
@@ -57,70 +39,6 @@ class BaseTestRest(ClientInterface):
 
         self.global_userids[user.name] = user.id
         self.global_passwords[user.name] = password
-
-    @staticmethod
-    def _convert_kwargs(kwargs):
-        """convert request argument to flask test client argument"""
-        kwargs["query_string"] = kwargs.pop("params", None)
-
-    def get(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
-
-        r = self.client.get(f"{prefix}{url}", **kwargs)
-        self.assert_status_code(r, expected_status)
-
-        return r
-
-    def post(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
-
-        try:
-            r = self.client.post(f"{prefix}{url}", **kwargs)
-        except:
-            if expected_status == 500:
-                return None
-            raise
-
-        self.assert_status_code(r, expected_status)
-
-        return r
-
-    def put(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
-
-        try:
-            r = self.client.put(f"{prefix}{url}", **kwargs)
-        except:
-            if expected_status == 500:
-                return None
-            raise
-
-        self.assert_status_code(r, expected_status)
-
-        return r
-
-    def delete(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
-
-        r = self.client.delete(f"{prefix}{url}", **kwargs)
-        self.assert_status_code(r, expected_status)
-
-        return r
-
-    @staticmethod
-    def assert_status_code(response, expected_status):
-        if expected_status is None:
-            expected_status = [200]
-        elif isinstance(expected_status, int):
-            expected_status = [expected_status]
-
-        assert (
-            response.status_code in expected_status
-        ), f"Status error: {response.status_code} i/o {expected_status}\n{response.data}"
 
     ######### dedicated function for legacy tests
 
