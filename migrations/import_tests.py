@@ -59,6 +59,10 @@ replacements = [
         r"(.)Contain invalid character\(s\)",
         "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['name']",
     ),
+    (
+        r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
+        r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
+    ),
     # (r"test_login_blocked_account(.*\n *).*\n", r'test_login_blocked_account\1contributor = NewUser.get(name="contributor")\n'),
     (r"already used forum_username", "A user still exists with this name"),
     (
@@ -84,7 +88,8 @@ skipped_methods = {
     "test_purge_tokens": "No such model in flask_camp",
     "test_renew_success": "/renew is not used",
     "test_renew_token_different_success": "/renew is not used",
-    "test_login_blocked_account": "blocked user can log-in",
+    "test_login_blocked_account": "blocked users can log-in",
+    "test_login_discourse_success": "sso in login payload not used anymore?",
 }
 
 

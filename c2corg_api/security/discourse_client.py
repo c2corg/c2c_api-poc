@@ -22,7 +22,7 @@ class APIDiscourseClient(object):
         self.discourse_base_url = settings["discourse.url"]
         self.discourse_public_url = settings["discourse.public_url"]
         self.api_key = settings["discourse.api_key"]
-        self.sso_key = str(settings.get("discourse.sso_secret"))  # no unicode
+        self.sso_key = str(settings["C2C_DISCOURSE_SSO_SECRET"])  # no unicode
 
         self.discourse_userid_cache = {}
         # FIXME: are we guaranteed usernames can never change? -> no!
@@ -43,15 +43,6 @@ class APIDiscourseClient(object):
             self.discourse_userid_cache[userid] = discourse_userid
             self.discourse_username_cache[userid] = discourse_user["username"]
         return discourse_userid
-
-    def get_username(self, userid):
-        discourse_username = self.discourse_username_cache.get(userid)
-        if not discourse_username:
-            discourse_user = self.client.by_external_id(userid)
-            self.discourse_userid_cache[userid] = discourse_user["id"]
-            discourse_username = discourse_user["username"]
-            self.discourse_username_cache[userid] = discourse_username
-        return discourse_username
 
     def sync_sso(self, user, email):
         result = self.client.sync_sso(
@@ -100,9 +91,9 @@ class APIDiscourseClient(object):
         try:
             r = requests.get(url, allow_redirects=False, timeout=self.timeout)
             assert r.status_code == 302
-        except Exception:
-            log.error("Could not request nonce", exc_info=True)
-            raise Exception("Could not request nonce")
+        except Exception as e:
+            log.exception("Could not request nonce")
+            raise Exception("Could not request nonce") from e
 
         location = r.headers["Location"]
         parsed = urllib.parse.urlparse(location)
@@ -119,11 +110,11 @@ class APIDiscourseClient(object):
 
         params = {
             "nonce": nonce,
-            "email": user.email,
-            "external_id": user.id,
-            "username": user.forum_username,
-            "name": user.name,
-            "custom.user_field_1": user.id,
+            "email": user["email"],  # I know what I do
+            "external_id": user["id"],
+            "username": user["name"],
+            "name": user["name"],
+            "custom.user_field_1": user["id"],
         }
 
         key = self.sso_key.encode("utf-8")
@@ -131,24 +122,6 @@ class APIDiscourseClient(object):
         h = hmac.new(key, r_payload, digestmod=hashlib.sha256)
         qs = urllib.parse.urlencode({"sso": r_payload, "sig": h.hexdigest()})
         return "%s%s?%s" % (self.discourse_public_url, url_part, qs)
-
-    def get_nonce_from_sso(self, sso, sig):
-        payload = urllib.parse.unquote(sso)
-        try:
-            decoded = self.decode_payload(payload)
-        except Exception as e:
-            log.error("Failed to decode payload", e)
-            raise BadRequest("discourse login failed")
-
-        self.check_signature(payload, sig)
-
-        # Build the return payload
-        qs = parse_qs(decoded)
-        return qs["nonce"][0]
-
-    def redirect(self, user, sso, signature):
-        nonce = self.get_nonce_from_sso(sso, signature)
-        return self.create_response_payload(user, nonce, "/session/sso_login")
 
     def redirect_without_nonce(self, user):
         nonce = self.request_nonce()

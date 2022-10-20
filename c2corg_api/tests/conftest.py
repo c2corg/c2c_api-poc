@@ -9,7 +9,9 @@ import pytest
 from c2corg_api.app import create_app
 
 
-tested_app, tested_api = create_app(TESTING=True, SECRET_KEY="not secret")
+tested_app, tested_api = create_app(
+    TESTING=True, SECRET_KEY="not secret", C2C_DISCOURSE_SSO_SECRET="d836444a9e4084d5b224a60c208dce14"
+)
 
 
 def pytest_configure(config):

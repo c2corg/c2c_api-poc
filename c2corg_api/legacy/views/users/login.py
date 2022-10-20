@@ -1,10 +1,9 @@
 import time
-from flask import request
+from flask import request, current_app
 from flask_camp import allow
 from flask_camp.views.account import user_login
 from werkzeug.exceptions import Unauthorized, Forbidden
-
-# from flask_camp.models import User
+from c2corg_api.security.discourse_client import get_discourse_client
 
 # from c2corg_api.schemas import schema
 
@@ -27,10 +26,16 @@ def post():
 
     try:
         user = user_login.post()["user"]
-    except Unauthorized:
-        raise Forbidden()
+    except Unauthorized as e:
+        raise Forbidden() from e
 
     user["token"] = None
     user["expire"] = 14 * 24 * 3600 + int(round(time.time()))
+
+    try:
+        user["redirect_internal"] = get_discourse_client().redirect_without_nonce(user)
+    except Exception:
+        # Any error with discourse should not prevent login
+        current_app.logger.exception("Error logging into discourse for %d", user["id"])
 
     return user

@@ -13,6 +13,7 @@ from c2corg_api.security.discourse_client import get_discourse_client
 
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
+from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
 from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import logout as logout_view
@@ -105,9 +106,9 @@ def create_app(**config):
     app.config.update(
         {
             "url.timeout": 666,
-            "discourse.url": "https://dev.forum.camptocamp.org",
-            "discourse.public_url": "https://dev.forum.camptocamp.org",
-            "discourse.api_key": "a key",
+            "discourse.url": "https://forum.demov6.camptocamp.org",
+            "discourse.public_url": "https://forum.demov6.camptocamp.org",
+            "discourse.api_key": "4647c0d98e8beb793da099ff103b9793d8d4f94fff7cdd52d58391c6fa025845",
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
         }
     )
@@ -125,6 +126,7 @@ def create_app(**config):
     )
 
     api.add_modules(app, health_view, cooker_view)
+    api.add_modules(app, discourse_login_url_view)
 
     # define v6 interface
     api.add_modules(app, health_view, cooker_view, url_prefix="")
