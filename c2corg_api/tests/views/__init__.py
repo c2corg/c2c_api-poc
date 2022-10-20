@@ -46,6 +46,10 @@ class BaseTestRest(BaseTestClass):
         self.login_user("contributor", self.global_passwords["contributor"])
         return self.get(url, prefix="", status=status).json
 
+    def post_json_with_contributor(self, url, json, status=200):
+        self.login_user("contributor", self.global_passwords["contributor"])
+        return self.post(url, prefix="", json=json, status=status).json
+
     def post_json_with_token(self, url, token, **kwargs):
         return self.app_send_json("post", url, {}, **kwargs)
 

@@ -40,3 +40,7 @@ class User:
     @blocked.setter
     def blocked(self, value):
         self._user.blocked = value
+
+    @property
+    def email_to_validate(self):
+        return self._user._email_to_validate
