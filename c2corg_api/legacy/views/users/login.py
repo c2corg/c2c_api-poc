@@ -33,7 +33,7 @@ def post():
     user["expire"] = 14 * 24 * 3600 + int(round(time.time()))
 
     try:
-        user["redirect_internal"] = get_discourse_client().redirect_without_nonce(user)
+        user["redirect_internal"] = get_discourse_client(current_app.config).redirect_without_nonce(user)
     except Exception:
         # Any error with discourse should not prevent login
         current_app.logger.exception("Error logging into discourse for %d", user["id"])
