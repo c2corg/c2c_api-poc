@@ -1,7 +1,8 @@
+from os import sync
 from flask_camp.models import User
 from sqlalchemy import select
 
-from c2corg_api.hooks import on_user_creation, ProfilePageLink
+from c2corg_api.hooks import on_user_creation, ProfilePageLink, on_user_validation
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.user_profile import UserProfile
 from c2corg_api.search import search
@@ -25,13 +26,14 @@ class BaseTestRest(BaseTestClass):
 
     def _add_user(self, name, password):
         user = User(name=name)
-        user.set_password(password)
-        user.set_email(f"{name}@camptocamp.org")
-        user.validate_email(user._email_token)
-
         self.api.database.session.add(user)
 
+        user.set_password(password)
+        user.set_email(f"{name}@camptocamp.org")
         on_user_creation(user, body={})
+
+        user.validate_email(user._email_token)
+        on_user_validation(user, sync_sso=False)
 
         self.api.database.session.flush()
 
@@ -39,6 +41,8 @@ class BaseTestRest(BaseTestClass):
         self.global_passwords[user.name] = password
 
     ######### dedicated function for legacy tests
+    def check_cache_version(self, user_id, cache_version):
+        pass
 
     def get_json_with_contributor(self, url, status=200):
         self.login_user("contributor", self.global_passwords["contributor"])
@@ -97,9 +101,9 @@ class BaseTestRest(BaseTestClass):
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"
 
-    def search_document(self, document_type, id=None, index=None, ignore=None):
+    def search_document(self, document_type, id=None, user_id=None, index=None, ignore=None):
 
-        document_ids = search(document_type=document_type, id=id)
+        document_ids = search(document_type=document_type, id=id, user_id=user_id)
 
         if len(document_ids) == 0:
             if ignore == 404:
@@ -110,7 +114,11 @@ class BaseTestRest(BaseTestClass):
         document_as_dict = self.api.get_cooked_document(document_ids[0])
         data = document_as_dict["data"]
 
-        return {"doc_type": document_as_dict["data"].get("type"), "title_fr": data["locales"]["fr"]["title"]}
+        return {
+            "doc_type": document_as_dict["data"].get("type"),
+            "title_fr": data["locales"]["fr"]["title"],
+            "title_en": data["locales"]["en"]["title"],
+        }
 
     def sync_es(self):
         pass

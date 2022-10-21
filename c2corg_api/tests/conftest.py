@@ -3,8 +3,8 @@ import sys
 
 from flask_camp.client import ClientInterface
 from flask_camp.models import User
-
 import pytest
+from werkzeug.test import TestResponse
 
 from c2corg_api.app import create_app
 
@@ -92,7 +92,7 @@ class BaseTestClass(ClientInterface):
             r = self.client.post(f"{prefix}{url}", **kwargs)
         except:
             if expected_status == 500:
-                return None
+                return TestResponse(response=b"", status="500", headers=None, request=None)
             raise
 
         self.assert_status_code(r, expected_status)

@@ -19,6 +19,7 @@ def post():
         "name": data.get("forum_username"),
         "email": data.get("email"),
         "password": data.get("password"),
+        "full_name": data.get("name"),
     }
 
     if "lang" in data:
@@ -31,5 +32,6 @@ def post():
     result["user"]["username"] = result["user"]["name"]
     result["user"]["forum_username"] = result["user"]["name"]
     result["user"]["email"] = User.get(id=result["user"]["id"])._email_to_validate
+    result["user"]["name"] = result["user"]["ui_preferences"]["full_name"]
 
     return result["user"]

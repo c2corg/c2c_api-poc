@@ -39,6 +39,7 @@ replacements = [
     ),
     (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
     (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
+    (r"self\.search_document\(USERPROFILE_TYPE, id=user_id", r"self.search_document(USERPROFILE_TYPE, user_id=user_id"),
     # rename some properties
     (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
     (r"purge_account\(self\.session\)", "purge_account()"),
@@ -76,9 +77,11 @@ replacements = [
     (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
     # sometime used as forum name -> back to test
     ('"testf"', '"test"'),
-    ('"Max Mustermann"', '"test"'),
-    ('"Max Mustermann testf"', '"test"'),
+    # ('"Max Mustermann"', '"test"'),
     ('"Contributor"', '"contributor"'),
+    # search title_fr was v6 name + forum_username. It now only name
+    ('"Max Mustermann testf"', '"test"'),
+    ('"changed contributor"', '"contributor"'),
     # errors in v6_api
     ("sso_sync", "sync_sso"),
     # different behavior
@@ -141,7 +144,7 @@ def convert_test_folder(folder):
                 subprocess.run(["cp", filename, dest], check=True)
 
 
-convert_test_folder("markdown")
+# convert_test_folder("markdown")
 convert_test_file("views/test_health.py")
 convert_test_file("views/test_cooker.py")
 convert_test_file("views/test_user.py")

@@ -44,3 +44,11 @@ class User:
     @property
     def email_to_validate(self):
         return self._user._email_to_validate
+
+    @property
+    def name(self):
+        return self._user.ui_preferences["full_name"]
+
+    @name.setter
+    def name(self, value):
+        self._user.ui_preferences["full_name"] = value

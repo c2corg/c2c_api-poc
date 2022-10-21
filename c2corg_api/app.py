@@ -43,6 +43,7 @@ def create_app(**config):
         cooker=cooker,
         on_user_creation=hooks.on_user_creation,
         on_user_validation=hooks.on_user_validation,
+        on_user_update=hooks.on_user_update,
         before_document_save=hooks.before_document_save,
         url_prefix="/v7",
     )

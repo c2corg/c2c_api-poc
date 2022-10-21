@@ -83,13 +83,13 @@ class TestUserAccountRest(BaseUserTestRest):
 
         # check that the search index is updated with the new name
         self.sync_es()
-        search_doc = self.search_document(USERPROFILE_TYPE, id=user_id, index=elasticsearch_config["index"])
+        search_doc = self.search_document(USERPROFILE_TYPE, user_id=user_id, index=elasticsearch_config["index"])
 
         # and check that the cache version of the user profile was updated
         self.check_cache_version(user_id, 2)
 
         assert search_doc["doc_type"] is not None
-        assert search_doc["title_en"] == "changed contributor"
+        assert search_doc["title_en"] == "contributor"
 
     def test_update_account_name_discourse_down(self):
         self._update_account_field_discourse_down("name", "changed")

@@ -1,5 +1,5 @@
 from flask_camp import current_api
-from flask_camp.models import BaseModel, Document
+from flask_camp.models import BaseModel, Document, User
 from sqlalchemy import Column, ForeignKey, String, select
 
 
@@ -12,8 +12,11 @@ class DocumentSearch(BaseModel):
     # index is very import, obviously
     document_type = Column(String(16), index=True)
 
+    # for profile document
+    user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=True)
 
-def search(document_type=None, id=None):
+
+def search(document_type=None, id=None, user_id=None):
     query = select(DocumentSearch.id)
 
     if document_type is not None:
@@ -21,6 +24,9 @@ def search(document_type=None, id=None):
 
     if id is not None:
         query = query.where(Document.id == id)
+
+    if user_id is not None:
+        query = query.where(DocumentSearch.user_id == user_id)
 
     result = list(current_api.database.session.execute(query))
 

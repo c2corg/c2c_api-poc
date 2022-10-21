@@ -1,3 +1,4 @@
+from copy import deepcopy
 import re
 
 from flask import request, current_app
@@ -40,17 +41,29 @@ def check_user_name(value):
         raise BadRequest("Ended by confusing suffix")
 
 
+def get_profile_document(user):
+    query = select(ProfilePageLink.document_id).where(ProfilePageLink.user_id == user.id)
+    result = current_api.database.session.execute(query)
+    document_id = list(result)[0][0]
+    return Document.get(id=document_id)
+
+
 def on_user_creation(user, body=None):
     # TODO legacy : remove body parameter
     body = body if body is not None else request.get_json()
 
     lang = body.get("lang", "fr")
-    user.ui_preferences = {"lang": lang}
+    full_name = body.get("full_name", user.name)
+    user.ui_preferences = {"lang": lang, "full_name": full_name}
 
     check_user_name(user.name)
 
     # create the profile page. This function adds the page in the session
-    data = {"type": USERPROFILE_TYPE, "locales": {"fr": {"title": user.name}}}
+    data = {
+        "type": USERPROFILE_TYPE,
+        "user_id": user.id,
+        "locales": {"fr": {"title": user.name}, "en": {"title": user.name}},
+    }
 
     user_page = Document.create(comment="Creation of user page", data=data, author=user)
     current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
@@ -58,13 +71,14 @@ def on_user_creation(user, body=None):
 
 def on_user_validation(user, sync_sso=True):
 
-    query = select(ProfilePageLink.document_id).where(ProfilePageLink.user_id == user.id)
-    result = current_api.database.session.execute(query)
-    document_id = list(result)[0][0]
-    profile_document = Document.get(id=document_id)
-
+    profile_document = get_profile_document(user)
     before_document_save(profile_document)
 
+    if sync_sso is True:  # TODO: needs forum in dev env
+        get_discourse_client(current_app.config).sync_sso(user, user._email)
+
+
+def on_user_update(user, sync_sso=True):
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)
 
@@ -77,8 +91,12 @@ def before_document_save(document):
     version = document.last_version
 
     search_item = DocumentSearch.get(id=document.id)
+
     if search_item is None:  # means the document is not yet created
         search_item = DocumentSearch(id=document.id)
         current_api.database.session.add(search_item)
 
     search_item.document_type = version.data.get("type")
+
+    if search_item.document_type == USERPROFILE_TYPE:
+        search_item.user_id = version.data.get("user_id")

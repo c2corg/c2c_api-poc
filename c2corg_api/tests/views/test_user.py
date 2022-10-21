@@ -102,7 +102,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email_validated": True,
             "email": "some_user@camptocamp.org",
@@ -121,7 +121,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -139,7 +139,7 @@ class TestUserRest(BaseUserTestRest):
             "username": "test",
             "forum_username": "test",
             "lang": "en",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -156,7 +156,7 @@ class TestUserRest(BaseUserTestRest):
             "username": "test",
             "forum_username": "test",
             "lang": "nn",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -187,7 +187,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "contributor",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -200,7 +200,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -210,7 +210,7 @@ class TestUserRest(BaseUserTestRest):
         body = self.app_post_json(url, request_body, status=200).json
         assert body.get("username") == "test"
         assert body.get("forum_username") == "test"
-        assert body.get("name") == "test"
+        assert body.get("name") == "Max Mustermann"
         assert body.get("email") == "some_user@camptocamp.org"
         assert "password" not in body
         assert "id" in body
@@ -265,7 +265,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -277,7 +277,9 @@ class TestUserRest(BaseUserTestRest):
 
         # check that the profile is not inserted in the search index
         sync_es(self.session)
-        search_doc = self.search_document(USERPROFILE_TYPE, id=user_id, index=elasticsearch_config["index"], ignore=404)
+        search_doc = self.search_document(
+            USERPROFILE_TYPE, user_id=user_id, index=elasticsearch_config["index"], ignore=404
+        )
         assert search_doc is None
 
         # Simulate confirmation email validation
@@ -287,7 +289,7 @@ class TestUserRest(BaseUserTestRest):
 
         # check that the profile is inserted in the index after confirmation
         self.sync_es()
-        search_doc = self.search_document(USERPROFILE_TYPE, id=user_id, index=elasticsearch_config["index"])
+        search_doc = self.search_document(USERPROFILE_TYPE, user_id=user_id, index=elasticsearch_config["index"])
         assert search_doc is not None
 
         assert search_doc["doc_type"] is not None
@@ -299,7 +301,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
@@ -378,7 +380,7 @@ class TestUserRest(BaseUserTestRest):
         request_body = {
             "username": "test",
             "forum_username": "test",
-            "name": "test",
+            "name": "Max Mustermann",
             "password": "super secret",
             "email": "some_user@camptocamp.org",
         }
