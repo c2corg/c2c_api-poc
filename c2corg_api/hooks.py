@@ -5,6 +5,7 @@ from flask import request, current_app
 from flask_camp import current_api
 from flask_camp.models import Document, BaseModel, User
 from sqlalchemy import Column, ForeignKey, Integer, delete, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest
 
@@ -54,7 +55,7 @@ def on_user_creation(user, body=None):
 
     lang = body.get("lang", "fr")
     full_name = body.get("full_name", user.name)
-    user.ui_preferences = {"lang": lang, "full_name": full_name}
+    user.ui_preferences = {"lang": lang, "full_name": full_name, "is_profile_public": False}
 
     check_user_name(user.name)
 
@@ -79,6 +80,19 @@ def on_user_validation(user, sync_sso=True):
 
 
 def on_user_update(user, sync_sso=True):
+
+    # as now, flask_camp does not allow to modify user name. To be discussed (maybe a modo action)
+    # v6 API allows it, so we do that here
+    data = request.get_json()
+
+    if "name" in data:
+        user.name = data["name"]
+        check_user_name(user.name)
+        try:
+            current_api.database.session.flush()
+        except IntegrityError as e:
+            raise BadRequest("Name is already used") from e
+
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)
 

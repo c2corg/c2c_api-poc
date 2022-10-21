@@ -52,3 +52,11 @@ class User:
     @name.setter
     def name(self, value):
         self._user.ui_preferences["full_name"] = value
+
+    @property
+    def forum_username(self):
+        return self._user.name
+
+    @property
+    def is_profile_public(self):
+        return self._user.ui_preferences["is_profile_public"]

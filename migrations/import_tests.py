@@ -77,7 +77,6 @@ replacements = [
     (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
     # sometime used as forum name -> back to test
     ('"testf"', '"test"'),
-    # ('"Max Mustermann"', '"test"'),
     ('"Contributor"', '"contributor"'),
     # search title_fr was v6 name + forum_username. It now only name
     ('"Max Mustermann testf"', '"test"'),
@@ -87,6 +86,8 @@ replacements = [
     # different behavior
     (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
     (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
+    # error messages
+    ('"Already used forum name"', '"Name is already used"'),
 ]
 
 skipped_methods = {

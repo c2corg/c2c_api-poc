@@ -14,6 +14,7 @@ class BaseTestRest(BaseTestClass):
     client = None
     global_userids = {}
     global_passwords = {}
+    global_session_cookies = {}
 
     def setup_method(self):
         super().setup_method()
@@ -22,6 +23,7 @@ class BaseTestRest(BaseTestClass):
 
     def _add_global_test_data(self):
         self._add_user("contributor", "super pass")
+        self._add_user("contributor2", "super pass")
         self._add_user("moderator", "super pass")
 
     def _add_user(self, name, password):
@@ -44,12 +46,21 @@ class BaseTestRest(BaseTestClass):
     def check_cache_version(self, user_id, cache_version):
         pass
 
-    def get_json_with_contributor(self, url, status=200):
-        self.login_user("contributor", self.global_passwords["contributor"])
+    def optimized_login(self, user_name):
+        if user_name not in self.global_session_cookies:
+            self.login_user(user_name, self.global_passwords["contributor"])
+            cookies = list(self.client.cookie_jar)
+            session_cookie = [cookie for cookie in cookies if cookie.name == "session"][0]
+            self.global_session_cookies[user_name] = session_cookie.value
+        else:
+            self.client.set_cookie("localhost.host", "session", self.global_session_cookies[user_name])
+
+    def get_json_with_contributor(self, url, username="contributor", status=200):
+        self.optimized_login(username)
         return self.get(url, prefix="", status=status).json
 
-    def post_json_with_contributor(self, url, json, status=200):
-        self.login_user("contributor", self.global_passwords["contributor"])
+    def post_json_with_contributor(self, url, json, username="contributor", status=200):
+        self.optimized_login(username)
         return self.post(url, prefix="", json=json, status=status).json
 
     def post_json_with_token(self, url, token, **kwargs):

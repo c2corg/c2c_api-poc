@@ -21,7 +21,7 @@ def get():
     user["username"] = user["name"]
     user["name"] = user["ui_preferences"]["full_name"]
 
-    user["is_profile_public"] = False  # TODO : save this info in profile page
+    user["is_profile_public"] = user["ui_preferences"]["is_profile_public"]
 
     return user
 
@@ -30,14 +30,22 @@ def get():
 def post():
     body = request.get_json()
 
-    new_body = {"password": body["currentpassword"]}
+    new_body = {
+        "password": body["currentpassword"],
+        "ui_preferences": deepcopy(current_user.ui_preferences),
+    }
+
+    if "forum_username" in body:
+        new_body["name"] = body["forum_username"].strip().lower()
 
     if "email" in body:
         new_body["email"] = body["email"]
 
     if "name" in body:
-        new_body["ui_preferences"] = deepcopy(current_user.ui_preferences)
         new_body["ui_preferences"]["full_name"] = body["name"]
+
+    if "is_profile_public" in body:
+        new_body["ui_preferences"]["is_profile_public"] = body["is_profile_public"]
 
     request._cached_json = (new_body, new_body)
 

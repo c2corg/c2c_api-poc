@@ -12,6 +12,7 @@ from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import logout as logout_view
 from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
 from c2corg_api.legacy.views.users import register as register_view
+from c2corg_api.legacy.views.users import update_preferred_language as update_preferred_language_view
 from c2corg_api.legacy.views.users import validate_change_email as validate_change_email_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
@@ -67,6 +68,7 @@ def create_app(**config):
         login_view,
         logout_view,
         account_view,
+        update_preferred_language_view,
         url_prefix="",
     )
 
