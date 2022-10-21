@@ -12,5 +12,10 @@
         "reportGeneralTypeIssues": "none",
         "reportOptionalMemberAccess": "none",
         "reportPrivateImportUsage": "none"
-    }
+    },
+    "python.analysis.autoImportCompletions": false,
+    "python.analysis.ignore": [
+        "c2corg_api/tests/*"
+    ],
+    "python.analysis.stubPath": ""
 }

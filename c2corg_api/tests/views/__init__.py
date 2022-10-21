@@ -47,6 +47,10 @@ class BaseTestRest(BaseTestClass):
     def check_cache_version(self, user_id, cache_version):
         pass
 
+    def add_authorization_header(self, username="contributor"):
+        self.optimized_login(username)
+        return None
+
     def optimized_login(self, user_name):
         if user_name not in self.global_session_cookies:
             self.login_user(user_name, self.global_passwords["contributor"])

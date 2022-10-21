@@ -1,11 +1,24 @@
+class DocumentIdList:
+    def __init__(self, _list):
+        self._list = _list
+
+    def append(self, item):
+        if isinstance(item, (int)):
+            self._list.append(item)
+        else:
+            self._list.append(item.document_id)
+
+
 class User:
     def __init__(self) -> None:
         self._user = None
+        self.feed_filter_areas = None
 
     @classmethod
     def from_user(cls, user):
         result = cls()
         result._user = user
+        result.feed_filter_areas = DocumentIdList(result._user.ui_preferences["feed"]["areas"])
 
         return result
 
@@ -60,10 +73,6 @@ class User:
     @property
     def is_profile_public(self):
         return self._user.ui_preferences["is_profile_public"]
-
-    @property
-    def feed_filter_areas(self):
-        return self._user.ui_preferences["feed"]["areas"]
 
     @property
     def feed_filter_activities(self):

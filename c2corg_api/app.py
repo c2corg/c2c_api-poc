@@ -20,7 +20,7 @@ from c2corg_api.legacy.views.users import validate_register_email as validate_re
 
 
 def cooker(document, get_document):
-    document["legacy"] = {}
+    document["legacy"] = {"document_id": document["id"], "locales": document["data"]["locales"]}
 
 
 def create_app(**config):

@@ -59,7 +59,7 @@ def on_user_creation(user, body=None):
         "lang": lang,
         "full_name": full_name,
         "is_profile_public": False,
-        "feed": {"areas": [], "activities": [], "langs": []},
+        "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False},
     }
 
     check_user_name(user.name)
