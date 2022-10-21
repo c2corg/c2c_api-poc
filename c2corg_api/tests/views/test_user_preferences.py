@@ -94,8 +94,8 @@ class TestUserFilterPreferencesRest(BaseTestRest):
 
         self.session.refresh(self.contributor)
         assert self.contributor.feed_followed_only is True
-        assert ["hiking" == "skitouring"], self.contributor.feed_filter_activities
-        assert ["fr" == "en"], self.contributor.feed_filter_langs
+        assert ["hiking", "skitouring"] == self.contributor.feed_filter_activities
+        assert ["fr", "en"] == self.contributor.feed_filter_langs
 
         self.assertIsNone(
             self.session.query(FilterArea)

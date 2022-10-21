@@ -17,3 +17,8 @@ def get():
             area["locales"] = [locale for locale in area["locales"] if locale["lang"] == lang]
 
     return result
+
+
+@allow("authenticated", allow_blocked=True)
+def post():
+    return "ok"

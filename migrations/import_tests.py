@@ -5,99 +5,125 @@ import black
 import subprocess
 
 
-replacements = [
-    (r"# package\n*", ""),
-    (r"# -\*- coding: utf-8 -\*-\n", ""),
-    # remove useless lines
-    (r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def"),
-    (r"(    def setUp\(self\):.*\n +)super\(\w+, self\)\.setUp\(\)\n", r"\1super().setUp()\n"),
-    # not very pythonic
-    (r"self\.assertTrue\((initial_encoded_password) != (modified_encoded_password)\)", r"assert \1 != \2"),
-    (r'self\.assertTrue\(("\w+") in (\w+)\)', r"assert \1 in \2"),
-    # clean unit tests code
-    (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
-    (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
-    (r"\.setUp\(self\)", r".setup_method(self)"),
-    (r"\.setUp\(\)", r".setup_method()"),
-    (r"\.tearDown\(self\)", r".teardown_method(self)"),
-    (r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n"),
-    (r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n"),
-    (r"self\.assertNotEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 != \2\n"),
-    (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
-    (r'self\.assertBodyEqual\((\w+), "(\w+)", "([\w @_.]+)"\)', r'assert \1.get("\2") == "\3"'),
-    (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
-    (r"self\.assertIn\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 in \2\n"),
-    (r"self\.assertNotIn\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 not in \2\n"),
-    (r"self\.assertIsNone\(([^,\n]*)\)\n", r"assert \1 is None\n"),
-    (r"self\.assertIsNotNone\(([^,\n]*)\)\n", r"assert \1 is not None\n"),
-    (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
-    (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
-    # replace test API
-    (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),
-    (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
-    (
-        r'query = self.session.query\(User\).filter\(User.username == "test"\)',
-        r'query = self.session.query(NewUser).filter(NewUser.name == "test")',
-    ),
-    (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
-    (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
-    (r"self\.search_document\(USERPROFILE_TYPE, id=user_id", r"self.search_document(USERPROFILE_TYPE, user_id=user_id"),
-    (r"self\.session\.add_all", "self.session_add_all"),
-    # rename some properties
-    (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
-    (r"purge_account\(self\.session\)", "purge_account()"),
-    # remap old models to legacy model
-    (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
-    (
-        r"from c2corg_api\.models\.user ",
-        "from flask_camp.models import User as NewUser\nfrom c2corg_api.legacy.models.user ",
-    ),
-    (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
-    (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
-    (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
-    (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
-    (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
-    # for now, comment these imports
-    (r"(from c2corg_api.models.token.*\n)", r"# \1"),
-    # targeted replace
-    (
-        r'self\.session\.query\(User\)\.get\(self\.global_userids\["contributor"\]\)',
-        'self.query_get(User, user_id=self.global_userids["contributor"])',
-    ),
-    (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
-    (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
-    (r"(.)Shorter than minimum length 3", "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
-    (
-        r"(.)Contain invalid character\(s\)",
-        "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['name']",
-    ),
-    (
-        r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
-        r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
-    ),
-    (r"already used forum_username", "A user still exists with this name"),
-    (
-        r'@patch\("c2corg_api.emails.email_service.EmailService._send_email"\)',
-        '@patch("flask_camp._services._send_mail.SendMail.send")',
-    ),
-    (r"from datetime import datetime\n", "from datetime import datetime, timedelta\n"),
-    (r"user.validation_nonce_expire = now", "user.creation_date = now - timedelta(days=3)"),
-    # Function that are totally replaced
-    (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
-    # sometime used as forum name -> back to test
-    ('"testf"', '"test"'),
-    ('"Contributor"', '"contributor"'),
-    # search title_fr was v6 name + forum_username. It now only name
-    ('"Max Mustermann testf"', '"test"'),
-    ('"changed contributor"', '"contributor"'),
-    # errors in v6_api
-    ("sso_sync", "sync_sso"),
-    # different behavior
-    (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
-    (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
-    # error messages
-    ('"Already used forum name"', '"Name is already used"'),
-]
+def get_code(filename):
+    with open(f"../v6_api/c2corg_api/tests/{filename}", "r", encoding="utf-8") as f:
+        code = "".join(f.readlines())
+
+    return black.format_str(code, mode=black.Mode(line_length=120))
+
+
+def _assert_replacements(old_foo, operator):
+    dict_member = r"\w+(?:\[(?:\"\w+\"|\d+)\])+"
+    simple_value = r"[^,\n\]\[]+"
+    string_list = r'\["\w+"(?:, "\w+")*\]'
+    value = f"({dict_member}|{simple_value}|{string_list})"
+    comment = r"([^,\n\)]*)"
+
+    return [
+        (rf"self\.{old_foo}\({value}, {value}\)\n", rf"assert \1 {operator} \2\n"),
+        (rf"self\.{old_foo}\({value}, {value}, {comment}\)\n", rf"assert \1 {operator} \2, \3\n"),
+    ]
+
+
+replacements = (
+    [
+        (r"# package\n*", ""),
+        (r"# -\*- coding: utf-8 -\*-\n", ""),
+        # remove useless lines
+        (r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def"),
+        (r"(    def setUp\(self\):.*\n +)super\(\w+, self\)\.setUp\(\)\n", r"\1super().setUp()\n"),
+        # not very pythonic
+        (r"self\.assertTrue\((initial_encoded_password) != (modified_encoded_password)\)", r"assert \1 != \2"),
+        (r'self\.assertTrue\(("\w+") in (\w+)\)', r"assert \1 in \2"),
+        # rename some properties
+        (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
+        # clean unit tests code
+        (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
+        (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
+        (r"\.setUp\(self\)", r".setup_method(self)"),
+        (r"\.setUp\(\)", r".setup_method()"),
+        (r"\.tearDown\(self\)", r".teardown_method(self)"),
+    ]
+    + _assert_replacements("assertEqual", "==")
+    + _assert_replacements("assertNotEqual", "!=")
+    + _assert_replacements("assertIn", "in")
+    + _assert_replacements("assertNotIn", "not in")
+    + [
+        (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
+        (r'self\.assertBodyEqual\((\w+), "(\w+)", "([\w @_.]+)"\)', r'assert \1.get("\2") == "\3"'),
+        (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
+        (r"self\.assertIsNone\(([^,\n]*)\)\n", r"assert \1 is None\n"),
+        (r"self\.assertIsNotNone\(([^,\n]*)\)\n", r"assert \1 is not None\n"),
+        (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
+        (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
+        # replace test API
+        (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),
+        (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
+        (
+            r'query = self.session.query\(User\).filter\(User.username == "test"\)',
+            r'query = self.session.query(NewUser).filter(NewUser.name == "test")',
+        ),
+        (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
+        (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
+        (
+            r"self\.search_document\(USERPROFILE_TYPE, id=user_id",
+            r"self.search_document(USERPROFILE_TYPE, user_id=user_id",
+        ),
+        (r"self\.session\.add_all", "self.session_add_all"),
+        (r"purge_account\(self\.session\)", "purge_account()"),
+        # remap old models to legacy model
+        (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
+        (
+            r"from c2corg_api\.models\.user ",
+            "from flask_camp.models import User as NewUser\nfrom c2corg_api.legacy.models.user ",
+        ),
+        (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
+        (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
+        (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
+        (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
+        (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
+        # for now, comment these imports
+        (r"(from c2corg_api.models.token.*\n)", r"# \1"),
+        # targeted replace
+        (
+            r'self\.session\.query\(User\)\.get\(self\.global_userids\["contributor"\]\)',
+            'self.query_get(User, user_id=self.global_userids["contributor"])',
+        ),
+        (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
+        (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
+        (r"(.)Shorter than minimum length 3", "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
+        (
+            r"(.)Contain invalid character\(s\)",
+            "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['name']",
+        ),
+        (
+            r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
+            r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
+        ),
+        (r"already used forum_username", "A user still exists with this name"),
+        (
+            r'@patch\("c2corg_api.emails.email_service.EmailService._send_email"\)',
+            '@patch("flask_camp._services._send_mail.SendMail.send")',
+        ),
+        (r"from datetime import datetime\n", "from datetime import datetime, timedelta\n"),
+        (r"user.validation_nonce_expire = now", "user.creation_date = now - timedelta(days=3)"),
+        # Function that are totally replaced
+        (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
+        # sometime used as forum name -> back to test
+        ('"testf"', '"test"'),
+        ('"Contributor"', '"contributor"'),
+        # search title_fr was v6 name + forum_username. It now only name
+        ('"Max Mustermann testf"', '"test"'),
+        ('"changed contributor"', '"contributor"'),
+        # errors in v6_api
+        ("sso_sync", "sync_sso"),
+        # different behavior
+        (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
+        (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
+        # error messages
+        ('"Already used forum name"', '"Name is already used"'),
+    ]
+)
 
 skipped_methods = {
     "test_purge_tokens": "No such model in flask_camp",
@@ -110,10 +136,8 @@ skipped_methods = {
 
 
 def convert_test_file(filename, make_replacements=True):
-    with open(f"../v6_api/c2corg_api/tests/{filename}", "r", encoding="utf-8") as f:
-        code = "".join(f.readlines())
 
-    code = black.format_str(code, mode=black.Mode(line_length=120))
+    code = get_code(filename)
 
     if make_replacements:
         for pattern, new_value in replacements:
