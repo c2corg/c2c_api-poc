@@ -4,6 +4,7 @@ from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_creation, ProfilePageLink, on_user_validation
 from c2corg_api.legacy.models.user import User as LegacyUser
+from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile
 from c2corg_api.search import search
 from c2corg_api.tests.conftest import BaseTestClass
@@ -72,15 +73,18 @@ class BaseTestRest(BaseTestClass):
     def app_send_json(self, action, url, json, **kwargs):
         return getattr(self, action)(url=url, prefix="", json=json, **kwargs)
 
+    def session_add_all(self, instances):
+        for instance in instances:
+            if isinstance(instance, LegacyArea):
+                self.session.add(instance._document)
+            else:
+                raise NotImplementedError()
+
     def query_get(self, klass, **kwargs):
         parameter_name, parameter_value = list(kwargs.items())[0]
 
         if klass is LegacyUser:
             if parameter_name == "user_id":
-                # query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
-                # result = self.session.execute(query)
-                # user_id = list(result)[0][0]
-
                 user = self.session.query(User).get(parameter_value)
                 return LegacyUser.from_user(user)
             elif parameter_name == "username":

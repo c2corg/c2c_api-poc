@@ -10,6 +10,7 @@ from c2corg_api.views.discourse import login_url as discourse_login_url_view
 from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import logout as logout_view
+from c2corg_api.legacy.views.users import preferences as preferences_view
 from c2corg_api.legacy.views.users import request_password_change as request_password_change_view
 from c2corg_api.legacy.views.users import register as register_view
 from c2corg_api.legacy.views.users import update_preferred_language as update_preferred_language_view
@@ -69,6 +70,7 @@ def create_app(**config):
         logout_view,
         account_view,
         update_preferred_language_view,
+        preferences_view,
         url_prefix="",
     )
 

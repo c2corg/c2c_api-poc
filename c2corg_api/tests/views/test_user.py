@@ -459,7 +459,7 @@ class TestUserRest(BaseUserTestRest):
 
     @pytest.mark.skip(reason="blocked users can log-in")
     def test_login_blocked_account(self):
-        contributor = self.session.query(User).get(self.global_userids["contributor"])
+        contributor = self.query_get(User, user_id=self.global_userids["contributor"])
         contributor.blocked = True
         self.session.flush()
 

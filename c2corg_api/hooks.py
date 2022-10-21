@@ -55,7 +55,12 @@ def on_user_creation(user, body=None):
 
     lang = body.get("lang", "fr")
     full_name = body.get("full_name", user.name)
-    user.ui_preferences = {"lang": lang, "full_name": full_name, "is_profile_public": False}
+    user.ui_preferences = {
+        "lang": lang,
+        "full_name": full_name,
+        "is_profile_public": False,
+        "feed": {"areas": [], "activities": [], "langs": []},
+    }
 
     check_user_name(user.name)
 

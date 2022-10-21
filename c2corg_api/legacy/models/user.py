@@ -60,3 +60,23 @@ class User:
     @property
     def is_profile_public(self):
         return self._user.ui_preferences["is_profile_public"]
+
+    @property
+    def feed_filter_areas(self):
+        return self._user.ui_preferences["feed"]["areas"]
+
+    @property
+    def feed_filter_activities(self):
+        return self._user.ui_preferences["feed"]["activities"]
+
+    @feed_filter_activities.setter
+    def feed_filter_activities(self, value):
+        self._user.ui_preferences["feed"]["activities"] = value
+
+    @property
+    def feed_filter_langs(self):
+        return self._user.ui_preferences["feed"]["langs"]
+
+    @feed_filter_langs.setter
+    def feed_filter_langs(self, value):
+        self._user.ui_preferences["feed"]["langs"] = value

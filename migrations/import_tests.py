@@ -10,6 +10,7 @@ replacements = [
     (r"# -\*- coding: utf-8 -\*-\n", ""),
     # remove useless lines
     (r"    def setUp\(self\):.*\n +super\(\w+, self\)\.setUp\(\)\n\n.   def", "\n    def"),
+    (r"(    def setUp\(self\):.*\n +)super\(\w+, self\)\.setUp\(\)\n", r"\1super().setUp()\n"),
     # not very pythonic
     (r"self\.assertTrue\((initial_encoded_password) != (modified_encoded_password)\)", r"assert \1 != \2"),
     (r'self\.assertTrue\(("\w+") in (\w+)\)', r"assert \1 in \2"),
@@ -17,6 +18,7 @@ replacements = [
     (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
     (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
     (r"\.setUp\(self\)", r".setup_method(self)"),
+    (r"\.setUp\(\)", r".setup_method()"),
     (r"\.tearDown\(self\)", r".teardown_method(self)"),
     (r"self\.assertEqual\(([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2\n"),
     (r"self\.assertEqual\(([^,\n]*), ([^,\n]*), ([^,\n]*)\)\n", r"assert \1 == \2, \3\n"),
@@ -31,7 +33,7 @@ replacements = [
     (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
     (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
     # replace test API
-    (r"self\.app\.get\(", "self.get("),
+    (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),
     (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
     (
         r'query = self.session.query\(User\).filter\(User.username == "test"\)',
@@ -40,6 +42,7 @@ replacements = [
     (r"self.session.expunge\((\w+)\)", r"self.expunge(\1)"),
     (r"= search_documents\[(\w+)\].get\(", r"= self.search_document(\1, "),
     (r"self\.search_document\(USERPROFILE_TYPE, id=user_id", r"self.search_document(USERPROFILE_TYPE, user_id=user_id"),
+    (r"self\.session\.add_all", "self.session_add_all"),
     # rename some properties
     (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
     (r"purge_account\(self\.session\)", "purge_account()"),
@@ -51,9 +54,16 @@ replacements = [
     ),
     (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
     (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
+    (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
+    (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
+    (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
     # for now, comment these imports
     (r"(from c2corg_api.models.token.*\n)", r"# \1"),
     # targeted replace
+    (
+        r'self\.session\.query\(User\)\.get\(self\.global_userids\["contributor"\]\)',
+        'self.query_get(User, user_id=self.global_userids["contributor"])',
+    ),
     (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
     (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
     (r"(.)Shorter than minimum length 3", "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
@@ -65,7 +75,6 @@ replacements = [
         r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
         r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
     ),
-    # (r"test_login_blocked_account(.*\n *).*\n", r'test_login_blocked_account\1contributor = NewUser.get(name="contributor")\n'),
     (r"already used forum_username", "A user still exists with this name"),
     (
         r'@patch\("c2corg_api.emails.email_service.EmailService._send_email"\)',
@@ -100,29 +109,30 @@ skipped_methods = {
 }
 
 
-def convert_test_file(filename):
+def convert_test_file(filename, make_replacements=True):
     with open(f"../v6_api/c2corg_api/tests/{filename}", "r", encoding="utf-8") as f:
         code = "".join(f.readlines())
 
     code = black.format_str(code, mode=black.Mode(line_length=120))
 
-    for pattern, new_value in replacements:
-        code = re.sub(pattern, new_value, code)
+    if make_replacements:
+        for pattern, new_value in replacements:
+            code = re.sub(pattern, new_value, code)
 
-    for method, skip_reason in skipped_methods.items():
-        code = code.replace(
-            f"\n    def {method}(self",
-            f'\n    @pytest.mark.skip(reason="{skip_reason}")\n    def {method}(self',
-        )
+        for method, skip_reason in skipped_methods.items():
+            code = code.replace(
+                f"\n    def {method}(self",
+                f'\n    @pytest.mark.skip(reason="{skip_reason}")\n    def {method}(self',
+            )
 
-    code = black.format_str(code, mode=black.Mode(line_length=120))
+        code = black.format_str(code, mode=black.Mode(line_length=120))
 
-    # remove empty init file
-    if filename.endswith("__init__.py"):
-        if len(code) == 0:
-            return
+        # remove empty init file
+        if filename.endswith("__init__.py"):
+            if len(code) == 0:
+                return
 
-    code = f"import pytest\n{code}"
+        code = f"import pytest\n{code}"
 
     dest = f"c2corg_api/tests/{filename}"
     Path(os.path.dirname(dest)).mkdir(parents=True, exist_ok=True)
@@ -150,3 +160,4 @@ convert_test_file("views/test_health.py")
 convert_test_file("views/test_cooker.py")
 convert_test_file("views/test_user.py")
 convert_test_file("views/test_user_account.py")
+convert_test_file("views/test_user_preferences.py")

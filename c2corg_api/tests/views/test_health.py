@@ -4,7 +4,7 @@ from c2corg_api.tests.views import BaseTestRest
 
 class TestHealthRest(BaseTestRest):
     def test_get(self):
-        r = self.get("/health", status=200)
+        r = self.get("/health", status=200, prefix="")
 
         data = r.json
 
