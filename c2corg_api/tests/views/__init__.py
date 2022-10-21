@@ -1,9 +1,7 @@
-from flask_camp.client import ClientInterface
 from flask_camp.models import User
 from sqlalchemy import select
 
-from c2corg_api.app import before_user_creation, ProfilePageLink
-from c2corg_api.legacy.search import search_documents
+from c2corg_api.hooks import on_user_creation, ProfilePageLink
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.user_profile import UserProfile
 from c2corg_api.search import search
@@ -33,7 +31,7 @@ class BaseTestRest(BaseTestClass):
 
         self.api.database.session.add(user)
 
-        before_user_creation(user, body={})
+        on_user_creation(user, body={})
 
         self.api.database.session.flush()
 
@@ -64,11 +62,11 @@ class BaseTestRest(BaseTestClass):
 
         if klass is LegacyUser:
             if parameter_name == "user_id":
-                query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
-                result = self.session.execute(query)
-                user_id = list(result)[0][0]
+                # query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == parameter_value)
+                # result = self.session.execute(query)
+                # user_id = list(result)[0][0]
 
-                user = self.session.query(User).get(user_id)
+                user = self.session.query(User).get(parameter_value)
                 return LegacyUser.from_user(user)
             elif parameter_name == "username":
                 user = self.session.query(User).filter_by(User.name == parameter_value).first()

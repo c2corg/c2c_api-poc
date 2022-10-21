@@ -1,7 +1,7 @@
 from flask_camp import current_api
 from flask_camp.models import User, Document
-from c2corg_api.app import ProfilePageLink
-from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.hooks import ProfilePageLink
+from c2corg_api.models import USERPROFILE_TYPE  # Do not remove
 from sqlalchemy import select
 
 
