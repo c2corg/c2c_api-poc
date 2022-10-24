@@ -106,7 +106,12 @@ class BaseTestClass(ClientInterface):
             r = self.client.post(f"{prefix}{url}", **kwargs)
         except:
             if expected_status == 500:
-                return TestResponse(response=b"", status="500", headers=None, request=None)
+                return TestResponse(
+                    response='{"status":"error"}',
+                    status="500",
+                    headers={"content-type": "application/json"},
+                    request=None,
+                )
             raise
 
         self.assert_status_code(r, expected_status)

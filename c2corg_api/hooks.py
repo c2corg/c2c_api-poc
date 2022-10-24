@@ -7,7 +7,7 @@ from flask_camp.models import Document, BaseModel, User
 from sqlalchemy import Column, ForeignKey, Integer, delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 from c2corg_api.models import USERPROFILE_TYPE
 from c2corg_api.security.discourse_client import get_discourse_client
@@ -89,6 +89,25 @@ def on_user_update(user, sync_sso=True):
 
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)
+
+
+def on_user_block(user):
+
+    client = get_discourse_client(current_app.config)
+
+    if user.blocked:
+        # suspend account in Discourse (suspending an account prevents a login)
+        try:
+            client.suspend(user.id, 99999, "account blocked by moderator")  # 99999 days = 273 years
+        except Exception as e:
+            current_app.logger.exception("Suspending account in Discourse failed: %d", user.id)
+            raise InternalServerError("Suspending account in Discourse failed") from e
+    else:
+        try:
+            client.unsuspend(user.id)
+        except Exception as e:
+            current_app.logger.exception("Unsuspending account in Discourse failed: %d", user.id)
+            raise InternalServerError("Unsuspending account in Discourse failed") from e
 
 
 def before_document_save(document):

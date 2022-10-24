@@ -27,6 +27,8 @@ class BaseTestRest(BaseTestClass):
         self._add_user("contributor2", "super pass")
         self._add_user("moderator", "super pass", ["moderator"])
 
+        self.api.database.session.commit()
+
     def _add_user(self, name, password, roles=None):
         user = User(name=name, ui_preferences=get_default_ui_preferences(name), roles=[] if roles is None else roles)
         self.api.database.session.add(user)
@@ -36,9 +38,9 @@ class BaseTestRest(BaseTestClass):
         on_user_creation(user)
 
         user.validate_email(user._email_token)
-        on_user_validation(user, sync_sso=False)
-
         self.api.database.session.flush()
+
+        on_user_validation(user, sync_sso=False)
 
         self.global_userids[user.name] = user.id
         self.global_passwords[user.name] = password

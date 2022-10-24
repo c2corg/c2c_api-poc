@@ -49,6 +49,7 @@ def create_app(**config):
         on_user_creation=hooks.on_user_creation,
         on_user_validation=hooks.on_user_validation,
         on_user_update=hooks.on_user_update,
+        on_user_block=hooks.on_user_block,
         before_document_save=hooks.before_document_save,
         url_prefix="/v7",
     )
