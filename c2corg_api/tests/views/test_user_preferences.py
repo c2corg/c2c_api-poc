@@ -94,7 +94,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
         headers = self.add_authorization_header(username="contributor")
         self.app_post_json(self._prefix, request_body, status=200, headers=headers)
 
-        self.session.refresh(self.contributor)
+        self.session_refresh(self.contributor)
         assert self.contributor.feed_followed_only is True
         assert ["hiking", "skitouring"] == self.contributor.feed_filter_activities
         assert ["fr", "en"] == self.contributor.feed_filter_langs

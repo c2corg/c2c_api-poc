@@ -57,6 +57,7 @@ replacements = (
         (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
         (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
         # replace test API
+        (r"self\.session\.refresh\(", r"self.session_refresh("),
         (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),
         (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
         (

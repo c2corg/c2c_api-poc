@@ -117,6 +117,12 @@ class BaseTestRest(BaseTestClass):
         else:
             self.session.expunge(item)
 
+    def session_refresh(self, item):
+        if isinstance(item, LegacyUser):
+            self.session.expunge(item._user)
+        else:
+            raise NotImplementedError()
+
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"
 

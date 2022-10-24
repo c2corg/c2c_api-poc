@@ -42,7 +42,7 @@ class BaseBlockTest(BaseTestRest):
 
     def is_blocked(self, user_id):
         user = self.query_get(User, user_id=user_id)
-        self.session.refresh(user)
+        self.session_refresh(user)
         return user.blocked
 
 
