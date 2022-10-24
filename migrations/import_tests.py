@@ -16,9 +16,10 @@ def _get_python_value():
     dict_member = r"\w+(?:\[(?:\"\w+\"|\d+)\])+"
     simple_value = r"[^,\n\]\[]+"
     string_list = r'\["\w+"(?:, "\w+")*\]'
-    function_call = r'[^\n(]+\([^\n)]*\)'
+    function_call = r"[^\n(]+\([^\n)]*\)"
 
     return f"({dict_member}|{simple_value}|{string_list}|{function_call})"
+
 
 def _assert_replacements(old_foo, operator):
     value = _get_python_value()
@@ -28,6 +29,7 @@ def _assert_replacements(old_foo, operator):
         (rf"self\.{old_foo}\({value}, {value}\)\n", rf"assert \1 {operator} \2\n"),
         (rf"self\.{old_foo}\({value}, {value}, {comment}\)\n", rf"assert \1 {operator} \2, \3\n"),
     ]
+
 
 def _assert_unary_replacements(old_foo, operator):
     value = _get_python_value()
@@ -121,6 +123,10 @@ replacements = (
         ),
         (r"from datetime import datetime\n", "from datetime import datetime, timedelta\n"),
         (r"user.validation_nonce_expire = now", "user.creation_date = now - timedelta(days=3)"),
+        (
+            r'errors = body.get\("errors"\)\n {8}assert self\.get_error\(errors, "user_id"\)',
+            r'assert self.get_body_error(body, "user_id")',
+        ),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
         # sometime used as forum name -> back to test

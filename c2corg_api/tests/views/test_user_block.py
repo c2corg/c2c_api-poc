@@ -96,8 +96,7 @@ class TestUserBlockRest(BaseBlockTest):
 
         body = response.json
         assert body.get("status") == "error"
-        errors = body.get("errors")
-        assert self.get_error(errors, "user_id") is not None
+        assert self.get_body_error(body, "user_id") is not None
 
 
 class TestUserUnblockRest(BaseBlockTest):
@@ -138,8 +137,7 @@ class TestUserUnblockRest(BaseBlockTest):
 
         body = response.json
         assert body.get("status") == "error"
-        errors = body.get("errors")
-        assert self.get_error(errors, "user_id") is not None
+        assert self.get_body_error(body, "user_id") is not None
 
     def test_unblock_discourse_error(self):
         self.set_discourse_down()

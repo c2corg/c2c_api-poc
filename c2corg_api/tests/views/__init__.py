@@ -35,8 +35,9 @@ class BaseTestRest(BaseTestClass):
 
         user.set_password(password)
         user.set_email(f"{name}@camptocamp.org")
-        on_user_creation(user)
+        self.api.database.session.flush()
 
+        on_user_creation(user)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 
@@ -153,3 +154,7 @@ class BaseTestRest(BaseTestClass):
     @property
     def settings(self):
         return self.app.config
+
+    def get_body_error(self, body, string):
+        assert string in body["description"], body
+        return body["description"]

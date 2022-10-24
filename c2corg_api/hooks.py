@@ -53,6 +53,8 @@ def on_user_creation(user):
 
     check_user_name(user.name)
 
+    assert user.id is not None, "Dev check..."
+
     # create the profile page. This function adds the page in the session
     data = {
         "type": USERPROFILE_TYPE,
