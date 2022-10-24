@@ -12,16 +12,30 @@ def get_code(filename):
     return black.format_str(code, mode=black.Mode(line_length=120))
 
 
-def _assert_replacements(old_foo, operator):
+def _get_python_value():
     dict_member = r"\w+(?:\[(?:\"\w+\"|\d+)\])+"
     simple_value = r"[^,\n\]\[]+"
     string_list = r'\["\w+"(?:, "\w+")*\]'
-    value = f"({dict_member}|{simple_value}|{string_list})"
+    function_call = r'[^\n(]+\([^\n)]*\)'
+
+    return f"({dict_member}|{simple_value}|{string_list}|{function_call})"
+
+def _assert_replacements(old_foo, operator):
+    value = _get_python_value()
     comment = r"([^,\n\)]*)"
 
     return [
         (rf"self\.{old_foo}\({value}, {value}\)\n", rf"assert \1 {operator} \2\n"),
         (rf"self\.{old_foo}\({value}, {value}, {comment}\)\n", rf"assert \1 {operator} \2, \3\n"),
+    ]
+
+def _assert_unary_replacements(old_foo, operator):
+    value = _get_python_value()
+    comment = r"([^,\n\)]*)"
+
+    return [
+        (rf"self\.{old_foo}\({value}\)\n", rf"assert \1 {operator}\n"),
+        (rf"self\.{old_foo}\({value}, {comment}\)\n", rf"assert \1 {operator}, \2\n"),
     ]
 
 
@@ -48,14 +62,13 @@ replacements = (
     + _assert_replacements("assertNotEqual", "!=")
     + _assert_replacements("assertIn", "in")
     + _assert_replacements("assertNotIn", "not in")
+    + _assert_unary_replacements("assertIsNone", "is None")
+    + _assert_unary_replacements("assertIsNotNone", "is not None")
+    + _assert_unary_replacements("assertFalse", "is False")
+    + _assert_unary_replacements("assertTrue", "is True")
     + [
-        (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
         (r'self\.assertBodyEqual\((\w+), "(\w+)", "([\w @_.]+)"\)', r'assert \1.get("\2") == "\3"'),
         (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
-        (r"self\.assertIsNone\(([^,\n]*)\)\n", r"assert \1 is None\n"),
-        (r"self\.assertIsNotNone\(([^,\n]*)\)\n", r"assert \1 is not None\n"),
-        (r"self\.assertTrue\(([^,\n]*)\)\n", r"assert \1 is True\n"),
-        (r"self\.assertFalse\(([^,\n]*)\)\n", r"assert \1 is False\n"),
         # replace test API
         (r"self\.session\.refresh\(", r"self.session_refresh("),
         (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),

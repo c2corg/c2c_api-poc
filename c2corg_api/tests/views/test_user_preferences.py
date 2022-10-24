@@ -77,8 +77,8 @@ class TestUserFilterPreferencesRest(BaseTestRest):
         assert body.get("status") == "error"
         errors = body.get("errors")
 
-        self.assertIsNotNone(self.get_error(errors, "activities.1"))
-        self.assertIsNotNone(self.get_error(errors, "langs.1"))
+        assert self.get_error(errors, "activities.1") is not None
+        assert self.get_error(errors, "langs.1") is not None
         self.assertCorniceRequired(self.get_error(errors, "areas.0.document_id"), "areas.0.document_id")
         self.assertCorniceRequired(self.get_error(errors, "followed_only"), "followed_only")
 
