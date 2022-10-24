@@ -25,10 +25,10 @@ class BaseTestRest(BaseTestClass):
     def _add_global_test_data(self):
         self._add_user("contributor", "super pass")
         self._add_user("contributor2", "super pass")
-        self._add_user("moderator", "super pass")
+        self._add_user("moderator", "super pass", ["moderator"])
 
-    def _add_user(self, name, password):
-        user = User(name=name, ui_preferences=get_default_ui_preferences(name))
+    def _add_user(self, name, password, roles=None):
+        user = User(name=name, ui_preferences=get_default_ui_preferences(name), roles=[] if roles is None else roles)
         self.api.database.session.add(user)
 
         user.set_password(password)

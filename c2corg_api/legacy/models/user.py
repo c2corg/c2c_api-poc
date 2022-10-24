@@ -23,6 +23,10 @@ class User:
         return result
 
     @property
+    def id(self):
+        return self._user.id
+
+    @property
     def username(self):
         return self._user.name
 

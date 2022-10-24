@@ -8,6 +8,7 @@ from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
 from c2corg_api.legacy.views.users import account as account_view
+from c2corg_api.legacy.views.users import block as block_view
 from c2corg_api.legacy.views.users import login as login_view
 from c2corg_api.legacy.views.users import logout as logout_view
 from c2corg_api.legacy.views.users import preferences as preferences_view
@@ -73,6 +74,11 @@ def create_app(**config):
         account_view,
         update_preferred_language_view,
         preferences_view,
+        url_prefix="",
+    )
+    api.add_modules(
+        app,
+        block_view,
         url_prefix="",
     )
 

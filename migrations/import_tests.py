@@ -86,8 +86,8 @@ replacements = (
         (r"(from c2corg_api.models.token.*\n)", r"# \1"),
         # targeted replace
         (
-            r'self\.session\.query\(User\)\.get\(self\.global_userids\["contributor"\]\)',
-            'self.query_get(User, user_id=self.global_userids["contributor"])',
+            r'self\.session\.query\(User\)\.get\(self\.global_userids\["(\w+)"\]\)',
+            r'self.query_get(User, user_id=self.global_userids["\1"])',
         ),
         (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
         (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
@@ -187,4 +187,4 @@ convert_test_file("views/test_cooker.py")
 convert_test_file("views/test_user.py")
 convert_test_file("views/test_user_account.py")
 convert_test_file("views/test_user_preferences.py")
-convert_test_file("views/test_user_block.py", False)
+convert_test_file("views/test_user_block.py")
