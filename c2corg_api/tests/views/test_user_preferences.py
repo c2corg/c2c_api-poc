@@ -58,6 +58,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
     def test_post_preferences_unauthenticated(self):
         self.app_post_json(self._prefix, {}, status=403)
 
+    @pytest.mark.skip(reason="Too painful to automatically import, recoded it")
     def test_post_preferences_invalid(self):
         request_body = {
             # missing 'followed_only'
@@ -81,6 +82,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
         self.assertCorniceRequired(self.get_error(errors, "areas.0.document_id"), "areas.0.document_id")
         self.assertCorniceRequired(self.get_error(errors, "followed_only"), "followed_only")
 
+    @pytest.mark.skip(reason="Too painful to automatically import, recoded it")
     def test_post_preferences(self):
         request_body = {
             "followed_only": True,

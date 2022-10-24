@@ -132,6 +132,8 @@ skipped_methods = {
     "test_login_blocked_account": "blocked users can log-in",
     "test_login_discourse_success": "sso in login payload not used anymore?",
     "test_read_account_info_blocked_account": "blocked users can view their account",
+    "test_post_preferences_invalid": "Too painful to automatically import, recoded it",
+    "test_post_preferences": "Too painful to automatically import, recoded it",
 }
 
 

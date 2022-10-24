@@ -1,7 +1,0 @@
-{
-  "properties": {
-    "lang": {
-      "$ref": "entities/langs.json"
-    }
-  }
-}

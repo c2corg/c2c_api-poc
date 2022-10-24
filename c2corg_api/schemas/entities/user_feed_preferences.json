@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "followed_only": { "type": "boolean" },
+    "areas": {
+      "type": "array",
+      "items": { "type": "integer" }
+    },
+    "langs": {
+      "type": "array",
+      "items": { "$ref": "/entities/langs.json" }
+    },
+    "activities": {
+      "type": "array",
+      "items": { "$ref": "/entities/activities.json" }
+    }
+  },
+  "required": ["langs", "areas", "followed_only", "activities"]
+}

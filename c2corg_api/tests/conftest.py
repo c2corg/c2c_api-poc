@@ -2,7 +2,7 @@ import logging
 import sys
 
 from flask_camp.client import ClientInterface
-from flask_camp.models import User
+from flask_camp.models import User, Document, DocumentVersion
 import pytest
 from werkzeug.test import TestResponse
 
@@ -12,6 +12,20 @@ from c2corg_api.app import create_app
 tested_app, tested_api = create_app(
     TESTING=True, SECRET_KEY="not secret", C2C_DISCOURSE_SSO_SECRET="d836444a9e4084d5b224a60c208dce14"
 )
+
+
+def get_default_ui_preferences(full_name):
+    return {
+        "lang": "fr",
+        "is_profile_public": False,
+        "full_name": full_name,
+        "feed": {
+            "areas": [],
+            "langs": [],
+            "followed_only": False,
+            "activities": [],
+        },
+    }
 
 
 def pytest_configure(config):
@@ -149,6 +163,7 @@ def _db_add_user(name="name", email=None, password="password", validate_email=Tr
         name=name,
         password=password,
         email=email if email else f"{name}@site.org",
+        ui_preferences=get_default_ui_preferences(name),
         roles=roles if isinstance(roles, (list, tuple)) else roles.split(",") if isinstance(roles, str) else [],
     )
 

@@ -3,12 +3,9 @@ from flask_camp import allow
 from flask_camp.views.account import users
 from flask_camp.models import User
 
-from c2corg_api.schemas import schema
-
 rule = "/users/register"
 
 
-@schema("users_register.json")
 @allow("anonymous")
 def post():
 
@@ -19,11 +16,18 @@ def post():
         "name": data.get("forum_username"),
         "email": data.get("email"),
         "password": data.get("password"),
-        "full_name": data.get("name"),
+        "ui_preferences": {
+            "full_name": data.get("name"),
+            "lang": data.get("lang", "fr"),
+            "is_profile_public": False,
+            "feed": {
+                "areas": [],
+                "activities": [],
+                "langs": [],
+                "followed_only": False,
+            },
+        },
     }
-
-    if "lang" in data:
-        body["lang"] = data["lang"]
 
     request._cached_json = (body, body)
 

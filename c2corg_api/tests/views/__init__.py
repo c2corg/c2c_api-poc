@@ -7,7 +7,7 @@ from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile
 from c2corg_api.search import search
-from c2corg_api.tests.conftest import BaseTestClass
+from c2corg_api.tests.conftest import BaseTestClass, get_default_ui_preferences
 
 
 class BaseTestRest(BaseTestClass):
@@ -28,12 +28,12 @@ class BaseTestRest(BaseTestClass):
         self._add_user("moderator", "super pass")
 
     def _add_user(self, name, password):
-        user = User(name=name)
+        user = User(name=name, ui_preferences=get_default_ui_preferences(name))
         self.api.database.session.add(user)
 
         user.set_password(password)
         user.set_email(f"{name}@camptocamp.org")
-        on_user_creation(user, body={})
+        on_user_creation(user)
 
         user.validate_email(user._email_token)
         on_user_validation(user, sync_sso=False)

@@ -49,18 +49,7 @@ def get_profile_document(user):
     return Document.get(id=document_id)
 
 
-def on_user_creation(user, body=None):
-    # TODO legacy : remove body parameter
-    body = body if body is not None else request.get_json()
-
-    lang = body.get("lang", "fr")
-    full_name = body.get("full_name", user.name)
-    user.ui_preferences = {
-        "lang": lang,
-        "full_name": full_name,
-        "is_profile_public": False,
-        "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False},
-    }
+def on_user_creation(user):
 
     check_user_name(user.name)
 
