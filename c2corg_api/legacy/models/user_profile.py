@@ -18,3 +18,7 @@ class UserProfile:
     @property
     def versions(self):
         return self._versions
+
+
+class ArchiveUserProfile:
+    ...

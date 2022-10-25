@@ -24,6 +24,12 @@ class Search:
         raise NotImplementedError()
 
 
+class SearchUser:
+    @staticmethod
+    def get(id, index):
+        ...
+
+
 search_documents = {
     # AREA_TYPE: SearchArea,
     # ARTICLE_TYPE: SearchArticle,

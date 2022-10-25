@@ -24,6 +24,8 @@ dependencies = [
     "pymdown-extensions==8.2",
 
     "pydiscourse @ https://github.com/c2corg/pydiscourse/archive/ea03a3a.zip",
+
+    "shapely==1.8.5.post1",
 ]
 
 [tool.setuptools]

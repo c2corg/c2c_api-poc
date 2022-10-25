@@ -4,3 +4,7 @@ class DocumentLocale:
 
     def to_json(self):
         return self._data
+
+
+class ArchiveDocumentLocale:
+    ...
