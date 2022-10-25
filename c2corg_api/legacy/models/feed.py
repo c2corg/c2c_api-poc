@@ -1,2 +1,6 @@
 class FilterArea:
     ...
+
+
+class FollowedUser:
+    ...

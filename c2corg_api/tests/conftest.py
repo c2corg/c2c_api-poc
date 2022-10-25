@@ -191,3 +191,9 @@ def moderator():
 def user():
     with tested_app.app_context():
         yield _db_add_user(name="user")
+
+
+@pytest.fixture()
+def user_2():
+    with tested_app.app_context():
+        yield _db_add_user(name="user_2")

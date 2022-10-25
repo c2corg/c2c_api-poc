@@ -98,6 +98,7 @@ replacements = (
         (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
         (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
+        ("from c2corg_api.views.user_follow import", "from c2corg_api.legacy.views.user_follow import"),
         # for now, comment these imports
         (r"(from c2corg_api.models.token.*\n)", r"# \1"),
         # targeted replace
@@ -166,6 +167,10 @@ skipped_methods = {
 skipped_classes = {
     "TestUserBlockedRest": "Redundant, and not used in actual UI",
     "TestUserBlockedAllRest": "Not used in actual UI",
+    "TestUserFollowRest": "PITA, rewrite it",
+    "TestUserUnfollowRest": "PITA, rewrite it",
+    "TestUserFollowingUserRest": "Not used in actual UI",
+    "TestUserFollowingRest": "Not used in actual UI",
 }
 
 
@@ -226,4 +231,4 @@ convert_test_file("views/test_user.py")
 convert_test_file("views/test_user_account.py")
 convert_test_file("views/test_user_preferences.py")
 convert_test_file("views/test_user_block.py")
-convert_test_file("views/test_user_follow.py", False)
+convert_test_file("views/test_user_follow.py")
