@@ -129,6 +129,10 @@ replacements = (
         ),
         (r" *assert .*\.ratelimit_times.*\n", ""),
         (r"(class BaseBlockTest(?:.|\n)*self\.session\.)flush", r"\1commit"),
+        (
+            r'(assert json\["description"\] == )"Invalid email address"',
+            "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['email']\"",
+        ),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
         # sometime used as forum name -> back to test
@@ -156,6 +160,7 @@ skipped_methods = {
     "test_read_account_info_blocked_account": "blocked users can view their account",
     "test_post_preferences_invalid": "Too painful to automatically import, recoded it",
     "test_post_preferences": "Too painful to automatically import, recoded it",
+    "test_register_username_email_not_equals_email": "username is removed in new model",
 }
 
 skipped_classes = {

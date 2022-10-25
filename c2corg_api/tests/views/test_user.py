@@ -196,6 +196,48 @@ class TestUserRest(BaseUserTestRest):
         assert json["description"] == "A user still exists with this name"
 
     @patch("flask_camp._services._send_mail.SendMail.send")
+    @pytest.mark.skip(reason="username is removed in new model")
+    def test_register_username_email_not_equals_email(self, _send_email):
+        request_body = {
+            "username": "someone_else@camptocamp.org",
+            "forum_username": "Contributor4",
+            "name": "Max Mustermann",
+            "password": "super secret",
+            "email": "some_user@camptocamp.org",
+        }
+        url = self._prefix + "/register"
+        json = self.app_post_json(url, request_body, status=400).json
+        self.assertEqual(
+            json["description"],
+            "An email address used as username should be the " + "same as the one used as the account email address.",
+        )
+
+    @patch("flask_camp._services._send_mail.SendMail.send")
+    def test_register_username_email_equals_email(self, _send_email):
+        request_body = {
+            "username": "some_user@camptocamp.org",
+            "forum_username": "Contributor4",
+            "name": "Frankie Vincent",
+            "password": "super secret",
+            "email": "some_user@camptocamp.org",
+        }
+        url = self._prefix + "/register"
+        self.app_post_json(url, request_body, status=200)
+
+    @patch("flask_camp._services._send_mail.SendMail.send")
+    def test_register_invalid_email(self, _send_email):
+        request_body = {
+            "username": "test",
+            "forum_username": "contributor",
+            "name": "Max Mustermann",
+            "password": "super secret",
+            "email": "some_useratcamptocamp.org",
+        }
+        url = self._prefix + "/register"
+        json = self.app_post_json(url, request_body, status=400).json
+        assert json["description"] == "'some_useratcamptocamp.org' is not a 'email' on instance ['email']"
+
+    @patch("flask_camp._services._send_mail.SendMail.send")
     def test_register_discourse_up(self, _send_email):
         request_body = {
             "username": "test",
@@ -455,6 +497,11 @@ class TestUserRest(BaseUserTestRest):
     def test_login_success_discourse_down(self):
         # Topoguide login allowed even if Discourse is down.
         body = self.login("moderator", status=200).json
+        assert "token" in body
+
+    def test_login_success_use_email(self):
+        # login allowed if providing the email instead of login
+        body = self.login("moderator@camptocamp.org", self.global_passwords["moderator"], status=200).json
         assert "token" in body
 
     @pytest.mark.skip(reason="blocked users can log-in")
