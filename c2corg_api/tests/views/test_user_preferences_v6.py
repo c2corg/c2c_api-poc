@@ -10,7 +10,7 @@ class TestUserFilterPreferencesRest(BaseTestClass):
     def test_post_preferences_invalid(self, user):
         self.login_user(user)
 
-        base_data = {"followed_only": True, "activities": ["hiking"], "langs": ["fr"], "areas": []}
+        base_data = {"followed_only": True, "activities": ["hiking"], "langs": ["fr"], "areas": [], "follow": []}
 
         data = deepcopy(base_data)
         del data["followed_only"]
@@ -41,6 +41,7 @@ class TestUserFilterPreferencesRest(BaseTestClass):
             "activities": ["hiking", "skitouring"],
             "langs": ["fr", "en"],
             "areas": [{"document_id": area.id}],
+            "follow": [],
         }
 
         self.post("/users/preferences", prefix="", json=request_body, status=200)

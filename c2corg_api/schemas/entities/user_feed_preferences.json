@@ -13,7 +13,11 @@
     "activities": {
       "type": "array",
       "items": { "$ref": "/entities/activities.json" }
+    },
+    "follow": {
+      "type": "array",
+      "items": { "type": "integer" }
     }
   },
-  "required": ["langs", "areas", "followed_only", "activities"]
+  "required": ["langs", "areas", "followed_only", "activities", "follow"]
 }

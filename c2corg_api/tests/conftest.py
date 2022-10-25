@@ -19,12 +19,7 @@ def get_default_ui_preferences(full_name):
         "lang": "fr",
         "is_profile_public": False,
         "full_name": full_name,
-        "feed": {
-            "areas": [],
-            "langs": [],
-            "followed_only": False,
-            "activities": [],
-        },
+        "feed": {"areas": [], "langs": [], "followed_only": False, "activities": [], "follow": []},
     }
 
 

@@ -20,12 +20,7 @@ def post():
             "full_name": data.get("name"),
             "lang": data.get("lang", "fr"),
             "is_profile_public": False,
-            "feed": {
-                "areas": [],
-                "activities": [],
-                "langs": [],
-                "followed_only": False,
-            },
+            "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False, "follow": []},
         },
     }
 
