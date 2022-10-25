@@ -26,10 +26,10 @@ class BaseTestRest(BaseTestClass):
         self._add_global_test_data()
 
     def _add_global_test_data(self):
+        self._add_user("moderator", "super pass", ["moderator"])
         self._add_user("contributor", "super pass")
         self._add_user("contributor2", "super pass")
         self._add_user("contributor3", "poor pass")
-        self._add_user("moderator", "super pass", ["moderator"])
 
         self.api.database.session.commit()
 

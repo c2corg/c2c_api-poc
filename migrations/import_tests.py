@@ -180,6 +180,7 @@ skipped_methods = {
     "test_post_preferences_invalid": "Too painful to automatically import, recoded it",
     "test_post_preferences": "Too painful to automatically import, recoded it",
     "test_register_username_email_not_equals_email": "username is removed in new model",
+    "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
 }
 
 skipped_classes = {
