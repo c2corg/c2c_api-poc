@@ -182,6 +182,27 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return self.get(self._prefix, params=params).json
 
+    def get_collection_lang(self, user=None):
+        if user:
+            self.optimized_login(user)
+
+        response = self.get(self._prefix, params={"pl": "es"}, status=200)
+
+        body = response.json
+        documents = body["documents"]
+        assert isinstance(documents, list)
+
+        doc = documents[0]
+        locales = doc.get("locales")
+        assert len(locales) == 1, locales
+        locale = locales[0]
+        assert locale["lang"] == "fr"
+
+        assert "protected" in doc
+        assert "type" in doc
+
+        return body
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         actual_ids = [json["document_id"] for json in actual["documents"]]

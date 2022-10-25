@@ -12,7 +12,11 @@ class LocaleArrayProxy:
         self._document = document
 
     def append(self, locale):
-        self._document.last_version.data["locales"].append(locale.to_json())
+        item = locale.to_json()
+        locales = self._document.last_version.data["locales"]
+        locales = [locale for locale in locales if locale["lang"] != item["lang"]]
+        locales.append(item)
+        self._document.last_version.data["locales"] = locales
 
 
 class UserProfile:

@@ -10,4 +10,20 @@ rule = "/profiles"
 def get():
     result = documents.get()
 
-    return {"total": result["count"], "documents": [document["legacy"] for document in result["documents"]]}
+    return {
+        "total": result["count"],
+        "documents": [_get_legacy_doc(document, request.args.get("pl")) for document in result["documents"]],
+    }
+
+
+def _get_legacy_doc(document, pl):
+    result = document["legacy"]
+
+    if pl is not None:
+        locales = [locale for locale in result["locales"] if locale["lang"] == pl]
+        if len(locales) == 0:
+            locales = [locale for locale in result["locales"] if locale["lang"] == "fr"]  # TODO preferred lang
+
+        result["locales"] = locales
+
+    return result
