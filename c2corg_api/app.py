@@ -7,6 +7,7 @@ from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
+from c2corg_api.legacy.views import profiles as profiles_view
 from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import block as block_view
 from c2corg_api.legacy.views.users import unblock as unblock_view
@@ -88,5 +89,7 @@ def create_app(**config):
         unblock_view,
         url_prefix="",
     )
+
+    api.add_modules(app, profiles_view, url_prefix="")
 
     return app, api
