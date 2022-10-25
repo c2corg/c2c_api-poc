@@ -2,6 +2,7 @@ from flask import Flask
 from flask_camp import RestApi
 
 from c2corg_api import hooks
+from c2corg_api.cooker import cooker
 
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
@@ -22,10 +23,6 @@ from c2corg_api.legacy.views.users import update_preferred_language as update_pr
 from c2corg_api.legacy.views.users import validate_change_email as validate_change_email_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
-
-
-def cooker(document, get_document):
-    document["legacy"] = {"document_id": document["id"], "locales": document["data"]["locales"]}
 
 
 def create_app(**config):

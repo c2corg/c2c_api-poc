@@ -1,4 +1,5 @@
 USERPROFILE_TYPE = "profile"
+AREA_TYPE = "area"
 
 VALIDATION_EXPIRE_DAYS = 3
 
@@ -9,6 +10,8 @@ def get_default_user_profile_data(user, categories):
         "user_id": user.id,
         "locales": [{"title": user.name, "lang": "fr"}, {"title": user.name, "lang": "en"}],
         "categories": categories,
+        "areas": [],
+        "name": user.ui_preferences["full_name"],
     }
 
 

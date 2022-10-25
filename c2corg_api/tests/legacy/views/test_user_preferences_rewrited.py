@@ -4,6 +4,7 @@ from unittest.mock import patch
 from flask_camp.models import Document, User
 
 from c2corg_api.tests.legacy.views import BaseTestRest
+from c2corg_api.legacy.models.area import Area
 
 
 class TestUserFilterPreferencesRest(BaseTestRest):
@@ -31,8 +32,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
     @patch("c2corg_api.security.discourse_client.APIDiscourseClient.sync_sso")
     def test_post_preferences(self, sync_sso):
 
-        user = User.get(name="contributor")
-        area = Document.create("Creation", {"locales": []}, author=user)
+        area = Area("country", locales=[])._document
         self.api.database.session.add(area)
         self.api.database.session.commit()
 
