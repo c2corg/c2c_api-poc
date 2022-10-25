@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 
-from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, get_default_user_profile_data
 from c2corg_api.security.discourse_client import get_discourse_client
 from c2corg_api.search import DocumentSearch
 
@@ -56,12 +56,7 @@ def on_user_creation(user):
     assert user.id is not None, "Dev check..."
 
     # create the profile page. This function adds the page in the session
-    data = {
-        "type": USERPROFILE_TYPE,
-        "user_id": user.id,
-        "locales": {"fr": {"title": user.name}, "en": {"title": user.name}},
-    }
-
+    data = get_default_user_profile_data(user, categories=[])
     user_page = Document.create(comment="Creation of user page", data=data, author=user)
     current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
 

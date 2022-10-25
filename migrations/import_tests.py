@@ -85,9 +85,9 @@ replacements = (
             r"self\.search_document\(USERPROFILE_TYPE, id=user_id",
             r"self.search_document(USERPROFILE_TYPE, user_id=user_id",
         ),
-        (r"self\.session\.add_all", "self.session_add_all"),
+        (r"self\.session\.add_all\(", "self.session_add_all("),
+        (r"self\.session\.add\(", "self.session_add("),
         (r"purge_account\(self\.session\)", "purge_account()"),
-        (r"\(BaseDocumentTestRest\)", "(BaseTestClass)"),
         # remap old models to legacy model
         (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
         (
@@ -113,7 +113,7 @@ replacements = (
         (r"from c2corg_api.views.document import", "from c2corg_api.legacy.views.document import"),
         (
             r"from c2corg_api.tests.views import BaseDocumentTestRest\n",
-            "from c2corg_api.tests.conftest import BaseTestClass\n",
+            "from c2corg_api.tests.legacy.views import BaseDocumentTestRest\n",
         ),
         # for now, comment these imports
         (r"(from c2corg_api.models.token.*\n)", r"# \1"),
@@ -252,4 +252,4 @@ convert_test_file("views/test_user_preferences.py")
 convert_test_file("views/test_user_block.py")
 convert_test_file("views/test_user_follow.py")
 convert_test_file("views/test_user_mailinglists.py")
-# convert_test_file("views/test_user_profile.py")
+convert_test_file("views/test_user_profile.py")

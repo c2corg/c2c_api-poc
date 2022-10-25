@@ -19,7 +19,7 @@ class Search:
                 raise Exception()
 
         if self.document_type == USERPROFILE_TYPE:
-            return LegacyUserProfile(document_ids[0])
+            return LegacyUserProfile.from_document_id(document_ids[0])
 
         raise NotImplementedError()
 

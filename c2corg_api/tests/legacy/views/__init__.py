@@ -5,7 +5,7 @@ from sqlalchemy import select
 from c2corg_api.hooks import on_user_creation, ProfilePageLink, on_user_validation
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
-from c2corg_api.legacy.models.user_profile import UserProfile
+from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.search import search
 from c2corg_api.tests.conftest import BaseTestClass, get_default_ui_preferences
 
@@ -82,12 +82,17 @@ class BaseTestRest(BaseTestClass):
     def app_send_json(self, action, url, json, **kwargs):
         return getattr(self, action)(url=url, json=json, **kwargs)
 
+    def session_add(self, instance):
+        if isinstance(instance, LegacyArea):
+            self.session.add(instance._document)
+        elif isinstance(instance, LegacyUserProfile):
+            self.session.add(instance._document)
+        else:
+            raise NotImplementedError()
+
     def session_add_all(self, instances):
         for instance in instances:
-            if isinstance(instance, LegacyArea):
-                self.session.add(instance._document)
-            else:
-                raise NotImplementedError()
+            self.session_add(instance)
 
     def query_get(self, klass, **kwargs):
         parameter_name, parameter_value = list(kwargs.items())[0]
@@ -102,8 +107,8 @@ class BaseTestRest(BaseTestClass):
             else:
                 raise TypeError("TODO...")
 
-        if klass is UserProfile:
-            return UserProfile(parameter_value)
+        if klass is LegacyUserProfile:
+            return LegacyUserProfile.from_document_id(parameter_value)
 
         raise TypeError("TODO...")
 
@@ -114,7 +119,7 @@ class BaseTestRest(BaseTestClass):
         return token
 
     def expunge(self, item):
-        if isinstance(item, UserProfile):
+        if isinstance(item, LegacyUserProfile):
             return
             # self.session.expunge(item._user)
         elif isinstance(item, LegacyUser):
@@ -144,11 +149,12 @@ class BaseTestRest(BaseTestClass):
         document_as_dict = self.api.get_cooked_document(document_ids[0])
         data = document_as_dict["data"]
 
-        return {
-            "doc_type": document_as_dict["data"].get("type"),
-            "title_fr": data["locales"]["fr"]["title"],
-            "title_en": data["locales"]["en"]["title"],
-        }
+        result = {"doc_type": document_as_dict["data"].get("type")}
+
+        for locale in data["locales"]:
+            result[f"title_{locale['lang']}"] = locale["title"]
+
+        return result
 
     def sync_es(self):
         pass
@@ -160,3 +166,8 @@ class BaseTestRest(BaseTestClass):
     def get_body_error(self, body, string):
         assert string in body["description"], body
         return body["description"]
+
+
+class BaseDocumentTestRest(BaseTestRest):
+    def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):
+        ...

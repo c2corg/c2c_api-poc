@@ -14,7 +14,7 @@ class BaseFollowTest(BaseTestRest):
         self.contributor2 = self.query_get(User, user_id=self.global_userids["contributor2"])
         self.moderator = self.query_get(User, user_id=self.global_userids["moderator"])
 
-        self.session.add(FollowedUser(followed_user_id=self.contributor2.id, follower_user_id=self.contributor.id))
+        self.session_add(FollowedUser(followed_user_id=self.contributor2.id, follower_user_id=self.contributor.id))
 
         self.session.flush()
 
