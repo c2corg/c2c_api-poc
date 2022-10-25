@@ -10,6 +10,4 @@ rule = "/profiles"
 def get():
     result = documents.get()
 
-    result["documents"] = [document["legacy"] for document in result["documents"]]
-
-    return result
+    return {"total": result["count"], "documents": [document["legacy"] for document in result["documents"]]}

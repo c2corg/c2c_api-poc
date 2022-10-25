@@ -1,3 +1,4 @@
+import json
 from os import sync
 from flask_camp.models import User
 from sqlalchemy import select
@@ -27,6 +28,7 @@ class BaseTestRest(BaseTestClass):
     def _add_global_test_data(self):
         self._add_user("contributor", "super pass")
         self._add_user("contributor2", "super pass")
+        self._add_user("contributor3", "poor pass")
         self._add_user("moderator", "super pass", ["moderator"])
 
         self.api.database.session.commit()
@@ -174,7 +176,14 @@ class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):
         self._prefix = prefix
 
-    def get_collection(self, user):
-        self.optimized_login(user)
+    def get_collection(self, params=None, user=None):
+        if user:
+            self.optimized_login(user)
 
-        return self.get(self._prefix).json
+        return self.get(self._prefix, params=params).json
+
+    def assertResultsEqual(self, actual, expected, total):
+        message = json.dumps(actual, indent=2)
+        actual_ids = [json["document_id"] for json in actual["documents"]]
+        assert sorted(actual_ids) == sorted(expected), message
+        assert actual["total"] == total, message

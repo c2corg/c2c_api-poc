@@ -42,6 +42,10 @@ class UserProfile:
         return result
 
     @property
+    def document_id(self):
+        return self._document.id
+
+    @property
     def versions(self):
         return self._versions
 
