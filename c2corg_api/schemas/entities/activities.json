@@ -1,3 +1,15 @@
 {
-  "enum": ["hiking", "skitouring"]
+  "enum": [
+    "skitouring",
+    "snow_ice_mixed",
+    "mountain_climbing",
+    "rock_climbing",
+    "ice_climbing",
+    "hiking",
+    "snowshoeing",
+    "paragliding",
+    "mountain_biking",
+    "via_ferrata",
+    "slacklining"
+  ]
 }
