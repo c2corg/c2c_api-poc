@@ -172,4 +172,4 @@ class BaseTestRest(BaseTestClass):
 
 class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):
-        ...
+        self._prefix = prefix

@@ -1,8 +1,9 @@
+import json
 import logging
 import sys
 
 from flask_camp.client import ClientInterface
-from flask_camp.models import User, Document, DocumentVersion
+from flask_camp.models import User
 import pytest
 from werkzeug.test import TestResponse
 
@@ -127,9 +128,14 @@ class BaseTestClass(ClientInterface):
         elif isinstance(expected_status, int):
             expected_status = [expected_status]
 
-        assert (
-            response.status_code in expected_status
-        ), f"Status error: {response.status_code} i/o {expected_status} for {response.request.url}\n{response.data}"
+        def pretty_message():
+            message = f"Status error: {response.status_code} i/o {expected_status} for {response.request.url}"
+            try:
+                return message + "\n" + json.dumps(response.json, indent=2)
+            except:  # pylint: disable=bare-except
+                return message + "\n" + str(response.data)
+
+        assert response.status_code in expected_status, pretty_message()
 
     ### some helpers
 
