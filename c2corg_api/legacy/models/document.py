@@ -1,6 +1,6 @@
 class DocumentLocale:
-    def __init__(self, lang, title):
-        self._data = {"lang": lang, "title": title}
+    def __init__(self, lang, title, description=""):
+        self._data = {"lang": lang, "title": title, "description": description}
 
     def to_json(self):
         return self._data
