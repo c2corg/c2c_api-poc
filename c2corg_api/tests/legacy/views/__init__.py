@@ -87,6 +87,8 @@ class BaseTestRest(BaseTestClass):
             self.session.add(instance._document)
         elif isinstance(instance, LegacyUserProfile):
             self.session.add(instance._document)
+        elif isinstance(instance, LegacyUser):
+            self.session.add(instance._user)
         else:
             raise NotImplementedError()
 

@@ -2,6 +2,7 @@ from flask import request
 from flask_camp import allow
 from flask_camp.views.account import users
 from flask_camp.models import User
+from c2corg_api.models import get_defaut_user_ui_preferences
 
 rule = "/users/register"
 
@@ -16,12 +17,7 @@ def post():
         "name": data.get("forum_username"),
         "email": data.get("email"),
         "password": data.get("password"),
-        "ui_preferences": {
-            "full_name": data.get("name"),
-            "lang": data.get("lang", "fr"),
-            "is_profile_public": False,
-            "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False, "follow": []},
-        },
+        "ui_preferences": get_defaut_user_ui_preferences(full_name=data.get("name"), lang=data.get("lang", "fr")),
     }
 
     request._cached_json = (body, body)

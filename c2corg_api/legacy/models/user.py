@@ -1,3 +1,7 @@
+from flask_camp.models import User as NewUser
+from c2corg_api.models import get_defaut_user_ui_preferences
+
+
 class DocumentIdList:
     def __init__(self, _list):
         self._list = _list
@@ -10,15 +14,42 @@ class DocumentIdList:
 
 
 class User:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        name=None,
+        username=None,
+        email=None,
+        forum_username=None,
+        password=None,
+        email_validated=False,
+        profile=None,
+    ) -> None:
         self._user = None
         self.feed_filter_areas = None
+
+        if name is not None:
+            self._user = NewUser.create(
+                name=forum_username,
+                email=email,
+                password=password,
+                ui_preferences=get_defaut_user_ui_preferences(full_name=name, lang="fr"),
+            )
+
+            if email_validated:
+                self._user.validate_email(self._user._email_token)
+
+            profile._document.last_version.user = self._user
+
+            self._set_proxies()
+
+    def _set_proxies(self):
+        self.feed_filter_areas = DocumentIdList(self._user.ui_preferences["feed"]["areas"])
 
     @classmethod
     def from_user(cls, user):
         result = cls()
         result._user = user
-        result.feed_filter_areas = DocumentIdList(result._user.ui_preferences["feed"]["areas"])
+        result._set_proxies()
 
         return result
 

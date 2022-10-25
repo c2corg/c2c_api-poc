@@ -10,3 +10,12 @@ def get_default_user_profile_data(user, categories):
         "locales": [{"title": user.name, "lang": "fr"}, {"title": user.name, "lang": "en"}],
         "categories": categories,
     }
+
+
+def get_defaut_user_ui_preferences(full_name, lang):
+    return {
+        "full_name": full_name,
+        "lang": lang,
+        "is_profile_public": False,
+        "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False, "follow": []},
+    }
