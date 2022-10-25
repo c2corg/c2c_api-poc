@@ -127,6 +127,8 @@ replacements = (
             r'errors = body.get\("errors"\)\n {8}assert self\.get_error\(errors, "user_id"\)',
             r'assert self.get_body_error(body, "user_id")',
         ),
+        (r" *assert .*\.ratelimit_times.*\n", ""),
+        (r"(class BaseBlockTest(?:.|\n)*self\.session\.)flush", r"\1commit"),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
         # sometime used as forum name -> back to test
@@ -156,6 +158,11 @@ skipped_methods = {
     "test_post_preferences": "Too painful to automatically import, recoded it",
 }
 
+skipped_classes = {
+    "TestUserBlockedRest": "Redundant, and not used in actual UI",
+    "TestUserBlockedAllRest": "Not used in actual UI",
+}
+
 
 def convert_test_file(filename, make_replacements=True):
 
@@ -169,6 +176,12 @@ def convert_test_file(filename, make_replacements=True):
             code = code.replace(
                 f"\n    def {method}(self",
                 f'\n    @pytest.mark.skip(reason="{skip_reason}")\n    def {method}(self',
+            )
+
+        for klass, skip_reason in skipped_classes.items():
+            code = code.replace(
+                f"\nclass {klass}(",
+                f'\n@pytest.mark.skip(reason="{skip_reason}")\ndef {klass}(',
             )
 
         code = black.format_str(code, mode=black.Mode(line_length=120))
