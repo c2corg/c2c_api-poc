@@ -1,11 +1,11 @@
-from c2corg_api.tests.conftest import BaseTestClass
+import pytest
+from c2corg_api.tests.legacy.views import BaseTestRest
 
 
-class TestCookerRest(BaseTestClass):
+class TestCookerRest(BaseTestRest):
     def test_get(self):
         markdowns = {"lang": "fr", "description": "**strong emphasis** and *emphasis*"}
-
-        response = self.post("/cooker", json=markdowns, status=200)
+        response = self.app_post_json("/cooker", markdowns, status=200)
 
         htmls = response.json
 

@@ -100,6 +100,8 @@ replacements = (
         (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.views.user_follow import", "from c2corg_api.legacy.views.user_follow import"),
+        (r"from c2corg_api.tests.views import BaseTestRest\n", "from c2corg_api.tests.legacy.views import BaseTestRest\n"),
+        (r"from c2corg_api.tests.views.test_user", "from c2corg_api.tests.legacy.views.test_user"),
         (r"from c2corg_api.models.mailinglist", "from c2corg_api.legacy.models.mailinglist"),
         (
             r"from c2corg_api.search.mappings.user_mapping import SearchUser",
@@ -217,7 +219,7 @@ def convert_test_file(filename, make_replacements=True):
 
         code = f"import pytest\n{code}"
 
-    dest = f"c2corg_api/tests/{filename}"
+    dest = f"c2corg_api/tests/legacy/{filename}"
     Path(os.path.dirname(dest)).mkdir(parents=True, exist_ok=True)
     with open(dest, "w", encoding="utf-8") as f:
         f.write(code)

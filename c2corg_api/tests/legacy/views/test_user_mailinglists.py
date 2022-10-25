@@ -2,7 +2,7 @@ import pytest
 from flask_camp.models import User as NewUser
 from c2corg_api.legacy.models.user import User
 from c2corg_api.legacy.models.mailinglist import Mailinglist
-from c2corg_api.tests.views import BaseTestRest
+from c2corg_api.tests.legacy.views import BaseTestRest
 
 # from c2corg_api.models.common.attributes import mailinglists
 

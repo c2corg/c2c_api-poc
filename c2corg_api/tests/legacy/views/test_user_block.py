@@ -4,7 +4,7 @@ from unittest.mock import Mock, MagicMock
 from flask_camp.models import User as NewUser
 from c2corg_api.legacy.models.user import User
 from c2corg_api.security.discourse_client import set_discourse_client, APIDiscourseClient
-from c2corg_api.tests.views import BaseTestRest
+from c2corg_api.tests.legacy.views import BaseTestRest
 
 
 class BaseBlockTest(BaseTestRest):
