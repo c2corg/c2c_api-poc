@@ -73,7 +73,7 @@ replacements = (
         (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
         # replace test API
         (r"self\.session\.refresh\(", r"self.session_refresh("),
-        (r"self\.app\.get\((.*)\)\n", r'self.get(\1, prefix="")\n'),
+        (r"self\.app\.get\((.*)\)\n", r"self.get(\1)\n"),
         (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
         (
             r'query = self.session.query\(User\).filter\(User.username == "test"\)',
@@ -100,7 +100,10 @@ replacements = (
         (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.views.user_follow import", "from c2corg_api.legacy.views.user_follow import"),
-        (r"from c2corg_api.tests.views import BaseTestRest\n", "from c2corg_api.tests.legacy.views import BaseTestRest\n"),
+        (
+            r"from c2corg_api.tests.views import BaseTestRest\n",
+            "from c2corg_api.tests.legacy.views import BaseTestRest\n",
+        ),
         (r"from c2corg_api.tests.views.test_user", "from c2corg_api.tests.legacy.views.test_user"),
         (r"from c2corg_api.models.mailinglist", "from c2corg_api.legacy.models.mailinglist"),
         (
@@ -249,4 +252,4 @@ convert_test_file("views/test_user_preferences.py")
 convert_test_file("views/test_user_block.py")
 convert_test_file("views/test_user_follow.py")
 convert_test_file("views/test_user_mailinglists.py")
-convert_test_file("views/test_user_profile.py")
+# convert_test_file("views/test_user_profile.py")

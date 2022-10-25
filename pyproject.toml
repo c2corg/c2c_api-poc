@@ -56,4 +56,5 @@ filterwarnings = [
 testpaths = [
     "c2corg_api/tests/markdown",
     "c2corg_api/tests/views",
+    "c2corg_api/tests/legacy",
 ]

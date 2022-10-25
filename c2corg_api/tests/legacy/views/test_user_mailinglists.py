@@ -24,11 +24,11 @@ def TestUserMailinglistsRest(BaseTestRest):
         self.session.flush()
 
     def test_get_mailinglists_unauthenticated(self):
-        self.get(self._prefix, status=403, prefix="")
+        self.get(self._prefix, status=403)
 
     def test_get_mailinglists(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix, status=200, headers=headers, prefix="")
+        response = self.get(self._prefix, status=200, headers=headers)
         body = response.json
 
         assert len(body) == len(mailinglists)

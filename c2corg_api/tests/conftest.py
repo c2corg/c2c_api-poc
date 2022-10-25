@@ -54,6 +54,8 @@ def pytest_configure(config):
 
 class BaseTestClass(ClientInterface):
 
+    is_v7_api = True
+
     client = None
 
     @classmethod
@@ -84,21 +86,14 @@ class BaseTestClass(ClientInterface):
         """convert request argument to flask test client argument"""
         kwargs["query_string"] = kwargs.pop("params", None)
 
-    def get(self, url, prefix="/v7", **kwargs):
+    def _request(self, method, url, **kwargs):
         expected_status = kwargs.pop("status", 200)
         self._convert_kwargs(kwargs)
 
-        r = self.client.get(f"{prefix}{url}", **kwargs)
-        self.assert_status_code(r, expected_status)
-
-        return r
-
-    def post(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
+        url = f"/v7{url}" if self.is_v7_api else url
 
         try:
-            r = self.client.post(f"{prefix}{url}", **kwargs)
+            r = method(url, **kwargs)
         except:
             if expected_status == 500:
                 return TestResponse(
@@ -113,29 +108,17 @@ class BaseTestClass(ClientInterface):
 
         return r
 
-    def put(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
+    def get(self, url, **kwargs):
+        return self._request(self.client.get, url, **kwargs)
 
-        try:
-            r = self.client.put(f"{prefix}{url}", **kwargs)
-        except:
-            if expected_status == 500:
-                return None
-            raise
+    def post(self, url, **kwargs):
+        return self._request(self.client.post, url, **kwargs)
 
-        self.assert_status_code(r, expected_status)
+    def put(self, url, **kwargs):
+        return self._request(self.client.put, url, **kwargs)
 
-        return r
-
-    def delete(self, url, prefix="/v7", **kwargs):
-        expected_status = kwargs.pop("status", 200)
-        self._convert_kwargs(kwargs)
-
-        r = self.client.delete(f"{prefix}{url}", **kwargs)
-        self.assert_status_code(r, expected_status)
-
-        return r
+    def delete(self, url, **kwargs):
+        return self._request(self.client.delete, url, **kwargs)
 
     @staticmethod
     def assert_status_code(response, expected_status):
@@ -146,7 +129,7 @@ class BaseTestClass(ClientInterface):
 
         assert (
             response.status_code in expected_status
-        ), f"Status error: {response.status_code} i/o {expected_status}\n{response.data}"
+        ), f"Status error: {response.status_code} i/o {expected_status} for {response.request.url}\n{response.data}"
 
     ### some helpers
 

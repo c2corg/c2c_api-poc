@@ -12,6 +12,8 @@ from c2corg_api.tests.conftest import BaseTestClass, get_default_ui_preferences
 
 class BaseTestRest(BaseTestClass):
 
+    is_v7_api = False
+
     client = None
     global_userids = {}
     global_passwords = {}
@@ -56,7 +58,7 @@ class BaseTestRest(BaseTestClass):
 
     def optimized_login(self, user_name):
         if user_name not in self.global_session_cookies:
-            self.login_user(user_name, self.global_passwords["contributor"])
+            self.post("/v7/login", json={"name_or_email": user_name, "password": self.global_passwords[user_name]})
             cookies = list(self.client.cookie_jar)
             session_cookie = [cookie for cookie in cookies if cookie.name == "session"][0]
             self.global_session_cookies[user_name] = session_cookie.value
@@ -65,11 +67,11 @@ class BaseTestRest(BaseTestClass):
 
     def get_json_with_contributor(self, url, username="contributor", status=200):
         self.optimized_login(username)
-        return self.get(url, prefix="", status=status).json
+        return self.get(url, status=status).json
 
     def post_json_with_contributor(self, url, json, username="contributor", status=200):
         self.optimized_login(username)
-        return self.post(url, prefix="", json=json, status=status).json
+        return self.post(url, json=json, status=status).json
 
     def post_json_with_token(self, url, token, **kwargs):
         return self.app_send_json("post", url, {}, **kwargs)
@@ -78,7 +80,7 @@ class BaseTestRest(BaseTestClass):
         return self.app_send_json("post", url, json, **kwargs)
 
     def app_send_json(self, action, url, json, **kwargs):
-        return getattr(self, action)(url=url, prefix="", json=json, **kwargs)
+        return getattr(self, action)(url=url, json=json, **kwargs)
 
     def session_add_all(self, instances):
         for instance in instances:

@@ -28,11 +28,11 @@ class TestUserFilterPreferencesRest(BaseTestRest):
         self.session.flush()
 
     def test_get_preferences_unauthenticated(self):
-        self.get(self._prefix, status=403, prefix="")
+        self.get(self._prefix, status=403)
 
     def test_get_preferences(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix, status=200, headers=headers, prefix="")
+        response = self.get(self._prefix, status=200, headers=headers)
         body = response.json
 
         assert ["hiking"] == body["activities"]
@@ -48,7 +48,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
     def test_get_preferences_lang(self):
         """Get the preferences with parameter `lang`."""
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix + "?pl=de", status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "?pl=de", status=200, headers=headers)
         body = response.json
 
         areas = body["areas"]

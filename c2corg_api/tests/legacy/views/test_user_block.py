@@ -157,28 +157,28 @@ def TestUserBlockedRest(BaseBlockTest):
         self._prefix = "/users/blocked"
 
     def test_blocked_unauthorized(self):
-        self.get(self._prefix + "/123", status=403, prefix="")
+        self.get(self._prefix + "/123", status=403)
 
         headers = self.add_authorization_header(username="contributor")
-        self.get(self._prefix, headers=headers, status=403, prefix="")
+        self.get(self._prefix, headers=headers, status=403)
 
     def test_blocked(self):
         headers = self.add_authorization_header(username="moderator")
-        response = self.get(self._prefix + "/{}".format(self.contributor2.id), status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "/{}".format(self.contributor2.id), status=200, headers=headers)
         body = response.json
 
         assert body["blocked"] is True
 
     def test_blocked_not(self):
         headers = self.add_authorization_header(username="moderator")
-        response = self.get(self._prefix + "/{}".format(self.contributor.id), status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "/{}".format(self.contributor.id), status=200, headers=headers)
         body = response.json
 
         assert body["blocked"] is False
 
     def test_blocked_invalid_user_id(self):
         headers = self.add_authorization_header(username="moderator")
-        response = self.get(self._prefix + "/invalid-user-id", status=400, headers=headers, prefix="")
+        response = self.get(self._prefix + "/invalid-user-id", status=400, headers=headers)
 
         body = response.json
         assert body.get("status") == "error"
@@ -187,7 +187,7 @@ def TestUserBlockedRest(BaseBlockTest):
 
     def test_blocked_wrong_user_id(self):
         headers = self.add_authorization_header(username="moderator")
-        self.get(self._prefix + "/9999999999", status=400, headers=headers, prefix="")
+        self.get(self._prefix + "/9999999999", status=400, headers=headers)
 
 
 @pytest.mark.skip(reason="Not used in actual UI")
@@ -197,14 +197,14 @@ def TestUserBlockedAllRest(BaseBlockTest):
         self._prefix = "/users/blocked"
 
     def test_blocked_unauthenticated(self):
-        self.get(self._prefix, status=403, prefix="")
+        self.get(self._prefix, status=403)
 
         headers = self.add_authorization_header(username="contributor")
-        self.get(self._prefix, headers=headers, status=403, prefix="")
+        self.get(self._prefix, headers=headers, status=403)
 
     def test_blocked(self):
         headers = self.add_authorization_header(username="moderator")
-        response = self.get(self._prefix, status=200, headers=headers, prefix="")
+        response = self.get(self._prefix, status=200, headers=headers)
         body = response.json
 
         blocked_users = body["blocked"]

@@ -105,25 +105,25 @@ def TestUserFollowingUserRest(BaseFollowTest):
         self._prefix = "/users/following-user"
 
     def test_follow_unauthenticated(self):
-        self.get(self._prefix + "/123", status=403, prefix="")
+        self.get(self._prefix + "/123", status=403)
 
     def test_following(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix + "/{}".format(self.contributor2.id), status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "/{}".format(self.contributor2.id), status=200, headers=headers)
         body = response.json
 
         assert body["is_following"] is True
 
     def test_following_not(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix + "/{}".format(self.moderator.id), status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "/{}".format(self.moderator.id), status=200, headers=headers)
         body = response.json
 
         assert body["is_following"] is False
 
     def test_following_invalid_user_id(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix + "/invalid-user-id", status=400, headers=headers, prefix="")
+        response = self.get(self._prefix + "/invalid-user-id", status=400, headers=headers)
 
         body = response.json
         assert body.get("status") == "error"
@@ -132,7 +132,7 @@ def TestUserFollowingUserRest(BaseFollowTest):
 
     def test_following_wrong_user_id(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix + "/9999999999", status=200, headers=headers, prefix="")
+        response = self.get(self._prefix + "/9999999999", status=200, headers=headers)
         body = response.json
 
         assert body["is_following"] is False
@@ -145,11 +145,11 @@ def TestUserFollowingRest(BaseFollowTest):
         self._prefix = "/users/following"
 
     def test_follow_unauthenticated(self):
-        self.get(self._prefix, status=403, prefix="")
+        self.get(self._prefix, status=403)
 
     def test_following(self):
         headers = self.add_authorization_header(username="contributor")
-        response = self.get(self._prefix, status=200, headers=headers, prefix="")
+        response = self.get(self._prefix, status=200, headers=headers)
         body = response.json
 
         following_users = body["following"]
@@ -158,7 +158,7 @@ def TestUserFollowingRest(BaseFollowTest):
 
     def test_following_empty(self):
         headers = self.add_authorization_header(username="contributor2")
-        response = self.get(self._prefix, status=200, headers=headers, prefix="")
+        response = self.get(self._prefix, status=200, headers=headers)
         body = response.json
 
         following_users = body["following"]
