@@ -42,4 +42,10 @@ def _get_legacy_doc(document, collection_view=False, pl=None):
     if collection_view:
         del result["geometry"]
 
+    cook_lang = request.args.get("cook")
+
+    if cook_lang:
+        result["locales"] = [document["data"]["locales"].get(cook_lang)]
+        result["cooked"] = document["cooked_data"]["locales"].get(cook_lang)
+
     return result

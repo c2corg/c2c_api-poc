@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 from pathlib import Path
 import re
@@ -186,7 +188,8 @@ skipped_methods = {
     "test_post_preferences": "Too painful to automatically import, recoded it",
     "test_register_username_email_not_equals_email": "username is removed in new model",
     "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
-    "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile",
+    "test_get_unconfirmed_user": "unecessary complexity of profile with no validated email, recoded it",
+    "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
 }
 
 skipped_classes = {

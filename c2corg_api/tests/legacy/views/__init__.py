@@ -251,6 +251,40 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return body
 
+    def get_cooked(self, reference, user=None):
+        body, locale, cooked = self._get_cooked(reference, "en", user)
+
+        assert locale.get("lang") == self.locale_en.lang
+        assert locale.get("lang") == "en"
+        assert cooked.get("lang") == "en"
+
+        return body
+
+    def get_cooked_with_defaulting(self, reference, user=None):
+        body, locale, cooked = self._get_cooked(reference, "it", user)
+
+        assert locale.get("lang") == "fr"
+        assert cooked.get("lang") == "fr"
+
+        return body
+
+    def _get_cooked(self, reference, lang, user=None):
+        if user:
+            self.optimized_login(user)
+
+        response = self.get(f"{self._prefix}/{reference.document_id}", params={"cook": lang}, status=200)
+
+        body = response.json
+        assert "cooked" in body
+        assert "locales" in body
+
+        locales = body.get("locales")
+        cooked = body.get("cooked")
+
+        assert len(locales) == 1
+
+        return body, locales[0], cooked
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)

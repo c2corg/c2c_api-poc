@@ -71,7 +71,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
             6,
         )
 
-    @pytest.mark.skip(reason="useless feature: anybody can create a profile")
+    @pytest.mark.skip(reason="useless feature: anybody can create a profile to see profile")
     def test_get_unauthenticated_private_profile(self):
         """Tests that only the user name is returned when requesting a private
         profile unauthenticated.
@@ -108,6 +108,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
         assert "name" in body
         assert "forum_username" in body
 
+    @pytest.mark.skip(reason="unecessary complexity of profile with no validated email, recoded it")
     def test_get_unconfirmed_user(self):
         headers = self.add_authorization_header(username="contributor")
         self.get(self._prefix + "/" + str(self.profile3.document_id), headers=headers, status=404)
