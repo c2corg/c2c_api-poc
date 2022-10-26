@@ -4,16 +4,20 @@ from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE
 def cooker(document, get_document):
     data = document["data"]
 
+    locales = [locale | {"version": 0} for locale in data["locales"]]
+
+    document["legacy"] = {
+        "locales": locales,
+        "available_langs": [locale["lang"] for locale in locales],
+        "document_id": document["id"],
+        "protected": document["protected"],
+        "type": data["type"],
+        "version": 0,  # no equivalent ?
+        "associations": [],
+    }
+
     if data["type"] == AREA_TYPE:
-        document["legacy"] = {"locales": data["locales"]}
+        pass
 
     elif data["type"] == USERPROFILE_TYPE:
-        document["legacy"] = {
-            "locales": data["locales"],
-            "areas": data["areas"],
-            "name": data["name"],
-        }
-
-    document["legacy"]["document_id"] = document["id"]
-    document["legacy"]["protected"] = document["protected"]
-    document["legacy"]["type"] = data["type"]
+        document["legacy"] |= {"areas": data["areas"], "name": data["name"], "geometry": data["geometry"]}

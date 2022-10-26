@@ -110,6 +110,10 @@ class User:
     def is_profile_public(self):
         return self._user.ui_preferences["is_profile_public"]
 
+    @is_profile_public.setter
+    def is_profile_public(self, value):
+        self._user.ui_preferences["is_profile_public"] = value
+
     @property
     def feed_filter_activities(self):
         return self._user.ui_preferences["feed"]["activities"]

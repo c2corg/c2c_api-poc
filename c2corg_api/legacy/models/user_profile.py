@@ -6,6 +6,15 @@ from c2corg_api.models import get_default_user_profile_data, ProfilePageLink
 from c2corg_api.models import USERPROFILE_TYPE  # Do not remove
 
 
+class LocaleProxy:
+    def __init__(self, json):
+        self._json = json
+
+    @property
+    def lang(self):
+        return self._json["lang"]
+
+
 class LocaleArrayProxy:
     def __init__(self, document):
         self._document = document
@@ -17,18 +26,21 @@ class LocaleArrayProxy:
         locales.append(item)
         self._document.last_version.data["locales"] = locales
 
+    def get_locale(self, lang):
+        for locale in self._document.last_version.data["locales"]:
+            if locale["lang"] == lang:
+                return LocaleProxy(locale)
+
 
 class UserProfile:
     def __init__(self, categories=None, locale_langs=None):
         self._document = None
         self._user = None
-        self.locales = None
 
         if categories:
             author = User.get(id=1)
             data = get_default_user_profile_data(author, categories=categories, locale_langs=locale_langs or [])
             self._document = Document.create("comment", data=data, author=author)
-            self.locales = LocaleArrayProxy(self._document)
 
     @staticmethod
     def from_document_id(profile_document_id):
@@ -52,8 +64,18 @@ class UserProfile:
     def versions(self):
         return self._versions
 
+    @property
+    def locales(self):
+        return LocaleArrayProxy(self._document)
+
     def get_locale(self, lang):
-        ...
+        return self.locales.get_locale(lang)
+
+    @property
+    def user(self):
+        from c2corg_api.legacy.models.user import User as LegacyUser
+
+        return LegacyUser.from_user(User.get(id=self._document.last_version.data["user_id"]))
 
 
 class ArchiveUserProfile:

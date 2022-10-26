@@ -73,6 +73,7 @@ replacements = (
         (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
         # replace test API
         (r"self\.session\.refresh\(", r"self.session_refresh("),
+        (r"self\.get\((.*)\)\n", r"self.get_custom(\1)\n"),
         (r"self\.app\.get\((.*)\)\n", r"self.get(\1)\n"),
         (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
         (
@@ -184,6 +185,7 @@ skipped_methods = {
     "test_post_preferences": "Too painful to automatically import, recoded it",
     "test_register_username_email_not_equals_email": "username is removed in new model",
     "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
+    "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile",
 }
 
 skipped_classes = {

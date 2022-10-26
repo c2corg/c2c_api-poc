@@ -213,9 +213,46 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return response.json
 
+    def get_custom(self, reference, user=None, check_title=True, ignore_checks=False):
+        if user:
+            self.optimized_login(user)
+
+        response = super().get(self._prefix + "/" + str(reference.document_id), status=200)
+
+        body = response.json
+        assert "id" not in body
+        assert "type" in body
+        assert body.get("document_id") == reference.document_id
+
+        assert body.get("version") is not None
+        assert body.get("associations") is not None
+
+        locales = body.get("locales")
+        if ignore_checks is False:
+            assert len(locales) == 2
+
+        locale_en = get_locale(locales, "en")
+
+        assert "id" not in locale_en
+        assert locale_en.get("version") is not None
+        assert locale_en.get("lang") == self.locale_en.lang, locale_en
+
+        if check_title:
+            assert locale_en.get("title") == self.locale_en.title
+
+        available_langs = body.get("available_langs")
+        if ignore_checks is False:
+            assert len(available_langs) == 2
+
+        return body
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)
         actual_ids = sorted(json["document_id"] for json in actual["documents"])
         assert actual_ids == expected, (actual_ids, expected)
         assert actual["total"] == total, message
+
+
+def get_locale(locales, lang):
+    return next(filter(lambda locale: locale["lang"] == lang, locales), None)

@@ -1,22 +1,35 @@
 from flask import request
 from flask_camp import allow
-from flask_camp.views.content import documents
+from flask_camp.views.content import documents, document
 
 
-rule = "/profiles"
+class ProfileView:
+    rule = "/profiles/<int:profile_id>"
+
+    @allow("anonymous")
+    def get(self, profile_id):
+        result = document.get(profile_id)
+
+        return _get_legacy_doc(result.json["document"])  #  not optimized at all
 
 
-@allow("authenticated", allow_blocked=True)
-def get():
-    result = documents.get()
+class ProfilesView:
+    rule = "/profiles"
 
-    return {
-        "total": result["count"],
-        "documents": [_get_legacy_doc(document, request.args.get("pl")) for document in result["documents"]],
-    }
+    @allow("authenticated", allow_blocked=True)
+    def get(self):
+        result = documents.get()
+
+        return {
+            "total": result["count"],
+            "documents": [
+                _get_legacy_doc(document, collection_view=True, pl=request.args.get("pl"))
+                for document in result["documents"]
+            ],
+        }
 
 
-def _get_legacy_doc(document, pl):
+def _get_legacy_doc(document, collection_view=False, pl=None):
     result = document["legacy"]
 
     if pl is not None:
@@ -25,5 +38,8 @@ def _get_legacy_doc(document, pl):
             locales = [locale for locale in result["locales"] if locale["lang"] == "fr"]  # TODO preferred lang
 
         result["locales"] = locales
+
+    if collection_view:
+        del result["geometry"]
 
     return result

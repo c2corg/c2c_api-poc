@@ -27,6 +27,7 @@ def get_default_user_profile_data(user, categories, locale_langs):
         "categories": categories,
         "areas": [],
         "name": user.ui_preferences["full_name"],
+        "geometry": {},
     }
 
 

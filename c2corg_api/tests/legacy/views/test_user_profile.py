@@ -71,6 +71,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
             6,
         )
 
+    @pytest.mark.skip(reason="useless feature: anybody can create a profile")
     def test_get_unauthenticated_private_profile(self):
         """Tests that only the user name is returned when requesting a private
         profile unauthenticated.
@@ -92,14 +93,14 @@ class TestUserProfileRest(BaseDocumentTestRest):
         contributor.is_profile_public = True
         self.session.flush()
 
-        body = self.get(self.profile1, check_title=False)
+        body = self.get_custom(self.profile1, check_title=False)
         assert "username" not in body
         assert "name" in body
         assert "locales" in body
         assert "geometry" in body
 
     def test_get(self):
-        body = self.get(self.profile1, user="contributor", check_title=False)
+        body = self.get_custom(self.profile1, user="contributor", check_title=False)
         self._assert_geometry(body)
         assert body["locales"][0].get("title") is None
         assert "maps" not in body
