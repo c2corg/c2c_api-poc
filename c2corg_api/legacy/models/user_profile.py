@@ -15,21 +15,17 @@ class LocaleProxy:
         return self._json["lang"]
 
 
-class LocaleArrayProxy:
+class LocaleDictProxy:
     def __init__(self, document):
         self._document = document
 
     def append(self, locale):
-        item = locale.to_json()
-        locales = self._document.last_version.data["locales"]
-        locales = [locale for locale in locales if locale["lang"] != item["lang"]]
-        locales.append(item)
-        self._document.last_version.data["locales"] = locales
+        self._document.last_version.data["locales"][locale.lang] = locale.to_json()
 
     def get_locale(self, lang):
-        for locale in self._document.last_version.data["locales"]:
-            if locale["lang"] == lang:
-                return LocaleProxy(locale)
+        result = self._document.last_version.data["locales"].get(lang)
+
+        return None if result is None else LocaleProxy(result)
 
 
 class UserProfile:
@@ -66,7 +62,7 @@ class UserProfile:
 
     @property
     def locales(self):
-        return LocaleArrayProxy(self._document)
+        return LocaleDictProxy(self._document)
 
     def get_locale(self, lang):
         return self.locales.get_locale(lang)

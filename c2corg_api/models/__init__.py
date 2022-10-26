@@ -20,7 +20,7 @@ class ProfilePageLink(BaseModel):
 
 
 def get_default_user_profile_data(user, categories, locale_langs):
-    locales = [{"topic_id": "None", "description": None, "summary": None, "lang": lang} for lang in locale_langs]
+    locales = {lang: {"topic_id": "None", "description": None, "summary": None, "lang": lang} for lang in locale_langs}
 
     return {
         "type": USERPROFILE_TYPE,

@@ -112,7 +112,7 @@ def before_document_save(document):
 
     if search_item.document_type == USERPROFILE_TYPE:
         search_item.user_id = version.data.get("user_id")
-        search_item.available_langs = [locale["lang"] for locale in version.data["locales"]]
+        search_item.available_langs = [lang for lang in version.data["locales"]]
 
 
 def update_search_query(query):

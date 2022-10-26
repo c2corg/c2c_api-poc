@@ -4,7 +4,7 @@ from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE
 def cooker(document, get_document):
     data = document["data"]
 
-    locales = [locale | {"version": 0} for locale in data["locales"]]
+    locales = [locale | {"version": 0} for locale in data["locales"].values()]
 
     document["legacy"] = {
         "locales": locales,

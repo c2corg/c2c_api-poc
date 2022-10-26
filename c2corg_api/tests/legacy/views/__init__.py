@@ -159,10 +159,10 @@ class BaseTestRest(BaseTestClass):
 
         if document_as_dict["data"].get("type") == USERPROFILE_TYPE:
             user = User.get(id=document_as_dict["data"]["user_id"])
-            for locale in data["locales"]:
+            for locale in data["locales"].values():
                 result[f"title_{locale['lang']}"] = user.name
         else:
-            for locale in data["locales"]:
+            for locale in data["locales"].values():
                 result[f"title_{locale['lang']}"] = locale["title"]
 
         return result
