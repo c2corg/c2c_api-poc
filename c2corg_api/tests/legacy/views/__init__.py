@@ -73,6 +73,9 @@ class BaseTestRest(BaseTestClass):
         self.optimized_login(username)
         return self.get(url, status=status).json
 
+    def post_json(self, url, json, expect_errors=False, status=200):
+        return self.post(url, json=json, status=status)
+
     def post_json_with_contributor(self, url, json, username="contributor", status=200):
         self.optimized_login(username)
         return self.post(url, json=json, status=status).json

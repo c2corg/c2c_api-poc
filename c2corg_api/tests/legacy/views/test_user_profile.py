@@ -128,9 +128,11 @@ class TestUserProfileRest(BaseDocumentTestRest):
     def test_get_404(self):
         self.get_404(user="contributor")
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.profile1, user="contributor")
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.profile1, "en")
         assert locale.get("lang") == "en"
@@ -138,7 +140,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
 
     def test_no_post(self):
         # can not create new profiles
-        self.app.post_json(self._prefix, {}, expect_errors=True, status=404)
+        self.post_json(self._prefix, {}, expect_errors=True, status=404)
 
     def test_put_wrong_user(self):
         """Test that a normal user can only edit its own profile."""

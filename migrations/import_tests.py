@@ -78,6 +78,7 @@ replacements = (
         (r"self\.session\.refresh\(", r"self.session_refresh("),
         (r"self\.get\((.*)\)\n", r"self.get_custom(\1)\n"),
         (r"self\.app\.get\((.*)\)\n", r"self.get(\1)\n"),
+        (r"self\.app\.post_json\((.*)\)\n", r"self.post_json(\1)\n"),
         (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
         (
             r'query = self.session.query\(User\).filter\(User.username == "test"\)',
@@ -190,6 +191,8 @@ skipped_methods = {
     "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
     "test_get_unconfirmed_user": "unecessary complexity of profile with no validated email, recoded it",
     "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
+    "test_get_caching": "caching is handled and tested in flask-camp",
+    "test_get_info": "test_get_info is not used in UI"
 }
 
 skipped_classes = {

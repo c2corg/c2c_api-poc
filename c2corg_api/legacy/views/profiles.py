@@ -1,6 +1,7 @@
 from flask import request
 from flask_camp import allow
 from flask_camp.views.content import documents, document
+from werkzeug.exceptions import NotFound
 
 
 class ProfileView:
@@ -27,6 +28,10 @@ class ProfilesView:
                 for document in result["documents"]
             ],
         }
+
+    @allow("anonymous", "authenticated")
+    def post(self):
+        raise NotFound()  # just for test
 
 
 def _get_preferred_locale(preferred_lang, locales):
