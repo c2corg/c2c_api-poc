@@ -10,7 +10,7 @@ class ProfileView:
     def get(self, profile_id):
         result = document.get(profile_id)
 
-        return _get_legacy_doc(result.json["document"])  #  not optimized at all
+        return _get_legacy_doc(result.json["document"], pl=request.args.get("l"))  #  not optimized at all
 
 
 class ProfilesView:

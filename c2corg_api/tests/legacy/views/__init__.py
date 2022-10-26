@@ -285,6 +285,23 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return body, locales[0], cooked
 
+    def get_lang(self, reference, user=None):
+        if user:
+            self.optimized_login(user)
+
+        response = self.get(f"{self._prefix}/{reference.document_id}", params={"l": "en"}, status=200)
+
+        body = response.json
+        locales = body.get("locales")
+        assert len(locales) == 1
+        locale_en = locales[0]
+
+        assert locale_en.get("lang") == self.locale_en.lang
+
+        assert "protected" in body
+        assert "topic_id" in locale_en
+        return body
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)
