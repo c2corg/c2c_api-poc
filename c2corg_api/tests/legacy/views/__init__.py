@@ -3,7 +3,8 @@ from os import sync
 from flask_camp.models import User
 from sqlalchemy import select
 
-from c2corg_api.hooks import on_user_creation, ProfilePageLink, on_user_validation
+from c2corg_api.hooks import on_user_validation
+from c2corg_api.models import create_user_profile, ProfilePageLink
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
@@ -26,14 +27,15 @@ class BaseTestRest(BaseTestClass):
         self._add_global_test_data()
 
     def _add_global_test_data(self):
-        self._add_user("moderator", "super pass", ["moderator"])
-        self._add_user("contributor", "super pass")
-        self._add_user("contributor2", "super pass")
-        self._add_user("contributor3", "poor pass")
+        self._add_user("moderator", "super pass", locale_langs=["en"], roles=["moderator"])
+        self._add_user("contributor", "super pass", locale_langs=["en", "fr"])
+        self._add_user("contributor2", "super pass", locale_langs=["en"])
+        self._add_user("contributor3", "poor pass", locale_langs=["en"])
+        self._add_user("robot", "bombproof pass", locale_langs=["en"])
 
         self.api.database.session.commit()
 
-    def _add_user(self, name, password, roles=None):
+    def _add_user(self, name, password, locale_langs, roles=None):
         user = User(name=name, ui_preferences=get_default_ui_preferences(name), roles=[] if roles is None else roles)
         self.api.database.session.add(user)
 
@@ -41,7 +43,7 @@ class BaseTestRest(BaseTestClass):
         user.set_email(f"{name}@camptocamp.org")
         self.api.database.session.flush()
 
-        on_user_creation(user)
+        create_user_profile(user, locale_langs=locale_langs)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 
@@ -203,8 +205,17 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return body
 
+    def get_collection_search(self, params=None, user=None):
+        if user:
+            self.optimized_login(user)
+
+        response = self.get(self._prefix, params=params, status=200)
+
+        return response.json
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
-        actual_ids = [json["document_id"] for json in actual["documents"]]
-        assert sorted(actual_ids) == sorted(expected), message
+        expected = sorted(expected)
+        actual_ids = sorted(json["document_id"] for json in actual["documents"])
+        assert actual_ids == expected, (actual_ids, expected)
         assert actual["total"] == total, message

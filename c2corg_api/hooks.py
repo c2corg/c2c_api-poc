@@ -1,28 +1,15 @@
-from copy import deepcopy
 import re
 
 from flask import request, current_app
 from flask_camp import current_api
-from flask_camp.models import Document, BaseModel, User
-from sqlalchemy import Column, ForeignKey, Integer, delete, select
+from flask_camp.models import Document, User
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import relationship
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 
-from c2corg_api.models import USERPROFILE_TYPE, get_default_user_profile_data
+from c2corg_api.models import USERPROFILE_TYPE, create_user_profile, ProfilePageLink
 from c2corg_api.security.discourse_client import get_discourse_client
 from c2corg_api.search import DocumentSearch
-
-# Make the link between the user and the profile page in DB
-class ProfilePageLink(BaseModel):
-    id = Column(Integer, primary_key=True)
-
-    document_id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=False, unique=True)
-    document = relationship(Document, cascade="all,delete")
-
-    user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=False, unique=True)
-    user = relationship(User, cascade="all,delete")
-
 
 # https://github.com/discourse/discourse/blob/master/app/models/username_validator.rb
 def check_user_name(value):
@@ -50,15 +37,8 @@ def get_profile_document(user):
 
 
 def on_user_creation(user):
-
     check_user_name(user.name)
-
-    assert user.id is not None, "Dev check..."
-
-    # create the profile page. This function adds the page in the session
-    data = get_default_user_profile_data(user, categories=[])
-    user_page = Document.create(comment="Creation of user page", data=data, author=user)
-    current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
+    create_user_profile(user, ["fr"])
 
 
 def on_user_validation(user, sync_sso=True):
@@ -122,7 +102,7 @@ def before_document_save(document):
 
     version = document.last_version
 
-    search_item = DocumentSearch.get(id=document.id)
+    search_item: DocumentSearch = DocumentSearch.get(id=document.id)
 
     if search_item is None:  # means the document is not yet created
         search_item = DocumentSearch(id=document.id)
@@ -132,3 +112,13 @@ def before_document_save(document):
 
     if search_item.document_type == USERPROFILE_TYPE:
         search_item.user_id = version.data.get("user_id")
+        search_item.available_langs = [locale["lang"] for locale in version.data["locales"]]
+
+
+def update_search_query(query):
+    locale_lang = request.args.get("l", default=None, type=str)
+
+    if locale_lang is not None:
+        query = query.join(DocumentSearch).where(DocumentSearch.available_langs.contains([locale_lang]))
+
+    return query

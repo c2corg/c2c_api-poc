@@ -1,6 +1,7 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document, User
 from sqlalchemy import Column, ForeignKey, String, select
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class DocumentSearch(BaseModel):
@@ -14,6 +15,8 @@ class DocumentSearch(BaseModel):
 
     # for profile document
     user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=True)
+
+    available_langs = Column(ARRAY(String()), index=True, default=[])
 
 
 def search(document_type=None, id=None, user_id=None):

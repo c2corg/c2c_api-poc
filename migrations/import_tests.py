@@ -118,7 +118,10 @@ replacements = (
         # for now, comment these imports
         (r"(from c2corg_api.models.token.*\n)", r"# \1"),
         (r"(from c2corg_api.models.common.attributes import mailinglists\n)", r"# \1"),
-        (r"(from c2corg_api.tests.search import reset_search_index\n)", r"# \1"),
+        (
+            r"from c2corg_api.tests.search import reset_search_index\n",
+            r"from c2corg_api.tests.legacy.search import reset_search_index\n",
+        ),
         # targeted replace
         (
             r'self\.session\.query\(User\)\.get\(self\.global_userids\["(\w+)"\]\)',

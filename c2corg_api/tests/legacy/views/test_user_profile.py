@@ -7,8 +7,7 @@ from c2corg_api.legacy.models.user_profile import UserProfile, ArchiveUserProfil
 from c2corg_api.legacy.scripts.es.sync import sync_es
 from c2corg_api.legacy.search import elasticsearch_config
 from c2corg_api.legacy.search import SearchUser
-
-# from c2corg_api.tests.search import reset_search_index
+from c2corg_api.tests.legacy.search import reset_search_index
 from c2corg_api.models.common.attributes import quality_types
 from shapely.geometry import shape, Point
 

@@ -2,8 +2,7 @@ from flask_camp import current_api
 from flask_camp.models import User, Document
 from sqlalchemy import select
 
-from c2corg_api.models import get_default_user_profile_data
-from c2corg_api.hooks import ProfilePageLink
+from c2corg_api.models import get_default_user_profile_data, ProfilePageLink
 from c2corg_api.models import USERPROFILE_TYPE  # Do not remove
 
 
@@ -20,14 +19,14 @@ class LocaleArrayProxy:
 
 
 class UserProfile:
-    def __init__(self, categories=None):
+    def __init__(self, categories=None, locale_langs=None):
         self._document = None
         self._user = None
         self.locales = None
 
         if categories:
             author = User.get(id=1)
-            data = get_default_user_profile_data(author, categories=categories)
+            data = get_default_user_profile_data(author, categories=categories, locale_langs=locale_langs or [])
             self._document = Document.create("comment", data=data, author=author)
             self.locales = LocaleArrayProxy(self._document)
 

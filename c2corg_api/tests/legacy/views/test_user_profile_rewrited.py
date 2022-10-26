@@ -12,20 +12,20 @@ class TestUserProfileRest(BaseDocumentTestRest):
         self._add_test_data()
 
     def test_get_collection_paginated(self):
-        self.assertResultsEqual(self.get_collection({"offset": 0, "limit": 0}, user="contributor"), [], 7)
+        self.assertResultsEqual(self.get_collection({"offset": 0, "limit": 0}, user="contributor"), [], 8)
 
         self.assertResultsEqual(
-            self.get_collection({"offset": 0, "limit": 1}, user="contributor"), [self.profile4.document_id], 7
+            self.get_collection({"offset": 0, "limit": 1}, user="contributor"), [self.profile4.document_id], 8
         )
         self.assertResultsEqual(
             self.get_collection({"offset": 0, "limit": 2}, user="contributor"),
             [self.profile4.document_id, self.profile3.document_id],
-            7,
+            8,
         )
         self.assertResultsEqual(
             self.get_collection({"offset": 1, "limit": 3}, user="contributor"),
-            [self.profile3.document_id, self.profile2.document_id, self.global_userids["contributor3"]],
-            7,
+            [self.profile3.document_id, self.profile2.document_id, self.global_userids["robot"]],
+            8,
         )
 
     def _add_test_data(self):

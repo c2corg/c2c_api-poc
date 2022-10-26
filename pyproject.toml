@@ -58,3 +58,6 @@ testpaths = [
     "c2corg_api/tests/views",
     "c2corg_api/tests/legacy",
 ]
+
+[tool.coverage.run]
+omit = ['c2corg_api/tests/*']
