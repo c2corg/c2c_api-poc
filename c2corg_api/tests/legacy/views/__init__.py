@@ -302,6 +302,22 @@ class BaseDocumentTestRest(BaseTestRest):
         assert "topic_id" in locale_en
         return body
 
+    def get_new_lang(self, reference, user=None):
+        if user:
+            self.optimized_login(user)
+
+        response = self.get(f"{self._prefix}/{reference.document_id}", params={"l": "it"}, status=200)
+
+        body = response.json
+        locales = body.get("locales")
+        assert len(locales) == 0, locales
+
+    def get_404(self, user=None):
+        headers = {} if not user else self.add_authorization_header(username=user)
+
+        self.app.get(self._prefix + "/9999999", headers=headers, status=404)
+        self.app.get(self._prefix + "/9999999?l=es", headers=headers, status=404)
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)

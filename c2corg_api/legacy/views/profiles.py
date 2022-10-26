@@ -10,7 +10,7 @@ class ProfileView:
     def get(self, profile_id):
         result = document.get(profile_id)
 
-        return _get_legacy_doc(result.json["document"], pl=request.args.get("l"))  #  not optimized at all
+        return _get_legacy_doc(result.json["document"], lang=request.args.get("l"))  #  not optimized at all
 
 
 class ProfilesView:
@@ -23,40 +23,47 @@ class ProfilesView:
         return {
             "total": result["count"],
             "documents": [
-                _get_legacy_doc(document, collection_view=True, pl=request.args.get("pl"))
+                _get_legacy_doc(document, collection_view=True, preferred_lang=request.args.get("pl"))
                 for document in result["documents"]
             ],
         }
 
 
-def _get_legacy_doc(document, collection_view=False, pl=None):
+def _get_preferred_locale(preferred_lang, locales):
+    if preferred_lang in locales:
+        return locales[preferred_lang]
+
+    langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
+
+    for lang in langs_priority:
+        if lang in locales:
+            return locales[lang]
+
+    return None  # raise ?
+
+
+def _get_legacy_doc(document, collection_view=False, preferred_lang=None, lang=None):
     result = document["legacy"]
-
-    if pl is not None:
-        locales = [locale for locale in result["locales"] if locale["lang"] == pl]
-        if len(locales) == 0:
-            locales = [locale for locale in result["locales"] if locale["lang"] == "fr"]  # TODO preferred lang
-
-        result["locales"] = locales
 
     if collection_view:
         del result["geometry"]
 
+    locales = document["data"]["locales"]
+    cooked_locales = document["cooked_data"]["locales"]
+
+    if preferred_lang is not None:
+        result["locales"] = [_get_preferred_locale(preferred_lang, locales)]
+
+    if lang is not None:
+        if lang in locales:
+            result["locales"] = [locales[lang]]
+        else:
+            result["locales"] = []
+
     cook_lang = request.args.get("cook")
 
     if cook_lang:
-        locales = document["data"]["locales"]
-        cooked_locales = document["cooked_data"]["locales"]
-
-        if cook_lang not in locales:
-            langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
-
-            for lang in langs_priority:
-                if lang in locales:
-                    cook_lang = lang
-                    break
-
-        result["locales"] = [locales.get(cook_lang)]
-        result["cooked"] = cooked_locales.get(cook_lang)
+        result["locales"] = [_get_preferred_locale(cook_lang, locales)]
+        result["cooked"] = _get_preferred_locale(cook_lang, cooked_locales)
 
     return result
