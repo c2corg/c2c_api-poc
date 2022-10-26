@@ -47,11 +47,12 @@ def create_app(**config):
         cooker=cooker,
         schemas_directory="c2corg_api/schemas",
         user_schema="user.json",
+        document_schemas=["profile.json"],
         on_user_creation=hooks.on_user_creation,
         on_user_validation=hooks.on_user_validation,
         on_user_update=hooks.on_user_update,
         on_user_block=hooks.on_user_block,
-        before_document_save=hooks.before_document_save,
+        on_document_save=hooks.on_document_save,
         update_search_query=hooks.update_search_query,
         url_prefix="/v7",
     )

@@ -2,7 +2,7 @@ import re
 
 from flask import request, current_app
 from flask_camp import current_api
-from flask_camp.models import Document, User
+from flask_camp.models import Document, User, DocumentVersion
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
@@ -44,7 +44,7 @@ def on_user_creation(user):
 def on_user_validation(user, sync_sso=True):
 
     profile_document = get_profile_document(user)
-    before_document_save(profile_document)
+    on_document_save(profile_document, profile_document.last_version, profile_document.last_version)
 
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)
@@ -95,12 +95,14 @@ def on_user_block(user):
             raise InternalServerError("Unsuspending account in Discourse failed") from e
 
 
-def before_document_save(document):
-    if document.last_version is None:  # document as been merged
+def on_document_save(document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
+    if new_version is None:  # document as been merged
         delete(DocumentSearch).where(DocumentSearch.id == document.id)
         return
 
-    version = document.last_version
+    if old_version is None:  # it's a creation
+        if new_version.data["type"] == USERPROFILE_TYPE:
+            raise BadRequest("Profile page can't be created without an user")
 
     search_item: DocumentSearch = DocumentSearch.get(id=document.id)
 
@@ -108,11 +110,11 @@ def before_document_save(document):
         search_item = DocumentSearch(id=document.id)
         current_api.database.session.add(search_item)
 
-    search_item.document_type = version.data.get("type")
+    search_item.document_type = new_version.data.get("type")
 
     if search_item.document_type == USERPROFILE_TYPE:
-        search_item.user_id = version.data.get("user_id")
-        search_item.available_langs = [lang for lang in version.data["locales"]]
+        search_item.user_id = new_version.data.get("user_id")
+        search_item.available_langs = [lang for lang in new_version.data["locales"]]
 
 
 def update_search_query(query):

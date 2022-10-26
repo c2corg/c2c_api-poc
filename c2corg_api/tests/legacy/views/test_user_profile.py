@@ -142,175 +142,175 @@ class TestUserProfileRest(BaseDocumentTestRest):
         # can not create new profiles
         self.post_json(self._prefix, {}, expect_errors=True, status=404)
 
-    def test_put_wrong_user(self):
-        """Test that a normal user can only edit its own profile."""
-        body = {
-            "message": "Update",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-                "geometry": {
-                    "version": self.profile1.geometry.version,
-                    "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
-                },
-            },
-        }
+    # def test_put_wrong_user(self):
+    #     """Test that a normal user can only edit its own profile."""
+    #     body = {
+    #         "message": "Update",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #             "geometry": {
+    #                 "version": self.profile1.geometry.version,
+    #                 "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
+    #             },
+    #         },
+    #     }
 
-        headers = self.add_authorization_header(username="contributor2")
-        self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
+    #     headers = self.add_authorization_header(username="contributor2")
+    #     self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
 
-    def test_put_wrong_document_id(self):
-        body = {
-            "document": {
-                "document_id": "9999999",
-                "version": self.profile1.version,
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-            }
-        }
-        self.put_wrong_document_id(body, user="moderator")
+    # def test_put_wrong_document_id(self):
+    #     body = {
+    #         "document": {
+    #             "document_id": "9999999",
+    #             "version": self.profile1.version,
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #         }
+    #     }
+    #     self.put_wrong_document_id(body, user="moderator")
 
-    def test_put_wrong_document_version(self):
-        body = {
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": -9999,
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-            }
-        }
-        self.put_wrong_version(body, self.profile1.document_id, user="moderator")
+    # def test_put_wrong_document_version(self):
+    #     body = {
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": -9999,
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #         }
+    #     }
+    #     self.put_wrong_version(body, self.profile1.document_id, user="moderator")
 
-    def test_put_wrong_locale_version(self):
-        body = {
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": -9999}],
-            }
-        }
-        self.put_wrong_version(body, self.profile1.document_id, user="moderator")
+    # def test_put_wrong_locale_version(self):
+    #     body = {
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": -9999}],
+    #         }
+    #     }
+    #     self.put_wrong_version(body, self.profile1.document_id, user="moderator")
 
-    def test_put_wrong_ids(self):
-        body = {
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-            }
-        }
-        self.put_wrong_ids(body, self.profile1.document_id, user="moderator")
+    # def test_put_wrong_ids(self):
+    #     body = {
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #         }
+    #     }
+    #     self.put_wrong_ids(body, self.profile1.document_id, user="moderator")
 
-    def test_put_no_document(self):
-        self.put_put_no_document(self.profile1.document_id, user="moderator")
+    # def test_put_no_document(self):
+    #     self.put_put_no_document(self.profile1.document_id, user="moderator")
 
-    def test_put_success_all(self):
-        body = {
-            "message": "Update",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "quality": quality_types[1],
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-                "geometry": {
-                    "version": self.profile1.geometry.version,
-                    "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
-                },
-            },
-        }
-        (body, profile) = self.put_success_all(body, self.profile1, user="moderator", check_es=False, cache_version=3)
+    # def test_put_success_all(self):
+    #     body = {
+    #         "message": "Update",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "quality": quality_types[1],
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #             "geometry": {
+    #                 "version": self.profile1.geometry.version,
+    #                 "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
+    #             },
+    #         },
+    #     }
+    #     (body, profile) = self.put_success_all(body, self.profile1, user="moderator", check_es=False, cache_version=3)
 
-        # version with lang 'en'
-        version_en = profile.versions[2]
+    #     # version with lang 'en'
+    #     version_en = profile.versions[2]
 
-        # geometry has been changed
-        archive_geometry_en = version_en.document_geometry_archive
-        assert archive_geometry_en.version == 2
+    #     # geometry has been changed
+    #     archive_geometry_en = version_en.document_geometry_archive
+    #     assert archive_geometry_en.version == 2
 
-        self._check_es_index()
+    #     self._check_es_index()
 
-    def test_put_success_figures_only(self):
-        body = {
-            "message": "Changing figures",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "quality": quality_types[1],
-                "categories": ["mountain_guide"],
-                "locales": [{"lang": "en", "description": "Me", "version": self.locale_en.version}],
-            },
-        }
-        (body, profile) = self.put_success_figures_only(body, self.profile1, user="moderator", check_es=False)
+    # def test_put_success_figures_only(self):
+    #     body = {
+    #         "message": "Changing figures",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "quality": quality_types[1],
+    #             "categories": ["mountain_guide"],
+    #             "locales": [{"lang": "en", "description": "Me", "version": self.locale_en.version}],
+    #         },
+    #     }
+    #     (body, profile) = self.put_success_figures_only(body, self.profile1, user="moderator", check_es=False)
 
-        assert profile.categories == ["mountain_guide"]
-        self._check_es_index()
+    #     assert profile.categories == ["mountain_guide"]
+    #     self._check_es_index()
 
-    def test_put_success_lang_only(self):
-        body = {
-            "message": "Changing lang",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "quality": quality_types[1],
-                "categories": ["amateur"],
-                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-            },
-        }
-        (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
+    # def test_put_success_lang_only(self):
+    #     body = {
+    #         "message": "Changing lang",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "quality": quality_types[1],
+    #             "categories": ["amateur"],
+    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+    #         },
+    #     }
+    #     (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
 
-        assert profile.get_locale("en").description == "Me!"
-        self._check_es_index()
+    #     assert profile.get_locale("en").description == "Me!"
+    #     self._check_es_index()
 
-    def test_put_reset_title(self):
-        """Tests that the title can not be set."""
-        body = {
-            "message": "Changing lang",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "quality": quality_types[1],
-                "categories": ["amateur"],
-                "locales": [
-                    {
-                        "lang": "en",
-                        "title": "Should not be set",
-                        "description": "Me!",
-                        "version": self.locale_en.version,
-                    }
-                ],
-            },
-        }
-        (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
+    # def test_put_reset_title(self):
+    #     """Tests that the title can not be set."""
+    #     body = {
+    #         "message": "Changing lang",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "quality": quality_types[1],
+    #             "categories": ["amateur"],
+    #             "locales": [
+    #                 {
+    #                     "lang": "en",
+    #                     "title": "Should not be set",
+    #                     "description": "Me!",
+    #                     "version": self.locale_en.version,
+    #                 }
+    #             ],
+    #         },
+    #     }
+    #     (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
 
-        assert profile.get_locale("en").description == "Me!"
-        self.session_refresh(self.locale_en)
-        assert self.locale_en.title == ""
+    #     assert profile.get_locale("en").description == "Me!"
+    #     self.session_refresh(self.locale_en)
+    #     assert self.locale_en.title == ""
 
-        # check that the the user names are added to the search index
-        self._check_es_index()
+    #     # check that the the user names are added to the search index
+    #     self._check_es_index()
 
-    def test_put_success_new_lang(self):
-        """Test updating a document by adding a new locale."""
-        body = {
-            "message": "Adding lang",
-            "document": {
-                "document_id": self.profile1.document_id,
-                "version": self.profile1.version,
-                "quality": quality_types[1],
-                "categories": ["amateur"],
-                "locales": [{"lang": "es", "description": "Yo"}],
-            },
-        }
-        (body, profile) = self.put_success_new_lang(body, self.profile1, user="moderator", check_es=False)
+    # def test_put_success_new_lang(self):
+    #     """Test updating a document by adding a new locale."""
+    #     body = {
+    #         "message": "Adding lang",
+    #         "document": {
+    #             "document_id": self.profile1.document_id,
+    #             "version": self.profile1.version,
+    #             "quality": quality_types[1],
+    #             "categories": ["amateur"],
+    #             "locales": [{"lang": "es", "description": "Yo"}],
+    #         },
+    #     }
+    #     (body, profile) = self.put_success_new_lang(body, self.profile1, user="moderator", check_es=False)
 
-        assert profile.get_locale("es").description == "Yo"
-        search_doc = self._check_es_index()
-        assert search_doc["title_es"] == "Contributor contributor"
+    #     assert profile.get_locale("es").description == "Yo"
+    #     search_doc = self._check_es_index()
+    #     assert search_doc["title_es"] == "Contributor contributor"
 
     def _check_es_index(self):
         sync_es(self.session)

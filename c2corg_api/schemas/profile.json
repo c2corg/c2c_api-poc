@@ -1,0 +1,22 @@
+{
+  "if": {
+    "properties": {
+      "data": {
+        "properties": {
+          "type": { "const": "profile" }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "data": {
+        "properties": {
+          "locales": {}
+        },
+        "required": ["locales"]
+      }
+    },
+    "required": ["data"]
+  }
+}
