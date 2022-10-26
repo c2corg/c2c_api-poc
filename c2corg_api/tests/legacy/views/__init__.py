@@ -313,10 +313,11 @@ class BaseDocumentTestRest(BaseTestRest):
         assert len(locales) == 0, locales
 
     def get_404(self, user=None):
-        headers = {} if not user else self.add_authorization_header(username=user)
+        if user:
+            self.optimized_login(user)
 
-        self.app.get(self._prefix + "/9999999", headers=headers, status=404)
-        self.app.get(self._prefix + "/9999999?l=es", headers=headers, status=404)
+        self.get(f"{self._prefix}/9999999", status=404)
+        self.get(f"{self._prefix}/9999999?l=es", status=404)
 
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
