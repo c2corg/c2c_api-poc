@@ -1,5 +1,3 @@
-from flask import request
-
 from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE
 from c2corg_api.views.markdown import cook as markdown_cooker
 

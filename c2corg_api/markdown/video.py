@@ -14,7 +14,7 @@ import re
 class C2CVideoExtension(Extension):
     def __init__(self, *args, **kwargs):
         self._iframe_secret_tag = kwargs.pop("iframe_secret_tag")
-        super(C2CVideoExtension, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def extendMarkdown(self, md):  # noqa: N802
 
@@ -34,7 +34,7 @@ class C2CVideoBlock(BlockProcessor):
     PATTERN = None
 
     def __init__(self, parser, iframe_secret_tag):
-        super(C2CVideoBlock, self).__init__(parser=parser)
+        super().__init__(parser=parser)
         self._iframe_secret_tag = iframe_secret_tag
         self.RE = re.compile(r"(^|\n)\[video\]" + self.PATTERN + r"\[/video\]")
 
@@ -66,7 +66,7 @@ class C2CVideoBlock(BlockProcessor):
 
 
 class C2CYoutubeVideoBlock(C2CVideoBlock):
-    PATTERN = r"https?:\/\/(?:www\.)?youtube\.com" r"/watch\?(?:[=&\w]+&)?v=([-\w]+)(?:&.+)?(?:\#.*)?"
+    PATTERN = r"https?:\/\/(?:www\.)?youtube\.com/watch\?(?:[=&\w]+&)?v=([-\w]+)(?:&.+)?(?:\#.*)?"
 
     def build_element(self, m):
         return self._embed("//www.youtube.com/embed/" + m.group(2))
@@ -77,7 +77,7 @@ class C2CYoutubeShortVideoBlock(C2CYoutubeVideoBlock):
 
 
 class C2CDailymotionVideoBlock(C2CVideoBlock):
-    PATTERN = r"https?://(?:www\.)?dailymotion\.com" r"/video/([\da-zA-Z]+)_[-&;\w]+(?:\#.*)?"
+    PATTERN = r"https?://(?:www\.)?dailymotion\.com/video/([\da-zA-Z]+)_[-&;\w]+(?:\#.*)?"
 
     def build_element(self, m):
         return self._embed("//www.dailymotion.com/embed/video/" + m.group(2) + "?theme=none&wmode=transparent")
@@ -91,7 +91,7 @@ class C2CVimeoVideoBlock(C2CVideoBlock):
     PATTERN = r"https?://(?:www\.)?vimeo\.com/(\d+)(?:\#.*)?"
 
     def build_element(self, m):
-        return self._embed("//player.vimeo.com/video/" + m.group(2) + "?title=0&byline=0" + "&portrait=0&color=ff9933")
+        return self._embed("//player.vimeo.com/video/" + m.group(2) + "?title=0&byline=0&portrait=0&color=ff9933")
 
 
 def makeExtension(*args, **kwargs):  # noqa: N802

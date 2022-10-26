@@ -27,7 +27,7 @@ class C2CImageBlock(BlockProcessor):
     RE = re.compile(IMG_RE)
 
     def __init__(self, parser, config):
-        super(C2CImageBlock, self).__init__(parser)
+        super().__init__(parser)
         self.config = config
 
     def test(self, parent, block):

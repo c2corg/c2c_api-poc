@@ -1,4 +1,4 @@
-from c2corg_api.models import USERPROFILE_TYPE, get_default_user_profile_data
+from c2corg_api.models import get_default_user_profile_data
 from c2corg_api.tests.conftest import BaseTestClass
 
 

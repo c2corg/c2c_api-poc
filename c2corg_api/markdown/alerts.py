@@ -56,10 +56,11 @@ class AlertProcessor(BlockProcessor):
         m = self.RE.match(line)
         if line.strip() in ("!!", "!!!", "!!!!"):
             return ""
-        elif m:
+
+        if m:
             return m.group(3)
-        else:
-            return line
+
+        return line
 
 
 class AlertExtension(Extension):

@@ -41,15 +41,17 @@ disable = "missing-module-docstring,missing-class-docstring,missing-function-doc
 generated-members = [
     ".*database\\.session\\..*",
 ]
-ignore = "c2corg/tests/legacy"
 
-[tool.pylint.tests]
+[tool.pylint.MASTER]
+ignore-paths = ["^c2corg_api/tests/legacy/.*$", ]
+
+[tool.pylint."c2corg_api/tests"]
 disable = "invalid-name,protected-access,too-many-public-methods,too-few-public-methods,attribute-defined-outside-init,wrong-import-order,consider-using-f-string"
 
 [tool.pytest.ini_options]
 log_format = "%(asctime)s.%(msecs)03d %(levelname)s %(message)s"
 log_date_format = "%H:%M:%S"
-addopts = "--cov=c2corg_api --cov-report html --cov-report term"  # --no-cov-on-fail --cov-fail-under=99.5"
+addopts = "--cov=c2corg_api --cov-report html --cov-report term --no-cov-on-fail --cov-fail-under=90"
 filterwarnings = [
     "ignore::DeprecationWarning:flask_sqlalchemy.*:"
 ]

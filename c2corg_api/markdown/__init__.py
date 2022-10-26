@@ -171,7 +171,7 @@ def parse_code(text):
             # we keep clean function into thread safe part,
             # because we are not sure of this function
             text = cleaner.clean(text=text)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logger.exception("While parsing markdown", exc_info=e)
             text = _PARSER_EXCEPTION_MESSAGE
 

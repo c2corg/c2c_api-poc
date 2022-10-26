@@ -60,7 +60,7 @@ def _get_ltag_pattern():
     return p("ltag", typ + "#" + text)
 
 
-class LTagNumbering(object):
+class LTagNumbering:
     """
     The aim of this class is to store and handle everything about numbering.
     This class replaces markdown L# values by numeric values, and changes
