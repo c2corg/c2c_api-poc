@@ -4,7 +4,7 @@ from flask_camp.models import User
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
-from c2corg_api.models import create_user_profile, ProfilePageLink
+from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
@@ -157,8 +157,13 @@ class BaseTestRest(BaseTestClass):
 
         result = {"doc_type": document_as_dict["data"].get("type")}
 
-        for locale in data["locales"]:
-            result[f"title_{locale['lang']}"] = locale["title"]
+        if document_as_dict["data"].get("type") == USERPROFILE_TYPE:
+            user = User.get(id=document_as_dict["data"]["user_id"])
+            for locale in data["locales"]:
+                result[f"title_{locale['lang']}"] = user.name
+        else:
+            for locale in data["locales"]:
+                result[f"title_{locale['lang']}"] = locale["title"]
 
         return result
 

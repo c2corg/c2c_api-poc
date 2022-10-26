@@ -8,7 +8,7 @@ from flask_camp import allow, current_api
 rule = "/health"
 
 
-@allow("anonymous")
+@allow("anonymous", "authenticated")
 def get():
     """Returns information about the version of the API and the status
     of its components:

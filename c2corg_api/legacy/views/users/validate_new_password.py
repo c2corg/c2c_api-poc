@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound
 rule = "/users/validate_new_password/<string:token>"
 
 
-@allow("anonymous")
+@allow("anonymous", "authenticated")
 def post(token):
     user = User.get(_login_token=token, with_for_update=True)
 

@@ -20,14 +20,16 @@ class ProfilePageLink(BaseModel):
 
 
 def get_default_user_profile_data(user, categories, locale_langs):
+    locales = [{"topic_id": "None", "description": None, "summary": None, "lang": lang} for lang in locale_langs]
+
     return {
         "type": USERPROFILE_TYPE,
         "user_id": user.id,
-        "locales": [{"title": user.name, "lang": lang} for lang in locale_langs],
+        "locales": locales,
         "categories": categories,
         "areas": [],
         "name": user.ui_preferences["full_name"],
-        "geometry": {},
+        "geometry": {"geom": '{"type":"point", "coordinates":null}'},
     }
 
 

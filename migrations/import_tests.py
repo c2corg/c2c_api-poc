@@ -71,6 +71,7 @@ replacements = (
     + [
         (r'self\.assertBodyEqual\((\w+), "(\w+)", "([\w @_.]+)"\)', r'assert \1.get("\2") == "\3"'),
         (r'self\.assertBodyEqual\((\w+), "(\w+)", (\w+)\)', r'assert \1.get("\2") == \3'),
+        (r"self\.assertIsInstance\(", "assert isinstance("),
         # replace test API
         (r"self\.session\.refresh\(", r"self.session_refresh("),
         (r"self\.get\((.*)\)\n", r"self.get_custom(\1)\n"),

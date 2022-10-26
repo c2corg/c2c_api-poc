@@ -325,7 +325,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
 
         geom = geometry.get("geom")
         point = shape(json.loads(geom))
-        self.assertIsInstance(point, Point)
+        assert isinstance(point, Point)
 
     def _add_test_data(self):
         user_id = self.global_userids["contributor"]

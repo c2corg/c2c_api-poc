@@ -20,4 +20,9 @@ def cooker(document, get_document):
         pass
 
     elif data["type"] == USERPROFILE_TYPE:
-        document["legacy"] |= {"areas": data["areas"], "name": data["name"], "geometry": data["geometry"]}
+        document["legacy"] |= {
+            "areas": data["areas"],
+            "name": data["name"],
+            "geometry": data["geometry"] | {"version": 0},
+            "forum_username": data["name"],
+        }

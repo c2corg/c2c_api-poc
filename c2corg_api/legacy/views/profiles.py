@@ -6,7 +6,7 @@ from flask_camp.views.content import documents, document
 class ProfileView:
     rule = "/profiles/<int:profile_id>"
 
-    @allow("anonymous")
+    @allow("anonymous", "authenticated")
     def get(self, profile_id):
         result = document.get(profile_id)
 
