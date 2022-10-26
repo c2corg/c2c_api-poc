@@ -45,7 +45,18 @@ def _get_legacy_doc(document, collection_view=False, pl=None):
     cook_lang = request.args.get("cook")
 
     if cook_lang:
-        result["locales"] = [document["data"]["locales"].get(cook_lang)]
-        result["cooked"] = document["cooked_data"]["locales"].get(cook_lang)
+        locales = document["data"]["locales"]
+        cooked_locales = document["cooked_data"]["locales"]
+
+        if cook_lang not in locales:
+            langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
+
+            for lang in langs_priority:
+                if lang in locales:
+                    cook_lang = lang
+                    break
+
+        result["locales"] = [locales.get(cook_lang)]
+        result["cooked"] = cooked_locales.get(cook_lang)
 
     return result
