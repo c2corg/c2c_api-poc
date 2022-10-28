@@ -2,41 +2,21 @@ from flask_camp import current_api
 from flask_camp.models import User, Document
 from sqlalchemy import select
 
-from c2corg_api.models import get_default_user_profile_data, ProfilePageLink
-from c2corg_api.models import USERPROFILE_TYPE  # Do not remove
+from c2corg_api.models import get_default_user_profile_data, ProfilePageLink, USERPROFILE_TYPE  # Do not remove
+from c2corg_api.legacy.models.document import Document as LegacyDocument
 
 
-class LocaleProxy:
-    def __init__(self, json):
-        self._json = json
-
-    @property
-    def lang(self):
-        return self._json["lang"]
-
-
-class LocaleDictProxy:
-    def __init__(self, document):
-        self._document = document
-
-    def append(self, locale):
-        self._document.last_version.data["locales"][locale.lang] = locale.to_json()
-
-    def get_locale(self, lang):
-        result = self._document.last_version.data["locales"].get(lang)
-
-        return None if result is None else LocaleProxy(result)
-
-
-class UserProfile:
+class UserProfile(LegacyDocument):
     def __init__(self, categories=None, locale_langs=None):
-        self._document = None
+        super().__init__()
         self._user = None
 
         if categories:
-            author = User.get(id=1)
-            data = get_default_user_profile_data(author, categories=categories, locale_langs=locale_langs or [])
-            self._document = Document.create("comment", data=data, author=author)
+            self.create_new_model(
+                data=get_default_user_profile_data(
+                    self.default_author, categories=categories, locale_langs=locale_langs or []
+                )
+            )
 
     @staticmethod
     def from_document_id(profile_document_id):
@@ -53,19 +33,8 @@ class UserProfile:
         return result
 
     @property
-    def document_id(self):
-        return self._document.id
-
-    @property
     def versions(self):
         return self._versions
-
-    @property
-    def locales(self):
-        return LocaleDictProxy(self._document)
-
-    def get_locale(self, lang):
-        return self.locales.get_locale(lang)
 
     @property
     def user(self):
