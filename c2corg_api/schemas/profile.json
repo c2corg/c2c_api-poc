@@ -12,9 +12,12 @@
     "properties": {
       "data": {
         "properties": {
-          "locales": {}
+          "locales": {},
+          "areas": {},
+          "name": {},
+          "type": { "const": "profile" }
         },
-        "required": ["locales"]
+        "required": ["locales", "type", "areas", "name"]
       }
     },
     "required": ["data"]

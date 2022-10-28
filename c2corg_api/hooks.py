@@ -3,9 +3,10 @@ import re
 from flask import request, current_app
 from flask_camp import current_api
 from flask_camp.models import Document, User, DocumentVersion
+from flask_login import current_user
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+from werkzeug.exceptions import BadRequest, InternalServerError, NotFound, Forbidden
 
 from c2corg_api.models import USERPROFILE_TYPE, create_user_profile, ProfilePageLink
 from c2corg_api.security.discourse_client import get_discourse_client
@@ -36,6 +37,12 @@ def get_profile_document(user):
     return Document.get(id=document_id)
 
 
+def get_user_id_from_profile_id(profile_id):
+    query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == profile_id)
+    result = current_api.database.session.execute(query)
+    return list(result)[0][0]
+
+
 def on_user_creation(user):
     check_user_name(user.name)
     create_user_profile(user, ["fr"])
@@ -44,7 +51,8 @@ def on_user_creation(user):
 def on_user_validation(user, sync_sso=True):
 
     profile_document = get_profile_document(user)
-    on_document_save(profile_document, profile_document.last_version, profile_document.last_version)
+
+    update_document_search_table(profile_document)
 
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)
@@ -100,9 +108,24 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
         delete(DocumentSearch).where(DocumentSearch.id == document.id)
         return
 
+    document_type = new_version.data.get("type")
+
     if old_version is None:  # it's a creation
-        if new_version.data["type"] == USERPROFILE_TYPE:
+        if document_type == USERPROFILE_TYPE:
             raise BadRequest("Profile page can't be created without an user")
+
+    if old_version is not None and new_version is not None:
+        if document_type == USERPROFILE_TYPE:
+            user_id = get_user_id_from_profile_id(document.id)
+            if user_id != current_user.id:
+                if not current_user.is_moderator:
+                    raise Forbidden()
+
+    update_document_search_table(document)
+
+
+def update_document_search_table(document):
+    new_version = document.last_version
 
     search_item: DocumentSearch = DocumentSearch.get(id=document.id)
 

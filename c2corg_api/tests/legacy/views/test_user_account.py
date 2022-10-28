@@ -103,6 +103,7 @@ class TestUserAccountRest(BaseUserTestRest):
             if value is False:
                 self.post_json_with_contributor(url, body, status=200)
             else:
+                print(body)
                 json = self.post_json_with_contributor(url, body, status=400)
                 assert json["description"] == value
 

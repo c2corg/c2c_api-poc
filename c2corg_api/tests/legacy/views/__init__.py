@@ -19,6 +19,7 @@ class BaseTestRest(BaseTestClass):
     client = None
     global_userids = {}
     global_passwords = {}
+    global_email = {}
     global_session_cookies = {}
 
     def setup_method(self):
@@ -51,6 +52,7 @@ class BaseTestRest(BaseTestClass):
 
         self.global_userids[user.name] = user.id
         self.global_passwords[user.name] = password
+        self.global_email[user.name] = f"{name}@camptocamp.org"
 
     ######### dedicated function for legacy tests
     def check_cache_version(self, user_id, cache_version):
@@ -58,16 +60,12 @@ class BaseTestRest(BaseTestClass):
 
     def add_authorization_header(self, username="contributor"):
         self.optimized_login(username)
-        return None
 
     def optimized_login(self, user_name):
-        if user_name not in self.global_session_cookies:
-            self.put("/v7/user/login", json={"name_or_email": user_name, "password": self.global_passwords[user_name]})
-            cookies = list(self.client.cookie_jar)
-            session_cookie = [cookie for cookie in cookies if cookie.name == "session"][0]
-            self.global_session_cookies[user_name] = session_cookie.value
-        else:
-            self.client.set_cookie("localhost.host", "session", self.global_session_cookies[user_name])
+        self.put(
+            "/v7/user/login",
+            json={"name_or_email": self.global_email[user_name], "password": self.global_passwords[user_name]},
+        )
 
     def get_json_with_contributor(self, url, username="contributor", status=200):
         self.optimized_login(username)
@@ -85,6 +83,9 @@ class BaseTestRest(BaseTestClass):
 
     def app_post_json(self, url, json, **kwargs):
         return self.app_send_json("post", url, json, **kwargs)
+
+    def app_put_json(self, url, json, **kwargs):
+        return self.app_send_json("put", url, json, **kwargs)
 
     def app_send_json(self, action, url, json, **kwargs):
         return getattr(self, action)(url=url, json=json, **kwargs)

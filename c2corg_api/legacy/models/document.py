@@ -14,6 +14,10 @@ class Document:
         return User.query.first()
 
     @property
+    def version(self):
+        return self._document.last_version_id
+
+    @property
     def document_id(self):
         return self._document.id
 
@@ -21,8 +25,22 @@ class Document:
     def locales(self):
         return LocaleDictProxy(self._document.last_version.data["locales"])
 
+    @property
+    def geometry(self):
+        return DocumentGeometry(self._document.last_version.data["geometry"])
+
     def get_locale(self, lang):
         return self.locales.get_locale(lang)
+
+
+class DocumentGeometry:
+    def __init__(self, json):
+        self._json = json
+
+    @property
+    def version(self):
+        """Does not exists in the new model"""
+        return 0
 
 
 class LocaleDictProxy:
@@ -47,6 +65,11 @@ class DocumentLocale:
 
     def to_json(self):
         return self._json
+
+    @property
+    def version(self):
+        """Does not exists in the new model"""
+        return 0
 
     @property
     def lang(self):

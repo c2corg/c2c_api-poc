@@ -1,7 +1,10 @@
+import json
 from flask import request
 from flask_camp import allow
-from flask_camp.views.content import documents, document
+from flask_camp.views.content import documents as documents_view, document as document_view
 from werkzeug.exceptions import NotFound
+
+from c2corg_api.models import USERPROFILE_TYPE
 
 
 class ProfileView:
@@ -9,9 +12,21 @@ class ProfileView:
 
     @allow("anonymous", "authenticated")
     def get(self, profile_id):
-        result = document.get(profile_id)
+        result = document_view.get(profile_id)
 
         return _get_legacy_doc(result.json["document"], lang=request.args.get("l"))  #  not optimized at all
+
+    @allow("authenticated")
+    def put(self, profile_id):
+        body = request.get_json()
+
+        new_body = _from_legacy_doc(body)
+
+        request._cached_json = (new_body, new_body)
+
+        result = document_view.post(profile_id)
+
+        return result
 
 
 class ProfilesView:
@@ -19,7 +34,7 @@ class ProfilesView:
 
     @allow("authenticated", allow_blocked=True)
     def get(self):
-        result = documents.get()
+        result = documents_view.get()
 
         return {
             "total": result["count"],
@@ -45,6 +60,19 @@ def _get_preferred_locale(preferred_lang, locales):
             return locales[lang]
 
     return None  # raise ?
+
+
+def _from_legacy_doc(body):
+    document = {"version_id": body["document"].pop("version")}
+
+    document["data"] = body["document"]
+    document["data"]["locales"] = {locale["lang"]: locale for locale in document["data"]["locales"]}
+    document["data"]["geometry"]["geom"] = json.loads(document["data"]["geometry"]["geom"])
+    document["data"]["type"] = USERPROFILE_TYPE
+    document["data"]["areas"] = document["data"].get("areas", {})
+    document["data"]["name"] = document["data"].get("name", None)
+
+    return {"comment": body["message"], "document": document}
 
 
 def _get_legacy_doc(document, collection_view=False, preferred_lang=None, lang=None):

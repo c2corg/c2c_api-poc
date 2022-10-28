@@ -142,24 +142,27 @@ class TestUserProfileRest(BaseDocumentTestRest):
         # can not create new profiles
         self.post_json(self._prefix, {}, expect_errors=True, status=404)
 
-    # def test_put_wrong_user(self):
-    #     """Test that a normal user can only edit its own profile."""
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #             "geometry": {
-    #                 "version": self.profile1.geometry.version,
-    #                 "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
-    #             },
-    #         },
-    #     }
+    def test_put_wrong_user(self):
+        """Test that a normal user can only edit its own profile."""
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+                "geometry": {
+                    "version": self.profile1.geometry.version,
+                    "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
+                },
+            },
+        }
 
-    #     headers = self.add_authorization_header(username="contributor2")
-    #     self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
+        print(self.profile1.document_id, self.global_userids["contributor"])
+        print(self.profile2.document_id, self.global_userids["contributor2"])
+
+        headers = self.add_authorization_header(username="contributor2")
+        self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
 
     # def test_put_wrong_document_id(self):
     #     body = {
