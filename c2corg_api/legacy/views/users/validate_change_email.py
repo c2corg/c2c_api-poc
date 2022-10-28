@@ -16,4 +16,4 @@ def post(token):
 
     request._cached_json = (body, body)
 
-    return email_validation_view.post()
+    return email_validation_view.put()

@@ -11,7 +11,7 @@ rule = "/users/preferences"
 @allow("authenticated", allow_blocked=True)
 def get():
     lang = request.args.get("pl", None)
-    result = current_user_view.get()["user"]["ui_preferences"]["feed"]
+    result = current_user_view.get()["user"]["data"]["feed"]
 
     result["areas"] = [current_api.get_cooked_document(area_id)["legacy"] for area_id in result["areas"]]
 
@@ -25,17 +25,16 @@ def get():
 @allow("authenticated", allow_blocked=True)
 def post():
     # convert v6 request to flask_camp request
-    ui_preferences = current_user.ui_preferences
-    ui_preferences["feed"] = request.get_json()
-    body = {"ui_preferences": ui_preferences}
+    data = current_user.data
+    data["feed"] = request.get_json()
 
     try:
-        body["ui_preferences"]["feed"]["areas"] = [
-            area["document_id"] for area in body["ui_preferences"]["feed"]["areas"]
-        ]
+        data["feed"]["areas"] = [area["document_id"] for area in data["feed"]["areas"]]
     except KeyError as e:
         raise BadRequest() from e
 
+    body = {"user": {"data": data}}
+
     request._cached_json = (body, body)
 
-    return user_view.post(current_user.id)
+    return user_view.put(current_user.id)

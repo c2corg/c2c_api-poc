@@ -6,7 +6,7 @@ from c2corg_api.tests.legacy.views import BaseTestRest
 class BaseFollowTest(BaseTestRest):
     def is_following(self, followed_user_id, follower_user_id):
         user = self.get(f"/v7/user/{follower_user_id}").json["user"]
-        return followed_user_id in user["ui_preferences"]["feed"]["follow"]
+        return followed_user_id in user["data"]["feed"]["follow"]
 
 
 class TestUserFollowRest(BaseFollowTest):

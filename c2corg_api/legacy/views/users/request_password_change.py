@@ -23,4 +23,4 @@ def post():
     if user.blocked:
         raise Forbidden()
 
-    return reset_password.post()
+    return reset_password.put()

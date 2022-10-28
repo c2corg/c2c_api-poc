@@ -62,10 +62,10 @@ def on_user_update(user: User, sync_sso=True):
         try:
             current_api.database.session.flush()
         except IntegrityError as e:
-            raise BadRequest("Name is already used") from e
+            raise BadRequest("Name or email already exists") from e
 
-    follow = list(set(user.ui_preferences["feed"]["follow"]))
-    user.ui_preferences["feed"]["follow"] = follow  # remove duplicates
+    follow = list(set(user.data["feed"]["follow"]))
+    user.data["feed"]["follow"] = follow  # remove duplicates
 
     if len(follow) != 0:
         real_user_ids = [r[0] for r in current_api.database.session.query(User.id).filter(User.id.in_(follow)).all()]

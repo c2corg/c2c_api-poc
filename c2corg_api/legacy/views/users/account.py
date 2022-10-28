@@ -1,9 +1,14 @@
 from copy import deepcopy
 from flask import request
 from flask_login import current_user
-from flask_camp import allow
+from flask_camp import allow, current_api
+from flask_camp.models import User
 from flask_camp.views.account import current_user as current_user_view
 from flask_camp.views.account import user as user_view
+from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import BadRequest
+
+from c2corg_api.hooks import check_user_name
 
 rule = "/users/account"
 
@@ -19,9 +24,9 @@ def get():
 
     user["forum_username"] = user["name"]
     user["username"] = user["name"]
-    user["name"] = user["ui_preferences"]["full_name"]
+    user["name"] = user["data"]["full_name"]
 
-    user["is_profile_public"] = user["ui_preferences"]["is_profile_public"]
+    user["is_profile_public"] = user["data"]["is_profile_public"]
 
     return user
 
@@ -30,25 +35,28 @@ def get():
 def post():
     body = request.get_json()
 
-    new_body = {
+    user = {
         "password": body["currentpassword"],
-        "ui_preferences": deepcopy(current_user.ui_preferences),
+        "data": deepcopy(current_user.data),
     }
 
     if "forum_username" in body:
-        new_body["name"] = body["forum_username"].strip().lower()
+        user["name"] = body["forum_username"].strip().lower()
+        check_user_name(user["name"])
 
     if "email" in body:
-        new_body["email"] = body["email"]
+        user["email"] = body["email"]
 
     if "name" in body:
-        new_body["ui_preferences"]["full_name"] = body["name"]
+        user["data"]["full_name"] = body["name"]
 
     if "is_profile_public" in body:
-        new_body["ui_preferences"]["is_profile_public"] = body["is_profile_public"]
+        user["data"]["is_profile_public"] = body["is_profile_public"]
+
+    new_body = {"user": user, "comment": "default comment"}
 
     request._cached_json = (new_body, new_body)
 
-    user_view.post(int(current_user.id))
+    user_view.put(int(current_user.id))
 
     return {"status": "ok"}

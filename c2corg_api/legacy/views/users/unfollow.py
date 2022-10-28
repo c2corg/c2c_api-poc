@@ -11,13 +11,13 @@ rule = "/users/unfollow"
 def post():
     # convert v6 request to flask_camp request
     user_id = request.get_json()["user_id"]
-    ui_preferences = current_user.ui_preferences
-    follow = ui_preferences["feed"]["follow"]
+    data = current_user.data
+    follow = data["feed"]["follow"]
 
     if user_id not in follow:
         return {"status": "ok"}
 
     follow.remove(user_id)
-    body = {"ui_preferences": ui_preferences}
+    body = {"data": data}
     request._cached_json = (body, body)
     return user_view.post(current_user.id)

@@ -1,6 +1,6 @@
 from flask import request
 from flask_camp import allow
-from flask_camp.views.account import block_user as block_user_view
+from flask_camp.views.account import user as user_view
 from werkzeug.exceptions import BadRequest
 
 rule = "/users/block"
@@ -13,7 +13,7 @@ def post():
     if data["user_id"] <= 0:
         raise BadRequest(f"user_id can't be negative")
 
-    body = {"blocked": True, "comment": "Default comment"}
+    body = {"user": {"blocked": True}, "comment": "Default comment"}
     request._cached_json = (body, body)
 
-    return block_user_view.post(data["user_id"])
+    return user_view.put(data["user_id"])

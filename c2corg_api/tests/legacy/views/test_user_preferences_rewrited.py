@@ -47,7 +47,7 @@ class TestUserFilterPreferencesRest(BaseTestRest):
         }
 
         self.post("/users/preferences", json=request_body, status=200)
-        preferences = self.get("/v7/current_user").json["user"]["ui_preferences"]
+        preferences = self.get("/v7/user/current").json["user"]["data"]
 
         assert preferences["feed"]["followed_only"] is True
         assert preferences["feed"]["activities"] == ["hiking", "skitouring"]

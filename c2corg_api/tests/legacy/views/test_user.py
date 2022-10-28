@@ -21,13 +21,13 @@ from unittest.mock import Mock, MagicMock, patch
 
 forum_username_tests = {
     # min length
-    "a": r"'a' does not match '^[^ @\\/?&]{3,64}$' on instance ['name']",
+    "a": "Shorter than minimum length 3",
     "a" * 3: False,
     # max length (colander schema validation)
     "a" * 26: "Longer than maximum length 25",
     "a" * 25: False,
     # valid characters
-    "test/test": r"'test/test' does not match '^[^ @\\/?&]{3,64}$' on instance ['name']",
+    "test/test": "Contain invalid character(s)",
     "test.test-test_test": False,
     # first char
     "-test": "First character is invalid",
@@ -235,7 +235,7 @@ class TestUserRest(BaseUserTestRest):
         }
         url = self._prefix + "/register"
         json = self.app_post_json(url, request_body, status=400).json
-        assert json["description"] == "'some_useratcamptocamp.org' is not a 'email' on instance ['email']"
+        assert json["description"] == "'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']"
 
     @patch("flask_camp._services._send_mail.SendMail.send")
     def test_register_discourse_up(self, _send_email):

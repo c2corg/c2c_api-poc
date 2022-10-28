@@ -1,6 +1,6 @@
 {
   "properties": {
-    "ui_preferences": {
+    "data": {
       "properties": {
         "full_name": { "type": "string" },
         "is_profile_public": { "type": "boolean" },
@@ -9,6 +9,5 @@
       },
       "required": ["full_name", "lang", "is_profile_public", "feed"]
     }
-  },
-  "required": ["ui_preferences"]
+  }
 }

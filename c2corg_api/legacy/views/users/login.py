@@ -25,7 +25,7 @@ def post():
     request._cached_json = (body, body)
 
     try:
-        user = user_login.post()["user"]
+        user = user_login.put()["user"]
     except Unauthorized as e:
         raise Forbidden() from e
 

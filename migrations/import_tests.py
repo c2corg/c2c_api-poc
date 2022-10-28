@@ -134,11 +134,14 @@ replacements = (
         ),
         (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
         (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
-        (r"(.)Shorter than minimum length 3", "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['name']"),
-        (
-            r"(.)Contain invalid character\(s\)",
-            "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['name']",
-        ),
+        # (
+        #     r"(.)Shorter than minimum length 3",
+        #     "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['user']['name']",
+        # ),
+        # (
+        #     r"(.)Contain invalid character\(s\)",
+        #     "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['user']['name']",
+        # ),
         (
             r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
             r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
@@ -158,7 +161,7 @@ replacements = (
         (r"(class BaseBlockTest(?:.|\n)*self\.session\.)flush", r"\1commit"),
         (
             r'(assert json\["description"\] == )"Invalid email address"',
-            "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['email']\"",
+            "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']\"",
         ),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
@@ -174,7 +177,7 @@ replacements = (
         (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
         (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
         # error messages
-        ('"Already used forum name"', '"Name is already used"'),
+        ('"Already used forum name"', '"Name or email already exists"'),
     ]
 )
 

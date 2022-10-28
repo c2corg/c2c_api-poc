@@ -12,13 +12,14 @@ def post():
     body = request.get_json()
 
     new_body = {
-        "ui_preferences": deepcopy(current_user.ui_preferences),
+        "comment": "xxx",
+        "user": {"data": deepcopy(current_user.data)},
     }
 
-    new_body["ui_preferences"]["lang"] = body["lang"]
+    new_body["user"]["data"]["lang"] = body["lang"]
 
     request._cached_json = (new_body, new_body)
 
-    user_view.post(int(current_user.id))
+    user_view.put(int(current_user.id))
 
     return {"status": "ok"}

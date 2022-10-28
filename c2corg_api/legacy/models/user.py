@@ -1,5 +1,5 @@
 from flask_camp.models import User as NewUser
-from c2corg_api.models import get_defaut_user_ui_preferences
+from c2corg_api.models import get_defaut_user_data
 
 
 class DocumentIdList:
@@ -32,7 +32,7 @@ class User:
                 name=forum_username,
                 email=email,
                 password=password,
-                ui_preferences=get_defaut_user_ui_preferences(full_name=name, lang="fr"),
+                data=get_defaut_user_data(full_name=name, lang="fr"),
             )
 
             if email_validated:
@@ -44,7 +44,7 @@ class User:
             self._set_proxies()
 
     def _set_proxies(self):
-        self.feed_filter_areas = DocumentIdList(self._user.ui_preferences["feed"]["areas"])
+        self.feed_filter_areas = DocumentIdList(self._user.data["feed"]["areas"])
 
     @classmethod
     def from_user(cls, user):
@@ -68,7 +68,7 @@ class User:
 
     @property
     def lang(self):
-        return self._user.ui_preferences["lang"]
+        return self._user.data["lang"]
 
     @property
     def password(self):
@@ -96,11 +96,11 @@ class User:
 
     @property
     def name(self):
-        return self._user.ui_preferences["full_name"]
+        return self._user.data["full_name"]
 
     @name.setter
     def name(self, value):
-        self._user.ui_preferences["full_name"] = value
+        self._user.data["full_name"] = value
 
     @property
     def forum_username(self):
@@ -108,24 +108,24 @@ class User:
 
     @property
     def is_profile_public(self):
-        return self._user.ui_preferences["is_profile_public"]
+        return self._user.data["is_profile_public"]
 
     @is_profile_public.setter
     def is_profile_public(self, value):
-        self._user.ui_preferences["is_profile_public"] = value
+        self._user.data["is_profile_public"] = value
 
     @property
     def feed_filter_activities(self):
-        return self._user.ui_preferences["feed"]["activities"]
+        return self._user.data["feed"]["activities"]
 
     @feed_filter_activities.setter
     def feed_filter_activities(self, value):
-        self._user.ui_preferences["feed"]["activities"] = value
+        self._user.data["feed"]["activities"] = value
 
     @property
     def feed_filter_langs(self):
-        return self._user.ui_preferences["feed"]["langs"]
+        return self._user.data["feed"]["langs"]
 
     @feed_filter_langs.setter
     def feed_filter_langs(self, value):
-        self._user.ui_preferences["feed"]["langs"] = value
+        self._user.data["feed"]["langs"] = value

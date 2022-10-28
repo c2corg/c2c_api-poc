@@ -114,7 +114,7 @@ class TestUserAccountRest(BaseUserTestRest):
 
         data = {"currentpassword": self.global_passwords["contributor2"], "forum_username": "Unique"}
         json = self.post_json_with_contributor(url, data, status=400, username="contributor2")
-        assert json["description"] == "Name is already used"
+        assert json["description"] == "Name or email already exists"
 
     def test_update_account_forum_username_discourse_up(self):
         self._update_account_field_discourse_up("forum_username", "changed")

@@ -16,4 +16,4 @@ def post(token):
     body = {"name": user.name, "token": token}
     request._cached_json = (body, body)
 
-    return email_validation.post()
+    return email_validation.put()

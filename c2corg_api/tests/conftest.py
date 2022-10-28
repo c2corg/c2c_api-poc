@@ -15,7 +15,7 @@ tested_app, tested_api = create_app(
 )
 
 
-def get_default_ui_preferences(full_name):
+def get_default_data(full_name):
     return {
         "lang": "fr",
         "is_profile_public": False,
@@ -152,7 +152,7 @@ def _db_add_user(name="name", email=None, password="password", validate_email=Tr
         name=name,
         password=password,
         email=email if email else f"{name}@site.org",
-        ui_preferences=get_default_ui_preferences(name),
+        data=get_default_data(name),
         roles=roles if isinstance(roles, (list, tuple)) else roles.split(",") if isinstance(roles, str) else [],
     )
 

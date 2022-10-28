@@ -9,7 +9,7 @@ from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.search import search
-from c2corg_api.tests.conftest import BaseTestClass, get_default_ui_preferences
+from c2corg_api.tests.conftest import BaseTestClass, get_default_data
 
 
 class BaseTestRest(BaseTestClass):
@@ -36,7 +36,7 @@ class BaseTestRest(BaseTestClass):
         self.api.database.session.commit()
 
     def _add_user(self, name, password, locale_langs, roles=None):
-        user = User(name=name, ui_preferences=get_default_ui_preferences(name), roles=[] if roles is None else roles)
+        user = User(name=name, data=get_default_data(name), roles=[] if roles is None else roles)
         self.api.database.session.add(user)
 
         user.set_password(password)
@@ -62,7 +62,7 @@ class BaseTestRest(BaseTestClass):
 
     def optimized_login(self, user_name):
         if user_name not in self.global_session_cookies:
-            self.post("/v7/login", json={"name_or_email": user_name, "password": self.global_passwords[user_name]})
+            self.put("/v7/user/login", json={"name_or_email": user_name, "password": self.global_passwords[user_name]})
             cookies = list(self.client.cookie_jar)
             session_cookie = [cookie for cookie in cookies if cookie.name == "session"][0]
             self.global_session_cookies[user_name] = session_cookie.value
