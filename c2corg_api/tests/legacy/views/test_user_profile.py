@@ -290,23 +290,21 @@ class TestUserProfileRest(BaseDocumentTestRest):
 
         # check that the the user names are added to the search index
 
-    # def test_put_success_new_lang(self):
-    #     """Test updating a document by adding a new locale."""
-    #     body = {
-    #         "message": "Adding lang",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["amateur"],
-    #             "locales": [{"lang": "es", "description": "Yo"}],
-    #         },
-    #     }
-    #     (body, profile) = self.put_success_new_lang(body, self.profile1, user="moderator", check_es=False)
+    def test_put_success_new_lang(self):
+        """Test updating a document by adding a new locale."""
+        body = {
+            "message": "Adding lang",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "quality": quality_types[1],
+                "categories": ["amateur"],
+                "locales": [{"lang": "es", "description": "Yo"}],
+            },
+        }
+        (body, profile) = self.put_success_new_lang(body, self.profile1, user="moderator", check_es=False)
 
-    #     assert profile.get_locale("es").description == "Yo"
-    #     search_doc = self._check_es_index()
-    #     assert search_doc["title_es"] == "Contributor contributor"
+        assert profile.get_locale("es").description == "Yo"
 
     def _check_es_index(self):
         sync_es(self.session)

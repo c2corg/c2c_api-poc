@@ -169,7 +169,11 @@ replacements = (
         # different behavior
         (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
         (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
-        (r" *self._check_es_index()\n", ""),
+        (
+            r' *search_doc = self._check_es_index\(\)\n *assert search_doc\["title_es\"] == "Contributor contributor"',
+            "",
+        ),
+        (r" *self._check_es_index\(\)\n", ""),
         # error messages
         ('"Already used forum name"', '"Name or email already exists"'),
     ]
