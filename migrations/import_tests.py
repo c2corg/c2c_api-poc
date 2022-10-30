@@ -155,6 +155,7 @@ replacements = (
             r'(assert json\["description"\] == )"Invalid email address"',
             "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']\"",
         ),
+        (r"(# version with lang 'en'\n *version_en = profile\.versions)\[2\]", r"\1[1]"),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
         # sometime used as forum name -> back to test
@@ -168,6 +169,7 @@ replacements = (
         # different behavior
         (r'(self.app_post_json\(url, \{"email": "non_existing_oeuhsaeuh@camptocamp.org"\}, status)=400', r"\1=200"),
         (r'self\.assertErrorsContain\(body, "email", "No user with this email"\)', ""),
+        (r" *self._check_es_index()\n", ""),
         # error messages
         ('"Already used forum name"', '"Name or email already exists"'),
     ]

@@ -1,6 +1,29 @@
+class _AlwaysTrue:
+    def __eq__(self, o):
+        return True
+
+
+class Geometry:
+    def __init__(self, json):
+        self._json = json
+
+    @property
+    def version(self):
+        return _AlwaysTrue()
+
+
+class DocumentArchive:
+    def __init__(self, version):
+        self._version = version
+
+    @property
+    def document_geometry_archive(self):
+        return Geometry(self._version.data.get("geometry", {}))
+
+
 class Document:
-    def __init__(self):
-        self._document = None
+    def __init__(self, document=None):
+        self._document = document
 
     def create_new_model(self, data):
         from flask_camp.models import Document
@@ -16,6 +39,10 @@ class Document:
     @property
     def version(self):
         return self._document.last_version_id
+
+    @property
+    def versions(self):
+        return [DocumentArchive(version) for version in self._document.versions]
 
     @property
     def document_id(self):
@@ -54,6 +81,12 @@ class LocaleDictProxy:
         result = self._json.get(lang)
 
         return None if result is None else DocumentLocale(json=result)
+
+    def __len__(self):
+        return len(self._json)
+
+    def __str__(self):
+        return str(self._json)
 
 
 class DocumentLocale:

@@ -7,11 +7,11 @@ from c2corg_api.legacy.models.document import Document as LegacyDocument
 
 
 class UserProfile(LegacyDocument):
-    def __init__(self, categories=None, locale_langs=None):
-        super().__init__()
+    def __init__(self, categories=None, locale_langs=None, document=None):
+        super().__init__(document=document)
         self._user = None
 
-        if categories:
+        if categories and document is None:
             self.create_new_model(
                 data=get_default_user_profile_data(
                     self.default_author, categories=categories, locale_langs=locale_langs or []
@@ -31,10 +31,6 @@ class UserProfile(LegacyDocument):
         result._versions = list(result._document.versions)
 
         return result
-
-    @property
-    def versions(self):
-        return self._versions
 
     @property
     def user(self):

@@ -158,9 +158,6 @@ class TestUserProfileRest(BaseDocumentTestRest):
             },
         }
 
-        print(self.profile1.document_id, self.global_userids["contributor"])
-        print(self.profile2.document_id, self.global_userids["contributor2"])
-
         headers = self.add_authorization_header(username="contributor2")
         self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
 
@@ -212,31 +209,29 @@ class TestUserProfileRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.profile1.document_id, user="moderator")
 
-    # def test_put_success_all(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #             "geometry": {
-    #                 "version": self.profile1.geometry.version,
-    #                 "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
-    #             },
-    #         },
-    #     }
-    #     (body, profile) = self.put_success_all(body, self.profile1, user="moderator", check_es=False, cache_version=3)
+    def test_put_success_all(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "quality": quality_types[1],
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+                "geometry": {
+                    "version": self.profile1.geometry.version,
+                    "geom": '{"type": "Point", "coordinates": [635957, 5723605]}',  # noqa
+                },
+            },
+        }
+        (body, profile) = self.put_success_all(body, self.profile1, user="moderator", check_es=False, cache_version=3)
 
-    #     # version with lang 'en'
-    #     version_en = profile.versions[2]
+        # version with lang 'en'
+        version_en = profile.versions[1]
 
-    #     # geometry has been changed
-    #     archive_geometry_en = version_en.document_geometry_archive
-    #     assert archive_geometry_en.version == 2
-
-    #     self._check_es_index()
+        # geometry has been changed
+        archive_geometry_en = version_en.document_geometry_archive
+        assert archive_geometry_en.version == 2
 
     # def test_put_success_figures_only(self):
     #     body = {

@@ -1,6 +1,6 @@
 import json
 from flask import request
-from flask_camp import allow
+from flask_camp import allow, current_api
 from flask_camp.views.content import documents as documents_view, document as document_view
 from werkzeug.exceptions import NotFound, BadRequest
 
@@ -20,7 +20,7 @@ class ProfileView:
     def put(self, profile_id):
         body = request.get_json()
 
-        new_body = _from_legacy_doc(body)
+        new_body = _from_legacy_doc(body, profile_id)
 
         request._cached_json = (new_body, new_body)
 
@@ -62,7 +62,7 @@ def _get_preferred_locale(preferred_lang, locales):
     return None  # raise ?
 
 
-def _from_legacy_doc(body):
+def _from_legacy_doc(body, uri_document_id):
 
     if "document" not in body:
         raise BadRequest()
@@ -72,8 +72,14 @@ def _from_legacy_doc(body):
     if isinstance(document["id"], str):
         document["id"] = int(document["id"])
 
+    if document["id"] != uri_document_id:
+        raise BadRequest("Id in body does not match id in URI")
+
+    old_document = current_api.get_document(document["id"])
+    old_locales = old_document["data"].get("locales", {})
+
     document["data"] = body["document"]
-    document["data"]["locales"] = {locale["lang"]: locale for locale in document["data"]["locales"]}
+    document["data"]["locales"] = old_locales | {locale["lang"]: locale for locale in document["data"]["locales"]}
     if "geometry" in document["data"]:
         document["data"]["geometry"]["geom"] = json.loads(document["data"]["geometry"]["geom"])
     else:
