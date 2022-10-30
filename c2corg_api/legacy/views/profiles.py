@@ -2,7 +2,7 @@ import json
 from flask import request
 from flask_camp import allow
 from flask_camp.views.content import documents as documents_view, document as document_view
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, BadRequest
 
 from c2corg_api.models import USERPROFILE_TYPE
 
@@ -63,6 +63,10 @@ def _get_preferred_locale(preferred_lang, locales):
 
 
 def _from_legacy_doc(body):
+
+    if "document" not in body:
+        raise BadRequest()
+
     document = {"version_id": body["document"].pop("version"), "id": body["document"].pop("document_id")}
 
     if isinstance(document["id"], str):

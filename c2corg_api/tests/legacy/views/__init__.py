@@ -351,6 +351,13 @@ class BaseDocumentTestRest(BaseTestRest):
         assert r["status"] == "error", r
         assert r["description"] == "Id in body does not match id in URI", r
 
+    def put_put_no_document(self, id, user="contributor"):
+        request_body = {"message": "..."}
+        self.add_authorization_header(username=user)
+        r = self.app_put_json(self._prefix + "/" + str(id), request_body, status=400).json
+
+        assert r["status"] == "error"
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)
