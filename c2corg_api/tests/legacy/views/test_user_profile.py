@@ -263,33 +263,32 @@ class TestUserProfileRest(BaseDocumentTestRest):
 
         assert profile.get_locale("en").description == "Me!"
 
-    # def test_put_reset_title(self):
-    #     """Tests that the title can not be set."""
-    #     body = {
-    #         "message": "Changing lang",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["amateur"],
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "Should not be set",
-    #                     "description": "Me!",
-    #                     "version": self.locale_en.version,
-    #                 }
-    #             ],
-    #         },
-    #     }
-    #     (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
+    def test_put_reset_title(self):
+        """Tests that the title can not be set."""
+        body = {
+            "message": "Changing lang",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "quality": quality_types[1],
+                "categories": ["amateur"],
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "Should not be set",
+                        "description": "Me!",
+                        "version": self.locale_en.version,
+                    }
+                ],
+            },
+        }
+        (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
 
-    #     assert profile.get_locale("en").description == "Me!"
-    #     self.session_refresh(self.locale_en)
-    #     assert self.locale_en.title == ""
+        assert profile.get_locale("en").description == "Me!"
+        self.session_refresh(self.locale_en)
+        assert self.locale_en.title == ""
 
-    #     # check that the the user names are added to the search index
-    #     self._check_es_index()
+        # check that the the user names are added to the search index
 
     # def test_put_success_new_lang(self):
     #     """Test updating a document by adding a new locale."""

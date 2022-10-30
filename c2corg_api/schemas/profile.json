@@ -12,10 +12,20 @@
     "properties": {
       "data": {
         "properties": {
-          "locales": {},
+          "type": { "const": "profile" },
+          "locales": {
+            "patternProperties": {
+              "(fr|en)": {
+                "type": "object",
+                "properties": {
+                  "lang": { "$ref": "entities/langs.json" },
+                  "description": { "type": ["string", "null"] }
+                }
+              }
+            }
+          },
           "areas": {},
-          "name": {},
-          "type": { "const": "profile" }
+          "name": {}
         },
         "required": ["locales", "type", "areas", "name"]
       }

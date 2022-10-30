@@ -5,6 +5,7 @@ from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
 from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
+from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
@@ -142,8 +143,10 @@ class BaseTestRest(BaseTestClass):
     def session_refresh(self, item):
         if isinstance(item, LegacyUser):
             self.session.expunge(item._user)
+        elif isinstance(item, LegacyDocumentLocale):
+            self.session.expunge_all()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(f"Can't refresh {item}")
 
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"

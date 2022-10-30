@@ -112,6 +112,10 @@ class DocumentLocale:
     def description(self):
         return self._json["description"]
 
+    @property
+    def title(self):
+        return self._json.get("title", "")
+
 
 class ArchiveDocumentLocale:
     ...
