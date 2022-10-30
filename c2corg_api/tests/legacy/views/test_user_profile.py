@@ -175,16 +175,16 @@ class TestUserProfileRest(BaseDocumentTestRest):
         }
         self.put_wrong_document_id(body, user="moderator")
 
-    # def test_put_wrong_document_version(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": -9999,
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #         }
-    #     }
-    #     self.put_wrong_version(body, self.profile1.document_id, user="moderator")
+    def test_put_wrong_document_version(self):
+        body = {
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": -9999,
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+            }
+        }
+        self.put_wrong_version(body, self.profile1.document_id, user="moderator")
 
     # def test_put_wrong_locale_version(self):
     #     body = {

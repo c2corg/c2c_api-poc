@@ -331,6 +331,17 @@ class BaseDocumentTestRest(BaseTestRest):
         self.add_authorization_header(username=user)
         response = self.app_put_json(self._prefix + "/9999999", request_body, status=404)
 
+    def put_wrong_version(self, request_body, id, user="contributor"):
+        self.app_put_json(self._prefix + "/" + str(id), request_body, status=403)
+
+        self.add_authorization_header(username=user)
+        self.app_put_json(self._prefix + "/" + str(id), request_body, status=409)
+
+        # TODO
+        # body = response.json
+        # self.assertEqual(body["status"], "error")
+        # self.assertEqual(body["errors"][0]["name"], "Conflict")
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)
