@@ -61,6 +61,8 @@ class BaseTestRest(BaseTestClass):
     def add_authorization_header(self, username="contributor"):
         self.optimized_login(username)
 
+        return None
+
     def optimized_login(self, user_name):
         self.put(
             "/v7/user/login",
@@ -322,6 +324,12 @@ class BaseDocumentTestRest(BaseTestRest):
 
         self.get(f"{self._prefix}/9999999", status=404)
         self.get(f"{self._prefix}/9999999?l=es", status=404)
+
+    def put_wrong_document_id(self, request_body, user="contributor"):
+        response = self.app_put_json(self._prefix + "/9999999", request_body, status=403)
+
+        self.add_authorization_header(username=user)
+        response = self.app_put_json(self._prefix + "/9999999", request_body, status=404)
 
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)

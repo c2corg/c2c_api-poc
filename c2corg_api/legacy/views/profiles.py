@@ -67,12 +67,16 @@ def _from_legacy_doc(body):
 
     document["data"] = body["document"]
     document["data"]["locales"] = {locale["lang"]: locale for locale in document["data"]["locales"]}
-    document["data"]["geometry"]["geom"] = json.loads(document["data"]["geometry"]["geom"])
+    if "geometry" in document["data"]:
+        document["data"]["geometry"]["geom"] = json.loads(document["data"]["geometry"]["geom"])
+    else:
+        document["data"]["geometry"] = {"geom": "{}"}
+
     document["data"]["type"] = USERPROFILE_TYPE
     document["data"]["areas"] = document["data"].get("areas", {})
     document["data"]["name"] = document["data"].get("name", None)
 
-    return {"comment": body["message"], "document": document}
+    return {"comment": body.get("message", "default comment"), "document": document}
 
 
 def _get_legacy_doc(document, collection_view=False, preferred_lang=None, lang=None):

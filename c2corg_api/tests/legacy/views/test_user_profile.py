@@ -164,16 +164,16 @@ class TestUserProfileRest(BaseDocumentTestRest):
         headers = self.add_authorization_header(username="contributor2")
         self.app_put_json(self._prefix + "/" + str(self.profile1.document_id), body, headers=headers, status=403)
 
-    # def test_put_wrong_document_id(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": "9999999",
-    #             "version": self.profile1.version,
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #         }
-    #     }
-    #     self.put_wrong_document_id(body, user="moderator")
+    def test_put_wrong_document_id(self):
+        body = {
+            "document": {
+                "document_id": "9999999",
+                "version": self.profile1.version,
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+            }
+        }
+        self.put_wrong_document_id(body, user="moderator")
 
     # def test_put_wrong_document_version(self):
     #     body = {
