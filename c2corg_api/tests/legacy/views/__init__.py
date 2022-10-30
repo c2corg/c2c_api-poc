@@ -363,6 +363,7 @@ class BaseDocumentTestRest(BaseTestRest):
         assert r["status"] == "error"
 
     def put_success_all(self, request_body, document, user="contributor", check_es=True, cache_version=2):
+        document_version = document.version
         self.add_authorization_header(username=user)
         self.app_put_json(f"{self._prefix}/{document.document_id}", request_body, status=200)
 
@@ -371,7 +372,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         body = response.json
         document_id = body.get("document_id")
-        assert body.get("version") != document.version
+        assert body.get("version") != document_version, f'{body.get("version")} vs {document_version}'
         assert body.get("document_id") == document_id
 
         # check that the document was updated correctly
@@ -393,6 +394,7 @@ class BaseDocumentTestRest(BaseTestRest):
     def put_success_figures_only(self, request_body, document, user="contributor", check_es=True):
         """Test updating a document with changes to the figures only."""
 
+        document_version = document.version
         self.add_authorization_header(username=user)
         self.app_put_json(self._prefix + "/" + str(document.document_id), request_body, status=200)
 
@@ -400,7 +402,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         body = response.json
         document_id = body.get("document_id")
-        assert body.get("version") != document.version
+        assert body.get("version") != document_version, f'{body.get("version")} vs {document_version}'
         assert body.get("document_id") == document_id
 
         # check that the document was updated correctly
@@ -419,7 +421,7 @@ class BaseDocumentTestRest(BaseTestRest):
         return (body, document)
 
     def put_success_lang_only(self, request_body, document, user="contributor", check_es=True):
-
+        document_version = document.version
         self.add_authorization_header(username=user)
         self.app_put_json(self._prefix + "/" + str(document.document_id), request_body, status=200)
 
@@ -428,7 +430,7 @@ class BaseDocumentTestRest(BaseTestRest):
         body = response.json
         document_id = body.get("document_id")
         # document version changes ! (was not changing in old model)
-        assert body.get("version") != document.version
+        assert body.get("version") != document_version, f'{body.get("version")} vs {document_version}'
         assert body.get("document_id") == document_id
 
         # check that the document was updated correctly
@@ -449,6 +451,7 @@ class BaseDocumentTestRest(BaseTestRest):
     def put_success_new_lang(self, request_body, document, user="contributor", check_es=True):
         """Test updating a document by adding a new locale."""
 
+        document_version = document.version
         self.add_authorization_header(username=user)
         self.app_put_json(self._prefix + "/" + str(document.document_id), request_body, status=200)
 
@@ -456,7 +459,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         body = response.json
         document_id = body.get("document_id")
-        assert body.get("version") != document.version
+        assert body.get("version") != document_version, f'{body.get("version")} vs {document_version}'
         assert body.get("document_id") == document_id
 
         # check that the document was updated correctly

@@ -5,6 +5,7 @@ from flask_camp.views.content import documents as documents_view, document as do
 from werkzeug.exceptions import NotFound, BadRequest
 
 from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.legacy.converter import convert_to_legacy_doc
 
 
 class ProfileView:
@@ -93,7 +94,7 @@ def _from_legacy_doc(body, uri_document_id):
 
 
 def _get_legacy_doc(document, collection_view=False, preferred_lang=None, lang=None):
-    result = document["legacy"]
+    result = convert_to_legacy_doc(document)
 
     if collection_view:
         del result["geometry"]

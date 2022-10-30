@@ -1,9 +1,12 @@
 from flask import request
-from flask_camp import allow, current_api
+from flask_camp import allow
 from flask_camp.views.account import current_user as current_user_view
 from flask_camp.views.account import user as user_view
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest
+
+from c2corg_api.legacy.converter import get_legacy_doc
+
 
 rule = "/users/preferences"
 
@@ -13,7 +16,7 @@ def get():
     lang = request.args.get("pl", None)
     result = current_user_view.get()["user"]["data"]["feed"]
 
-    result["areas"] = [current_api.get_cooked_document(area_id)["legacy"] for area_id in result["areas"]]
+    result["areas"] = [get_legacy_doc(area_id) for area_id in result["areas"]]
 
     if lang is not None:
         for area in result["areas"]:
