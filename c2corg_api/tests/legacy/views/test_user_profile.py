@@ -248,21 +248,20 @@ class TestUserProfileRest(BaseDocumentTestRest):
 
         assert profile.categories == ["mountain_guide"]
 
-    # def test_put_success_lang_only(self):
-    #     body = {
-    #         "message": "Changing lang",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["amateur"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #         },
-    #     }
-    #     (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
+    def test_put_success_lang_only(self):
+        body = {
+            "message": "Changing lang",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "quality": quality_types[1],
+                "categories": ["amateur"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+            },
+        }
+        (body, profile) = self.put_success_lang_only(body, self.profile1, user="moderator", check_es=False)
 
-    #     assert profile.get_locale("en").description == "Me!"
-    #     self._check_es_index()
+        assert profile.get_locale("en").description == "Me!"
 
     # def test_put_reset_title(self):
     #     """Tests that the title can not be set."""
