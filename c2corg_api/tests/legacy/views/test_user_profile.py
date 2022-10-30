@@ -233,21 +233,20 @@ class TestUserProfileRest(BaseDocumentTestRest):
         archive_geometry_en = version_en.document_geometry_archive
         assert archive_geometry_en.version == 2
 
-    # def test_put_success_figures_only(self):
-    #     body = {
-    #         "message": "Changing figures",
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me", "version": self.locale_en.version}],
-    #         },
-    #     }
-    #     (body, profile) = self.put_success_figures_only(body, self.profile1, user="moderator", check_es=False)
+    def test_put_success_figures_only(self):
+        body = {
+            "message": "Changing figures",
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "quality": quality_types[1],
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me", "version": self.locale_en.version}],
+            },
+        }
+        (body, profile) = self.put_success_figures_only(body, self.profile1, user="moderator", check_es=False)
 
-    #     assert profile.categories == ["mountain_guide"]
-    #     self._check_es_index()
+        assert profile.categories == ["mountain_guide"]
 
     # def test_put_success_lang_only(self):
     #     body = {

@@ -38,6 +38,10 @@ class UserProfile(LegacyDocument):
 
         return LegacyUser.from_user(User.get(id=self._document.last_version.data["user_id"]))
 
+    @property
+    def categories(self):
+        return self._document.last_version.data["categories"]
+
 
 class ArchiveUserProfile:
     ...

@@ -387,6 +387,34 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return (body, document)
 
+    def put_success_figures_only(self, request_body, document, user="contributor", check_es=True):
+        """Test updating a document with changes to the figures only."""
+
+        self.add_authorization_header(username=user)
+        self.app_put_json(self._prefix + "/" + str(document.document_id), request_body, status=200)
+
+        response = self.get(self._prefix + "/" + str(document.document_id), status=200)
+
+        body = response.json
+        document_id = body.get("document_id")
+        assert body.get("version") != document.version
+        assert body.get("document_id") == document_id
+
+        # check that the document was updated correctly
+        self.session.expire_all()
+        document = self._model(document=self.session.query(Document).get(document_id))
+        assert len(document.locales) == 2, document.locales
+
+        # check that a new archive_document was created
+        archive_count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
+        assert archive_count == 2
+
+        # check that new versions were created
+        versions = document.versions
+        assert len(versions) == 2, versions  # 4 on old model
+
+        return (body, document)
+
     def assertResultsEqual(self, actual, expected, total):
         message = json.dumps(actual, indent=2)
         expected = sorted(expected)
