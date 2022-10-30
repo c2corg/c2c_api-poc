@@ -186,27 +186,28 @@ class TestUserProfileRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.profile1.document_id, user="moderator")
 
-    # def test_put_wrong_locale_version(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": -9999}],
-    #         }
-    #     }
-    #     self.put_wrong_version(body, self.profile1.document_id, user="moderator")
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
+    def test_put_wrong_locale_version(self):
+        body = {
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": -9999}],
+            }
+        }
+        self.put_wrong_version(body, self.profile1.document_id, user="moderator")
 
-    # def test_put_wrong_ids(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.profile1.document_id,
-    #             "version": self.profile1.version,
-    #             "categories": ["mountain_guide"],
-    #             "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
-    #         }
-    #     }
-    #     self.put_wrong_ids(body, self.profile1.document_id, user="moderator")
+    def test_put_wrong_ids(self):
+        body = {
+            "document": {
+                "document_id": self.profile1.document_id,
+                "version": self.profile1.version,
+                "categories": ["mountain_guide"],
+                "locales": [{"lang": "en", "description": "Me!", "version": self.locale_en.version}],
+            }
+        }
+        self.put_wrong_ids(body, self.profile1.document_id, user="moderator")
 
     # def test_put_no_document(self):
     #     self.put_put_no_document(self.profile1.document_id, user="moderator")

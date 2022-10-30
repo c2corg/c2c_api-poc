@@ -134,14 +134,6 @@ replacements = (
         ),
         (r"class TestFormat\(unittest\.TestCase\):", "class TestFormat:"),
         (r'"username": "test\{\}"\.format\(i\),', '"username": forum_username,'),
-        # (
-        #     r"(.)Shorter than minimum length 3",
-        #     "r\\1'a' does not match '^[^ @\\\\\\\\/?&]{3,64}$' on instance ['user']['name']",
-        # ),
-        # (
-        #     r"(.)Contain invalid character\(s\)",
-        #     "r\\1'test/test' does not match '^[^ @\\\\\\/?&]{3,64}$' on instance ['user']['name']",
-        # ),
         (
             r'self\.session\.query\(User\)\.filter\(User.username == "moderator"\).one\(\)',
             r'self.session.query(NewUser).filter(NewUser.name == "moderator").one()',
@@ -196,6 +188,7 @@ skipped_methods = {
     "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
     "test_get_caching": "caching is handled and tested in flask-camp",
     "test_get_info": "test_get_info is not used in UI",
+    "test_put_wrong_locale_version": "Locales are not versionned in the new model",
 }
 
 skipped_classes = {

@@ -63,7 +63,10 @@ def _get_preferred_locale(preferred_lang, locales):
 
 
 def _from_legacy_doc(body):
-    document = {"version_id": body["document"].pop("version")}
+    document = {"version_id": body["document"].pop("version"), "id": body["document"].pop("document_id")}
+
+    if isinstance(document["id"], str):
+        document["id"] = int(document["id"])
 
     document["data"] = body["document"]
     document["data"]["locales"] = {locale["lang"]: locale for locale in document["data"]["locales"]}
