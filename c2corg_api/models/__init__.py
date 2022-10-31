@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 USERPROFILE_TYPE = "profile"
 AREA_TYPE = "area"
 ARTICLE_TYPE = "article"
+WAYPOINT_TYPE = "waypoint"
 
 VALIDATION_EXPIRE_DAYS = 3
 
@@ -21,7 +22,7 @@ class ProfilePageLink(BaseModel):
 
 
 def get_default_user_profile_data(user, categories, locale_langs):
-    locales = {lang: {"topic_id": "None", "description": None, "summary": None, "lang": lang} for lang in locale_langs}
+    locales = {lang: {"topic_id": None, "description": None, "summary": None, "lang": lang} for lang in locale_langs}
 
     return {
         "type": USERPROFILE_TYPE,
@@ -30,7 +31,7 @@ def get_default_user_profile_data(user, categories, locale_langs):
         "categories": categories,
         "areas": [],
         "name": user.data["full_name"],
-        "geometry": {"geom": '{"type":"point", "coordinates":null}'},
+        "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json
     }
 
 

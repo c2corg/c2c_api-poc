@@ -54,7 +54,8 @@ class LegacyView:
             result["cooked"] = cls._get_preferred_locale(cook_lang, cooked_locales)
 
         if collection_view:
-            del result["geometry"]
+            if "geometry" in result:
+                del result["geometry"]
 
         return result
 
@@ -62,7 +63,6 @@ class LegacyView:
 class DocumentCollectionView(LegacyView):
     document_type = NotImplemented
 
-    @allow("authenticated", allow_blocked=True)
     def get(self):
         http_args = request.args.to_dict()
         http_args["document_type"] = self.document_type

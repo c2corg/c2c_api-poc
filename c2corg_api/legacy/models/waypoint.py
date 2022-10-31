@@ -1,4 +1,5 @@
 from c2corg_api.legacy.models.document import Document, DocumentGeometry
+from c2corg_api.models import WAYPOINT_TYPE
 
 
 class Waypoint(Document):
@@ -11,6 +12,7 @@ class Waypoint(Document):
 
             self.create_new_model(
                 {
+                    "type": WAYPOINT_TYPE,
                     "waypoint_type": waypoint_type,
                     "elevation": elevation,
                     "locales": {},

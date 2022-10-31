@@ -11,6 +11,10 @@ class ProfilesView(DocumentCollectionView):
     rule = "/profiles"
     document_type = USERPROFILE_TYPE
 
+    @allow("authenticated", allow_blocked=True)
+    def get(self):
+        return super().get()
+
     @allow("anonymous", "authenticated")
     def post(self):
         raise NotFound()  # just for test

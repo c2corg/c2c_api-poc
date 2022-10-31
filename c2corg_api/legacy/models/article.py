@@ -12,5 +12,11 @@ class Article(LegacyDocument):
 
         if document is None:
             self.create_new_model(
-                data={"categories": categories, "activities": activities, "article_type": article_type, "locales": {}}
+                data={
+                    "type": ARTICLE_TYPE,
+                    "categories": categories,
+                    "activities": activities,
+                    "article_type": article_type,
+                    "locales": {},
+                }
             )

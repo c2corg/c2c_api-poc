@@ -48,7 +48,7 @@ def update_document_search_table(document):
         search_item = DocumentSearch(id=document.id)
         current_api.database.session.add(search_item)
 
-    search_item.document_type = new_version.data.get("type")
+    search_item.document_type = new_version.data["type"]
 
     if search_item.document_type == USERPROFILE_TYPE:
         search_item.user_id = new_version.data.get("user_id")
