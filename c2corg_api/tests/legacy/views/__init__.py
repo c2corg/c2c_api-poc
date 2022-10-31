@@ -4,6 +4,7 @@ from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
+from c2corg_api.hooks._tools import update_document_search_table
 from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
@@ -99,6 +100,8 @@ class BaseTestRest(BaseTestClass):
     def session_add(self, instance):
         if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
             self.session.add(instance._document)
+            update_document_search_table(instance._document)
+
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
         else:
