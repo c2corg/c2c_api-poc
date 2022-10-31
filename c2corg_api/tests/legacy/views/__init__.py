@@ -220,7 +220,7 @@ class BaseDocumentTestRest(BaseTestRest):
         locales = doc.get("locales")
         assert len(locales) == 1, locales
         locale = locales[0]
-        assert locale["lang"] == "fr"
+        assert locale["lang"] == "fr", locales
 
         assert "protected" in doc
         assert "type" in doc

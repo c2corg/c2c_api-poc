@@ -1,6 +1,7 @@
 from flask import request
 from flask_camp import allow
 from flask_camp.views.content import documents as documents_view
+from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
@@ -47,7 +48,7 @@ class LegacyView:
         if preferred_lang is not None:
             result["locales"] = [cls._get_preferred_locale(preferred_lang, locales)]
 
-        if cook_lang:
+        if cook_lang is not None:
             cooked_locales = document["cooked_data"]["locales"]
             result["locales"] = [cls._get_preferred_locale(cook_lang, locales)]
             result["cooked"] = cls._get_preferred_locale(cook_lang, cooked_locales)
@@ -63,7 +64,10 @@ class DocumentCollectionView(LegacyView):
 
     @allow("authenticated", allow_blocked=True)
     def get(self):
-        # request.args["document_type"] = self.document_type
+        http_args = request.args.to_dict()
+        http_args["document_type"] = self.document_type
+        request.args = ImmutableMultiDict(http_args)
+
         result = documents_view.get()
 
         return {
