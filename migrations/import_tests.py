@@ -43,6 +43,21 @@ def _assert_unary_replacements(old_foo, operator):
     ]
 
 
+def _legacy_model_replacements():
+    return [
+        (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
+        (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
+        (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
+        (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
+        (r"from c2corg_api.models.association ", "from c2corg_api.legacy.models.association "),
+        (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
+        (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
+        (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
+        (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
+        (r"from c2corg_api.models.document_history ", "from c2corg_api.legacy.models.document_history "),
+    ]
+
+
 replacements = (
     [
         (r"# package\n*", ""),
@@ -94,23 +109,21 @@ replacements = (
         (r"self\.session\.add\(", "self.session_add("),
         (r"purge_account\(self\.session\)", "purge_account()"),
         # remap old models to legacy model
-        (r"from c2corg_api.models\.user_profile ", r"from c2corg_api.legacy.models.user_profile "),
         (
             r"from c2corg_api\.models\.user ",
             "from flask_camp.models import User as NewUser\nfrom c2corg_api.legacy.models.user ",
         ),
         (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
         (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
-        (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
-        (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
-        (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
+    ]
+    + _legacy_model_replacements()
+    + [
         (r"from c2corg_api.views.user_follow import", "from c2corg_api.legacy.views.user_follow import"),
         (
             r"from c2corg_api.tests.views import BaseTestRest\n",
             "from c2corg_api.tests.legacy.views import BaseTestRest\n",
         ),
         (r"from c2corg_api.tests.views.test_user", "from c2corg_api.tests.legacy.views.test_user"),
-        (r"from c2corg_api.models.mailinglist", "from c2corg_api.legacy.models.mailinglist"),
         (
             r"from c2corg_api.search.mappings.user_mapping import SearchUser",
             "from c2corg_api.legacy.search import SearchUser",
@@ -120,9 +133,11 @@ replacements = (
             r"from c2corg_api.tests.views import BaseDocumentTestRest\n",
             "from c2corg_api.tests.legacy.views import BaseDocumentTestRest\n",
         ),
+        (r"from c2corg_api.caching ", "from c2corg_api.legacy.caching "),
         # for now, comment these imports
         (r"(from c2corg_api.models.token.*\n)", r"# \1"),
         (r"(from c2corg_api.models.common.attributes import mailinglists\n)", r"# \1"),
+        (r"(from dogpile.cache.api import NO_VALUE\n)", r"# \1"),
         (
             r"from c2corg_api.tests.search import reset_search_index\n",
             r"from c2corg_api.tests.legacy.search import reset_search_index\n",
@@ -155,6 +170,10 @@ replacements = (
             r'(assert json\["description"\] == )"Invalid email address"',
             "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']\"",
         ),
+        (
+            r"self.([\w\d]+)_version = \(\n *self.session.query\(DocumentVersion\)\n *.filter\(DocumentVersion.document_id == self.([\w\d]+).document_id\)\n *.filter\(DocumentVersion.lang == \"en\"\)\n *.first\(\)\n *\)",
+            r"self.\1_version = self.session_query_first(DocumentVersion, document_id = self.\2.document_id)\n",
+        ),
         (r"(# version with lang 'en'\n *version_en = profile\.versions)\[2\]", r"\1[1]"),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
@@ -179,22 +198,30 @@ replacements = (
     ]
 )
 
-skipped_methods = {
-    "test_purge_tokens": "No such model in flask_camp",
-    "test_renew_success": "/renew is not used",
-    "test_renew_token_different_success": "/renew is not used",
-    "test_login_blocked_account": "blocked users can log-in",
-    "test_login_discourse_success": "sso in login payload not used anymore?",
-    "test_read_account_info_blocked_account": "blocked users can view their account",
-    "test_post_preferences_invalid": "Too painful to automatically import, recoded it",
-    "test_post_preferences": "Too painful to automatically import, recoded it",
-    "test_register_username_email_not_equals_email": "username is removed in new model",
-    "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
-    "test_get_unconfirmed_user": "unecessary complexity of profile with no validated email, recoded it",
-    "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
-    "test_get_caching": "caching is handled and tested in flask-camp",
-    "test_get_info": "test_get_info is not used in UI",
-    "test_put_wrong_locale_version": "Locales are not versionned in the new model",
+skipped_methods_by_file = {
+    "views/test_user.py": {
+        "test_purge_tokens": "No such model in flask_camp",
+        "test_renew_success": "/renew is not used",
+        "test_renew_token_different_success": "/renew is not used",
+        "test_login_blocked_account": "blocked users can log-in",
+        "test_login_discourse_success": "sso in login payload not used anymore?",
+        "test_register_username_email_not_equals_email": "username is removed in new model",
+    },
+    "views/test_user_account.py": {
+        "test_read_account_info_blocked_account": "blocked users can view their account",
+    },
+    "views/test_user_preferences.py": {
+        "test_post_preferences_invalid": "Too painful to automatically import, recoded it",
+        "test_post_preferences": "Too painful to automatically import, recoded it",
+    },
+    "views/test_user_profile.py": {
+        "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
+        "test_get_unconfirmed_user": "unecessary complexity of profile with no validated email, recoded it",
+        "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
+        "test_get_caching": "caching is handled and tested in flask-camp",
+        "test_get_info": "test_get_info is not used in UI",
+        "test_put_wrong_locale_version": "Locales are not versionned in the new model",
+    },
 }
 
 skipped_classes = {
@@ -216,6 +243,7 @@ def convert_test_file(filename, make_replacements=True):
         for pattern, new_value in replacements:
             code = re.sub(pattern, new_value, code)
 
+        skipped_methods = skipped_methods_by_file.get(filename, {})
         for method, skip_reason in skipped_methods.items():
             code = code.replace(
                 f"\n    def {method}(self",
@@ -268,3 +296,4 @@ convert_test_file("views/test_user_block.py")
 convert_test_file("views/test_user_follow.py")
 convert_test_file("views/test_user_mailinglists.py")
 convert_test_file("views/test_user_profile.py")
+convert_test_file("views/test_article.py")

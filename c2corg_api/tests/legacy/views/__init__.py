@@ -6,9 +6,12 @@ from sqlalchemy import select
 from c2corg_api.hooks import on_user_validation
 from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
+from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
+from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
+from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
 from c2corg_api.search import search
 from c2corg_api.tests.conftest import BaseTestClass, get_default_data
 
@@ -94,9 +97,7 @@ class BaseTestRest(BaseTestClass):
         return getattr(self, action)(url=url, json=json, **kwargs)
 
     def session_add(self, instance):
-        if isinstance(instance, LegacyArea):
-            self.session.add(instance._document)
-        elif isinstance(instance, LegacyUserProfile):
+        if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
             self.session.add(instance._document)
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
@@ -147,6 +148,12 @@ class BaseTestRest(BaseTestClass):
             self.session.expunge_all()
         else:
             raise NotImplementedError(f"Can't refresh {item}")
+
+    def session_query_first(self, klass, document_id):
+        if klass is LegacyDocumentVersion:
+            return self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).first()
+
+        raise NotImplementedError(f"Can't query {klass}")
 
     def assertErrorsContain(self, body, error_name):
         assert body["status"] != "ok"
@@ -479,6 +486,10 @@ class BaseDocumentTestRest(BaseTestRest):
         actual_ids = sorted(json["document_id"] for json in actual["documents"])
         assert actual_ids == expected, (actual_ids, expected)
         assert actual["total"] == total, message
+
+    def _add_association(self, association, user_id):
+        """used for setup"""
+        association.propagate_in_documents()
 
 
 def get_locale(locales, lang):

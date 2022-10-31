@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 USERPROFILE_TYPE = "profile"
 AREA_TYPE = "area"
+ARTICLE_TYPE = "article"
 
 VALIDATION_EXPIRE_DAYS = 3
 

@@ -54,14 +54,24 @@ class Document:
 
     @property
     def geometry(self):
-        return DocumentGeometry(self._document.last_version.data["geometry"])
+        return DocumentGeometry(json=self._document.last_version.data["geometry"])
 
     def get_locale(self, lang):
         return self.locales.get_locale(lang)
 
 
 class DocumentGeometry:
-    def __init__(self, json):
+    def __init__(self, geom=None, json=None):
+        if json is None:
+            import shapely.wkt
+            from shapely.geometry import mapping
+
+            srid, shape_as_string = geom.split(";")
+            assert srid == "SRID=3857"
+            shape = shapely.wkt.loads(shape_as_string)
+
+            json = {"geom": mapping(shape)}
+
         self._json = json
 
     @property
