@@ -4,7 +4,8 @@ from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.hooks._tools import get_user_id_from_profile_id, update_document_search_table
-from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE
+from c2corg_api.schemas import schema_validator
 from c2corg_api.search import DocumentSearch
 
 
@@ -14,6 +15,11 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
         return
 
     document_type = new_version.data.get("type")
+
+    if document_type not in [USERPROFILE_TYPE, AREA_TYPE]:
+        raise BadRequest(f"Unknow document type: {document_type}")
+
+    schema_validator.validate(new_version.data, f"{document_type}.json")
 
     if old_version is None:  # it's a creation
         if document_type == USERPROFILE_TYPE:

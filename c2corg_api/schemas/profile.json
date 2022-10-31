@@ -1,35 +1,19 @@
 {
-  "if": {
-    "properties": {
-      "data": {
-        "properties": {
-          "type": { "const": "profile" }
+  "properties": {
+    "type": { "const": "profile" },
+    "locales": {
+      "patternProperties": {
+        "(fr|en)": {
+          "type": "object",
+          "properties": {
+            "lang": { "$ref": "entities/langs.json" },
+            "description": { "type": ["string", "null"] }
+          }
         }
       }
-    }
-  },
-  "then": {
-    "properties": {
-      "data": {
-        "properties": {
-          "type": { "const": "profile" },
-          "locales": {
-            "patternProperties": {
-              "(fr|en)": {
-                "type": "object",
-                "properties": {
-                  "lang": { "$ref": "entities/langs.json" },
-                  "description": { "type": ["string", "null"] }
-                }
-              }
-            }
-          },
-          "areas": {},
-          "name": {}
-        },
-        "required": ["locales", "type", "areas", "name"]
-      }
     },
-    "required": ["data"]
-  }
+    "areas": {},
+    "name": { "type": "string" }
+  },
+  "required": ["locales", "type", "areas", "name"]
 }

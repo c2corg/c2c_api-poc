@@ -77,7 +77,8 @@ def _from_legacy_doc(body, uri_document_id):
         raise BadRequest("Id in body does not match id in URI")
 
     old_document = current_api.get_document(document["id"])
-    old_locales = old_document["data"].get("locales", {})
+    old_data = old_document["data"]
+    old_locales = old_data.get("locales", {})
 
     document["data"] = body["document"]
     document["data"]["locales"] = old_locales | {locale["lang"]: locale for locale in document["data"]["locales"]}
@@ -88,7 +89,7 @@ def _from_legacy_doc(body, uri_document_id):
 
     document["data"]["type"] = USERPROFILE_TYPE
     document["data"]["areas"] = document["data"].get("areas", {})
-    document["data"]["name"] = document["data"].get("name", None)
+    document["data"]["name"] = document["data"].get("name", old_data["name"])
 
     return {"comment": body.get("message", "default comment"), "document": document}
 
