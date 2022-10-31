@@ -4,8 +4,7 @@ from flask_camp.models import User, Document, DocumentVersion
 from datetime import datetime, timedelta
 from sqlalchemy.sql.expression import and_
 
-from c2corg_api.hooks import ProfilePageLink
-from c2corg_api.models import VALIDATION_EXPIRE_DAYS
+from c2corg_api.models import ProfilePageLink, VALIDATION_EXPIRE_DAYS
 
 
 log = logging.getLogger(__name__)

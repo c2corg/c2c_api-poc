@@ -3,7 +3,7 @@ from flask_camp import allow
 from flask_camp.views.account import users
 from flask_camp.models import User
 
-from c2corg_api.hooks import check_user_name
+from c2corg_api.hooks._tools import check_user_name
 from c2corg_api.models import get_defaut_user_data
 
 rule = "/users/register"

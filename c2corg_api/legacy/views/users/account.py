@@ -8,7 +8,7 @@ from flask_camp.views.account import user as user_view
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 
-from c2corg_api.hooks import check_user_name
+from c2corg_api.hooks._tools import check_user_name
 
 rule = "/users/account"
 
