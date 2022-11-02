@@ -35,19 +35,11 @@ def get_default_user_profile_data(user, categories, locale_langs):
     }
 
 
-def create_user_profile(user, locale_langs):
+def create_user_profile(user, locale_langs, session=None):
+    # TODO on legacy removal, removes session parameter
+    session = current_api.database.session if session is None else session
     assert user.id is not None, "Dev check..."
 
     data = get_default_user_profile_data(user, categories=[], locale_langs=locale_langs)
     user_page = Document.create(comment="Creation of user page", data=data, author=user)
-    current_api.database.session.add(ProfilePageLink(document=user_page, user=user))
-
-
-# TODO: move to legacy folder (only used in legacy test and legacy interface)
-def get_defaut_user_data(full_name, lang):
-    return {
-        "full_name": full_name,
-        "lang": lang,
-        "is_profile_public": False,
-        "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False, "follow": []},
-    }
+    session.add(ProfilePageLink(document=user_page, user=user))

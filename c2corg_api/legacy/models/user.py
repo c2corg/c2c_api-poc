@@ -1,5 +1,13 @@
 from flask_camp.models import User as NewUser
-from c2corg_api.models import get_defaut_user_data
+
+
+def get_defaut_user_data(full_name, lang):
+    return {
+        "full_name": full_name,
+        "lang": lang,
+        "is_profile_public": False,
+        "feed": {"areas": [], "activities": [], "langs": [], "followed_only": False, "follow": []},
+    }
 
 
 class DocumentIdList:
@@ -26,6 +34,7 @@ class User:
     ) -> None:
         self._user = None
         self.feed_filter_areas = None
+        self.profile = profile
 
         if name is not None:
             self._user = NewUser.create(

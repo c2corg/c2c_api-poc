@@ -175,6 +175,8 @@ replacements = (
             r"self.\1_version = self.session_query_first(DocumentVersion, document_id = self.\2.document_id)\n",
         ),
         (r"(# version with lang 'en'\n *version_en = profile\.versions)\[2\]", r"\1[1]"),
+        # commit after adding test data, as tst session is not query session
+        (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
         # Function that are totally replaced
         (r"def extract_nonce\(", r"def extract_nonce_TO_BE_DELETED("),
         # sometime used as forum name -> back to test

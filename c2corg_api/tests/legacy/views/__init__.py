@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 from os import sync
 from flask_camp.models import User, Document, DocumentVersion
@@ -49,7 +50,7 @@ class BaseTestRest(BaseTestClass):
         user.set_email(f"{name}@camptocamp.org")
         self.api.database.session.flush()
 
-        create_user_profile(user, locale_langs=locale_langs)
+        create_user_profile(user, locale_langs=locale_langs, session=self.session)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 
@@ -100,10 +101,15 @@ class BaseTestRest(BaseTestClass):
     def session_add(self, instance):
         if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
             self.session.add(instance._document)
-            update_document_search_table(instance._document)
+            update_document_search_table(instance._document, self.session)
 
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
+            self.session.flush()
+            data = deepcopy(instance.profile._document.last_version.data)
+            data["user_id"] = instance.id
+            instance.profile._document.last_version._data = json.dumps(data)
+            self.session.flush()
         else:
             raise NotImplementedError()
 

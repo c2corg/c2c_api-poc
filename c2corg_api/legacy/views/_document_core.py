@@ -1,5 +1,4 @@
 from flask import request
-from flask_camp import allow
 from flask_camp.views.content import documents as documents_view
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest
@@ -67,6 +66,12 @@ class DocumentCollectionView(LegacyView):
         http_args = request.args.to_dict()
         http_args["document_type"] = self.document_type
         request.args = ImmutableMultiDict(http_args)
+
+        if "offset" in request.args:
+            try:
+                _ = int(request.args["offset"])
+            except ValueError as e:
+                raise BadRequest() from e
 
         result = documents_view.get()
 

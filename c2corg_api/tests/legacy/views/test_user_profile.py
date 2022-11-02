@@ -22,6 +22,7 @@ class TestUserProfileRest(BaseDocumentTestRest):
         self.set_prefix_and_model("/profiles", USERPROFILE_TYPE, UserProfile, ArchiveUserProfile, ArchiveDocumentLocale)
         BaseDocumentTestRest.setup_method(self)
         self._add_test_data()
+        self.session.commit()
 
     def test_get_collection_unauthenticated(self):
         self.get(self._prefix, status=403)

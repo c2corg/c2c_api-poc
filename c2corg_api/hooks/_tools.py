@@ -4,7 +4,7 @@ from flask_camp.models import Document
 from sqlalchemy import select
 from werkzeug.exceptions import BadRequest
 
-from c2corg_api.models import USERPROFILE_TYPE, ProfilePageLink
+from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE, ProfilePageLink
 from c2corg_api.search import DocumentSearch
 
 
@@ -39,17 +39,29 @@ def get_user_id_from_profile_id(profile_id):
     return list(result)[0][0]
 
 
-def update_document_search_table(document):
+def update_document_search_table(document, session=None):
+    # TODO: on remove legacy, removes session parameters
+    session = current_api.database.session if session is None else session
+
     new_version = document.last_version
 
-    search_item: DocumentSearch = DocumentSearch.get(id=document.id)
+    search_item: DocumentSearch = session.query(DocumentSearch).get(document.id)
 
     if search_item is None:  # means the document is not yet created
         search_item = DocumentSearch(id=document.id)
-        current_api.database.session.add(search_item)
+        session.add(search_item)
+
+    search_item.available_langs = [lang for lang in new_version.data["locales"]]
 
     search_item.document_type = new_version.data["type"]
 
     if search_item.document_type == USERPROFILE_TYPE:
         search_item.user_id = new_version.data.get("user_id")
-        search_item.available_langs = [lang for lang in new_version.data["locales"]]
+    elif search_item.document_type == ARTICLE_TYPE:
+        pass
+    elif search_item.document_type == WAYPOINT_TYPE:
+        pass
+    elif search_item.document_type == AREA_TYPE:
+        pass
+    else:
+        raise NotImplementedError(f"Please set how to search {search_item.document_type}")
