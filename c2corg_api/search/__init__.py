@@ -3,6 +3,8 @@ from flask_camp.models import BaseModel, Document, User
 from sqlalchemy import Column, ForeignKey, String, select
 from sqlalchemy.dialects.postgresql import ARRAY
 
+from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE, ProfilePageLink
+
 
 class DocumentSearch(BaseModel):
     # Define a one-to-one relationship with document table
@@ -17,6 +19,35 @@ class DocumentSearch(BaseModel):
     user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=True)
 
     available_langs = Column(ARRAY(String()), index=True, default=[])
+
+    def update(self, new_version):
+        self.available_langs = [lang for lang in new_version.data["locales"]]
+
+        self.document_type = new_version.data["type"]
+
+        if self.document_type == USERPROFILE_TYPE:
+            self.user_id = new_version.data.get("user_id")
+        elif self.document_type == ARTICLE_TYPE:
+            pass
+        elif self.document_type == WAYPOINT_TYPE:
+            pass
+        elif self.document_type == AREA_TYPE:
+            pass
+        else:
+            raise NotImplementedError(f"Please set how to search {self.document_type}")
+
+
+def update_document_search_table(document, session=None):
+    # TODO: on remove legacy, removes session parameters
+    session = current_api.database.session if session is None else session
+
+    search_item: DocumentSearch = session.query(DocumentSearch).get(document.id)
+
+    if search_item is None:  # means the document is not yet created
+        search_item = DocumentSearch(id=document.id)
+        session.add(search_item)
+
+    search_item.update(document.last_version)
 
 
 def search(document_type=None, id=None, user_id=None):

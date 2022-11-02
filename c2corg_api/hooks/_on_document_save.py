@@ -3,10 +3,10 @@ from flask_login import current_user
 from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest, Forbidden
 
-from c2corg_api.hooks._tools import get_user_id_from_profile_id, update_document_search_table
+from c2corg_api.hooks._tools import get_user_id_from_profile_id
 from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE
 from c2corg_api.schemas import schema_validator
-from c2corg_api.search import DocumentSearch
+from c2corg_api.search import DocumentSearch, update_document_search_table
 
 
 def on_document_save(document: Document, old_version: DocumentVersion, new_version: DocumentVersion):

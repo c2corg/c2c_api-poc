@@ -5,7 +5,6 @@ from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
-from c2corg_api.hooks._tools import update_document_search_table
 from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
@@ -14,7 +13,7 @@ from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
-from c2corg_api.search import search
+from c2corg_api.search import search, update_document_search_table
 from c2corg_api.tests.conftest import BaseTestClass, get_default_data
 
 

@@ -1,5 +1,5 @@
 from flask_camp.models import Document
-from c2corg_api.hooks._tools import update_document_search_table
+from c2corg_api.search import update_document_search_table
 
 
 def reset_search_index(session):

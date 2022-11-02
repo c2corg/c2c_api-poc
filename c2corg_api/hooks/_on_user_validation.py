@@ -1,6 +1,7 @@
 from flask import current_app
 
-from c2corg_api.hooks._tools import update_document_search_table, get_profile_document
+from c2corg_api.hooks._tools import get_profile_document
+from c2corg_api.search import update_document_search_table
 from c2corg_api.security.discourse_client import get_discourse_client
 
 
