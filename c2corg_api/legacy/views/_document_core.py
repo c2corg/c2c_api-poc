@@ -4,7 +4,7 @@ from flask import request, Response
 from flask_camp import allow
 from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view
 from werkzeug.datastructures import ImmutableMultiDict
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, UnsupportedMediaType
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
 
@@ -97,6 +97,9 @@ class DocumentCollectionView(LegacyView):
 
     @allow("authenticated")
     def post(self):
+        if not request.is_json:
+            raise UnsupportedMediaType()
+
         legacy_doc = request.get_json()
         new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type)
         body = {"document": new_model, "comment": "Default comment on creation"}

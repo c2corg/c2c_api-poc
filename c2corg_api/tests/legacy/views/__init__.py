@@ -409,6 +409,14 @@ class BaseDocumentTestRest(BaseTestRest):
         assert document.protected is False
         return (body, document)
 
+    def post_missing_content_type(self, request_body):
+        self.add_authorization_header(username="contributor")
+        response = self.post(self._prefix, data=json.dumps(request_body), status=415)
+
+        body = response.json
+        assert body.get("status") == "error"
+        return body
+
     def put_wrong_document_id(self, request_body, user="contributor"):
         self.app_put_json(self._prefix + "/9999999", request_body, status=403)
 
