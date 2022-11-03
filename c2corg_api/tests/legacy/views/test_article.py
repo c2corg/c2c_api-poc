@@ -102,18 +102,18 @@ class TestArticleRest(BaseDocumentTestRest):
     def test_get_version(self):
         self.get_version(self.article1, self.article1_version)
 
-    # def test_get_version_etag(self):
-    #     url = "{0}/{1}/en/{2}".format(self._prefix, str(self.article1.document_id), str(self.article1_version.id))
-    #     response = self.get(url, status=200)
+    def test_get_version_etag(self):
+        url = "{0}/{1}/en/{2}".format(self._prefix, str(self.article1.document_id), str(self.article1_version.id))
+        response = self.get(url, status=200)
 
-    #     # check that the ETag header is set
-    #     headers = response.headers
-    #     etag = headers.get("ETag")
-    #     assert etag is not None
+        # check that the ETag header is set
+        headers = response.headers
+        etag = headers.get("ETag")
+        assert etag is not None
 
-    #     # then request the document again with the etag
-    #     headers = {"If-None-Match": etag}
-    #     self.get(url, status=304, headers=headers)
+        # then request the document again with the etag
+        headers = {"If-None-Match": etag}
+        self.get(url, status=304, headers=headers)
 
     # def test_get_version_caching(self):
     #     url = "{0}/{1}/en/{2}".format(self._prefix, str(self.article1.document_id), str(self.article1_version.id))

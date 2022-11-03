@@ -1,4 +1,6 @@
-from flask import request
+import json
+
+from flask import request, Response
 from flask_camp import allow
 from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view
 from werkzeug.datastructures import ImmutableMultiDict
@@ -105,7 +107,8 @@ class VersionView(LegacyView):
     @allow("anonymous", "authenticated")
     def get(self, document_id, lang, version_id):
         r = version_view.get(version_id)
-        return {
+
+        legacy_content = {
             "document": self._get_legacy_doc(r["document"], cook_lang=lang),
             "previous_version_id": None,  # TODO
             "next_version_id": None,  # TODO
@@ -117,3 +120,13 @@ class VersionView(LegacyView):
                 "written_at": r["document"]["timestamp"],
             },
         }
+
+        response = Response(
+            response=json.dumps(legacy_content),
+            content_type="application/json",
+        )
+
+        response.add_etag()
+        response.make_conditional(request)
+
+        return response
