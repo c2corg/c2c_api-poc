@@ -7,9 +7,10 @@
           "type": "object",
           "properties": {
             "lang": { "$ref": "entities/langs.json" },
-            "description": { "type": ["string", "null"] }
+            "description": { "type": ["string", "null"] },
+            "topic_id":  { "type": ["integer", "null"] }
           },
-          "required": ["lang", "description", "title"],
+          "required": ["lang", "description", "title", "topic_id"],
           "aditionnalProperties": false
         }
       }

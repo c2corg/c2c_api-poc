@@ -109,7 +109,7 @@ class DocumentLocale:
         if json is not None:
             self._json = json
         else:
-            self._json = {"lang": lang, "title": title, "description": description}
+            self._json = {"lang": lang, "title": title, "description": description, "topic_id": None}
 
     def to_json(self):
         return self._json

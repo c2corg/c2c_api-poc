@@ -13,6 +13,7 @@ from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
+from c2corg_api.schemas import schema_validator
 from c2corg_api.search import search, update_document_search_table
 from c2corg_api.tests.conftest import BaseTestClass, get_default_data
 
@@ -99,7 +100,10 @@ class BaseTestRest(BaseTestClass):
 
     def session_add(self, instance):
         if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
+            data = instance._document.last_version.data
+            schema_validator.validate(data, f"{data['type']}.json")
             self.session.add(instance._document)
+
             update_document_search_table(instance._document, self.session)
 
         elif isinstance(instance, LegacyUser):

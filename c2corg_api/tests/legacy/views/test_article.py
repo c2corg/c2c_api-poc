@@ -84,20 +84,20 @@ class TestArticleRest(BaseDocumentTestRest):
         linked_articles = associations.get("articles")
         assert len(linked_articles) == 2
 
-    # def test_get_cooked(self):
-    #     self.get_cooked(self.article1)
+    def test_get_cooked(self):
+        self.get_cooked(self.article1)
 
-    # def test_get_cooked_with_defaulting(self):
-    #     self.get_cooked_with_defaulting(self.article1)
+    def test_get_cooked_with_defaulting(self):
+        self.get_cooked_with_defaulting(self.article1)
 
-    # def test_get_lang(self):
-    #     self.get_lang(self.article1)
+    def test_get_lang(self):
+        self.get_lang(self.article1)
 
-    # def test_get_new_lang(self):
-    #     self.get_new_lang(self.article1)
+    def test_get_new_lang(self):
+        self.get_new_lang(self.article1)
 
-    # def test_get_404(self):
-    #     self.get_404()
+    def test_get_404(self):
+        self.get_404()
 
     # def test_get_version(self):
     #     self.get_version(self.article1, self.article1_version)
