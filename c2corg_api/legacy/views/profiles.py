@@ -22,6 +22,7 @@ class ProfilesView(DocumentCollectionView):
 
 class ProfileView(LegacyView):
     rule = "/profiles/<int:profile_id>"
+    document_type = USERPROFILE_TYPE
 
     @allow("anonymous", "authenticated")
     def get(self, profile_id):

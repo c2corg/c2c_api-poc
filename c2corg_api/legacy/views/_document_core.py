@@ -10,6 +10,8 @@ from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_lega
 
 
 class LegacyView:
+    document_type = None
+
     @staticmethod
     def _get_preferred_locale(preferred_lang, locales):
         if preferred_lang in locales:
@@ -23,15 +25,18 @@ class LegacyView:
 
         return None  # raise ?
 
-    @staticmethod
-    def _from_legacy_doc(body, uri_document_id):
+    def _from_legacy_doc(self, body, uri_document_id):
 
         if "document" not in body:
             raise BadRequest()
 
         return {
             "comment": body.get("message", "default comment"),
-            "document": convert_from_legacy_doc(body["document"], expected_document_id=uri_document_id),
+            "document": convert_from_legacy_doc(
+                body["document"],
+                document_type=self.document_type,
+                expected_document_id=uri_document_id,
+            ),
         }
 
     @classmethod
@@ -89,6 +94,17 @@ class DocumentCollectionView(LegacyView):
                 for document in result["documents"]
             ],
         }
+
+    @allow("authenticated")
+    def post(self):
+        legacy_doc = request.get_json()
+        new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type)
+        body = {"document": new_model, "comment": "Default comment on creation"}
+
+        request._cached_json = (body, body)
+
+        r = documents_view.post()
+        return r
 
 
 class DocumentView(LegacyView):

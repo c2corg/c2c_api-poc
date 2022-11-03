@@ -376,6 +376,27 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return body
 
+    def post_error(self, request_body, user="contributor"):
+        response = self.app_post_json(self._prefix, request_body, expect_errors=True, status=403)
+
+        self.add_authorization_header(username=user)
+        response = self.app_post_json(self._prefix, request_body, expect_errors=True, status=400)
+
+        body = response.json
+        assert body.get("status") == "error"
+        return body
+
+    def post_missing_title(self, request_body, user="contributor", prefix=""):
+
+        self.add_authorization_header(username=user)
+        response = self.app_post_json(self._prefix, request_body, status=400)
+
+        body = response.json
+        assert body.get("status") == "error"
+        assert "'title' is a required property on instance ['locales']['en']\n" in body.get("description"), body
+
+        return body
+
     def put_wrong_document_id(self, request_body, user="contributor"):
         self.app_put_json(self._prefix + "/9999999", request_body, status=403)
 

@@ -115,57 +115,63 @@ class TestArticleRest(BaseDocumentTestRest):
         headers = {"If-None-Match": etag}
         self.get(url, status=304, headers=headers)
 
-    # def test_get_version_caching(self):
-    #     url = "{0}/{1}/en/{2}".format(self._prefix, str(self.article1.document_id), str(self.article1_version.id))
-    #     cache_key = "{0}-{1}".format(
-    #         get_cache_key(self.article1.document_id, "en", ARTICLE_TYPE), self.article1_version.id
-    #     )
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
+    def test_get_version_caching(self):
+        url = "{0}/{1}/en/{2}".format(self._prefix, str(self.article1.document_id), str(self.article1_version.id))
+        cache_key = "{0}-{1}".format(
+            get_cache_key(self.article1.document_id, "en", ARTICLE_TYPE), self.article1_version.id
+        )
 
-    #     cache_value = cache_document_version.get(cache_key)
-    #     assert cache_value == NO_VALUE
+        cache_value = cache_document_version.get(cache_key)
+        assert cache_value == NO_VALUE
 
-    #     # check that the response is cached
-    #     self.get(url, status=200)
+        # check that the response is cached
+        self.get(url, status=200)
 
-    #     cache_value = cache_document_version.get(cache_key)
-    #     assert cache_value != NO_VALUE
+        cache_value = cache_document_version.get(cache_key)
+        assert cache_value != NO_VALUE
 
-    #     # check that values are returned from the cache
-    #     fake_cache_value = {"document": "fake doc"}
-    #     cache_document_version.set(cache_key, fake_cache_value)
+        # check that values are returned from the cache
+        fake_cache_value = {"document": "fake doc"}
+        cache_document_version.set(cache_key, fake_cache_value)
 
-    #     response = self.get(url, status=200)
-    #     body = response.json
-    #     assert body == fake_cache_value
+        response = self.get(url, status=200)
+        body = response.json
+        assert body == fake_cache_value
 
-    # def test_get_caching(self):
-    #     self.get_caching(self.article1)
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
+    def test_get_caching(self):
+        self.get_caching(self.article1)
 
-    # def test_get_info(self):
-    #     body, locale = self.get_info(self.article1, "en")
-    #     assert locale.get("lang") == "en"
+    @pytest.mark.skip(reason="...")
+    def test_get_info(self):
+        body, locale = self.get_info(self.article1, "en")
+        assert locale.get("lang") == "en"
 
-    # def test_get_info_best_lang(self):
-    #     body, locale = self.get_info(self.article1, "es")
-    #     assert locale.get("lang") == "fr"
+    @pytest.mark.skip(reason="...")
+    def test_get_info_best_lang(self):
+        body, locale = self.get_info(self.article1, "es")
+        assert locale.get("lang") == "fr"
 
-    # def test_get_info_404(self):
-    #     self.get_info_404()
+    @pytest.mark.skip(reason="...")
+    def test_get_info_404(self):
+        self.get_info_404()
 
-    # def test_post_error(self):
-    #     body = self.post_error({}, user="moderator")
-    #     errors = body.get("errors")
-    #     assert len(errors) == 2
-    #     self.assertCorniceRequired(errors[0], "locales")
+    @pytest.mark.skip(reason="...")
+    def test_post_error(self):
+        body = self.post_error({}, user="moderator")
+        errors = body.get("errors")
+        assert len(errors) == 2
+        self.assertCorniceRequired(errors[0], "locales")
 
-    # def test_post_missing_title(self):
-    #     body_post = {
-    #         "categories": ["site_info"],
-    #         "activities": ["hiking"],
-    #         "article_type": "collab",
-    #         "locales": [{"lang": "en"}],
-    #     }
-    #     self.post_missing_title(body_post, user="moderator")
+    def test_post_missing_title(self):
+        body_post = {
+            "categories": ["site_info"],
+            "activities": ["hiking"],
+            "article_type": "collab",
+            "locales": [{"lang": "en"}],
+        }
+        self.post_missing_title(body_post, user="moderator")
 
     # def test_post_non_whitelisted_attribute(self):
     #     body = {"article_type": "collab", "protected": True, "locales": [{"lang": "en", "title": "Lac d'Annecy"}]}

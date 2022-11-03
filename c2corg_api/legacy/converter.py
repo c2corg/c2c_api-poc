@@ -58,9 +58,16 @@ def convert_to_legacy_doc(document):
     return result
 
 
-def convert_from_legacy_doc(legacy_document, expected_document_id=None):
+def convert_from_legacy_doc(legacy_document, document_type, expected_document_id=None):
 
-    result = {"version_id": legacy_document.pop("version"), "data": {}}
+    result = {
+        "data": {
+            "type": legacy_document.pop("type", document_type),
+        },
+    }
+
+    if "version" in legacy_document:  # new doc do not have any version id
+        result["version_id"] = legacy_document.pop("version")
 
     if "document_id" in legacy_document:
         result["id"] = int(legacy_document.pop("document_id"))
@@ -75,12 +82,11 @@ def convert_from_legacy_doc(legacy_document, expected_document_id=None):
 
     old_locales = old_data.get("locales", {})
 
-    if old_data["type"] == USERPROFILE_TYPE:  # rely on old version to get document type
+    if document_type == USERPROFILE_TYPE:  # rely on old version to get document type
         result["data"] |= {
             "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
             "areas": legacy_document.pop("areas", {}),
             "name": legacy_document.pop("name", old_data["name"]),
-            "type": legacy_document.pop("type", USERPROFILE_TYPE),
             "geometry": {"geom": "{}"},
             "associations": [],  # TODO
         }
@@ -90,7 +96,12 @@ def convert_from_legacy_doc(legacy_document, expected_document_id=None):
 
         # other props
         result["data"] |= legacy_document
+    elif document_type == ARTICLE_TYPE:
+        result["data"] |= {
+            "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
+            "associations": [],  # TODO
+        }
     else:
-        raise NotImplementedError(f'Cant onvert {old_data["type"]}')
+        raise NotImplementedError(f"Dont know how to convert {document_type}")
 
     return result

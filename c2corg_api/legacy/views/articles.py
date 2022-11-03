@@ -19,7 +19,9 @@ class ArticlesView(DocumentCollectionView):
 
 class ArticleView(DocumentView):
     rule = "/articles/<document_id>"
+    document_type = ARTICLE_TYPE
 
 
 class ArticleVersionView(VersionView):
     rule = "/articles/<document_id>/<lang>/<version_id>"
+    document_type = ARTICLE_TYPE
