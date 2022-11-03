@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+
+  redis:
+    image: redis/redis-stack:latest
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+      - 8001:8001  # with redis/redis-stack:latest
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+  pg:
+    image: postgres
+    user: postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./docker/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
