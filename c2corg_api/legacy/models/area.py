@@ -9,5 +9,6 @@ class Area(LegacyDocument):
             "type": AREA_TYPE,
             "area_type": area_type,
             "locales": {locale.lang: locale.to_json() for locale in locales},
+            "associations": [],
         }
         self.create_new_model(data=data)

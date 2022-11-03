@@ -29,9 +29,10 @@ def get_default_user_profile_data(user, categories, locale_langs):
         "user_id": user.id,
         "locales": locales,
         "categories": categories,
-        "areas": [],
+        "areas": [],  # TODO: remove this
         "name": user.data["full_name"],
-        "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json
+        "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json,
+        "associations": [],
     }
 
 

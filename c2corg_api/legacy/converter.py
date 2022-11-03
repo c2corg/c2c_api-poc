@@ -1,6 +1,6 @@
 import json
 from flask_camp import current_api
-from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE
+from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
 from werkzeug.exceptions import BadRequest
 
 
@@ -21,8 +21,20 @@ def convert_to_legacy_doc(document):
         "type": data["type"],
         "locales": [locale | {"version": 0} for locale in data["locales"].values()],
         "available_langs": list(data["locales"].keys()),
-        "associations": [],
+        "associations": {
+            "articles": [],
+            "books": [],
+            "images": [],
+            "waypoints": [],
+            "routes": [],
+            "xreports": [],
+            "users": [],
+        },
     }
+
+    # print(json.dumps(document, indent=4))
+    for _, associated_document in document["cooked_data"]["associations"].items():
+        result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
 
     if data["type"] == AREA_TYPE:
         pass
@@ -34,6 +46,14 @@ def convert_to_legacy_doc(document):
             "areas": data["areas"],
             "geometry": data["geometry"] | {"version": 0},
         }
+    elif data["type"] == ARTICLE_TYPE:
+        result |= {
+            "categories": data["categories"],
+            "activities": data["activities"],
+            "article_type": data["article_type"],
+        }
+
+        result |= {"author": {"user_id": data.get("author", None)}}
 
     return result
 
@@ -55,13 +75,14 @@ def convert_from_legacy_doc(legacy_document, expected_document_id=None):
 
     old_locales = old_data.get("locales", {})
 
-    if old_data["type"] == USERPROFILE_TYPE:  # rely on lod version to get document type
+    if old_data["type"] == USERPROFILE_TYPE:  # rely on old version to get document type
         result["data"] |= {
             "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
             "areas": legacy_document.pop("areas", {}),
             "name": legacy_document.pop("name", old_data["name"]),
             "type": legacy_document.pop("type", USERPROFILE_TYPE),
             "geometry": {"geom": "{}"},
+            "associations": [],  # TODO
         }
 
         if "geometry" in legacy_document:

@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "type": { "const": "article" },
+    "locales": {
+      "patternProperties": {
+        "(fr|en)": {
+          "type": "object",
+          "properties": {
+            "lang": { "$ref": "entities/langs.json" },
+            "description": { "type": ["string", "null"] }
+          },
+          "required": ["lang", "description", "title"],
+          "aditionnalProperties": false
+        }
+      }
+    },
+    "author": { "type": "null" },
+    "associations": { "$ref": "entities/association_array.json" }
+  },
+  "required": ["locales", "type", "author", "associations"],
+  "aditionnalProperties": false
+
+}

@@ -18,5 +18,6 @@ class Waypoint(Document):
                     "locales": {},
                     "rock_types": rock_types,
                     "geometry": geometry._json,
+                    "associations": [],
                 }
             )

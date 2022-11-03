@@ -18,5 +18,6 @@ class Article(LegacyDocument):
                     "activities": activities,
                     "article_type": article_type,
                     "locales": {},
+                    "associations": [],
                 }
             )

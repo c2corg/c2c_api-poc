@@ -62,27 +62,27 @@ class TestArticleRest(BaseDocumentTestRest):
             4,
         )
 
-    # def test_get(self):
-    #     body = self.get_custom(self.article1)
-    #     assert "article" not in body
-    #     assert "geometry" not in body
-    #     assert body.get("geometry") is None
+    def test_get(self):
+        body = self.get_custom(self.article1)
+        assert "article" not in body
+        assert "geometry" not in body
+        assert body.get("geometry") is None
 
-    #     assert "author" in body
-    #     author = body.get("author")
-    #     self.assertEqual(self.global_userids["contributor"], author.get("user_id"))
+        assert "author" in body
+        author = body.get("author")
+        assert self.global_userids["contributor"] == author.get("user_id")
 
-    #     associations = body["associations"]
-    #     assert "articles" in associations
-    #     assert "books" in associations
-    #     assert "images" in associations
-    #     assert "waypoints" in associations
-    #     assert "routes" in associations
-    #     assert "xreports" in associations
-    #     assert "users" in associations
+        associations = body["associations"]
+        assert "articles" in associations
+        assert "books" in associations
+        assert "images" in associations
+        assert "waypoints" in associations
+        assert "routes" in associations
+        assert "xreports" in associations
+        assert "users" in associations
 
-    #     linked_articles = associations.get("articles")
-    #     assert len(linked_articles) == 2
+        linked_articles = associations.get("articles")
+        assert len(linked_articles) == 2
 
     # def test_get_cooked(self):
     #     self.get_cooked(self.article1)

@@ -13,7 +13,8 @@
       }
     },
     "areas": {},
+    "associations": { "$ref": "entities/association_array.json" },
     "name": { "type": "string" }
   },
-  "required": ["locales", "type", "areas", "name"]
+  "required": ["locales", "type", "areas", "name", "associations"]
 }

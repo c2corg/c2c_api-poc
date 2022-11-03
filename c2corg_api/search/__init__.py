@@ -20,6 +20,8 @@ class DocumentSearch(BaseModel):
 
     available_langs = Column(ARRAY(String()), index=True, default=[])
 
+    activities = Column(ARRAY(String()), index=True, default=[])
+
     def update(self, new_version):
         self.available_langs = [lang for lang in new_version.data["locales"]]
 
@@ -28,7 +30,7 @@ class DocumentSearch(BaseModel):
         if self.document_type == USERPROFILE_TYPE:
             self.user_id = new_version.data.get("user_id")
         elif self.document_type == ARTICLE_TYPE:
-            pass
+            self.activities = new_version.data["activities"]
         elif self.document_type == WAYPOINT_TYPE:
             pass
         elif self.document_type == AREA_TYPE:

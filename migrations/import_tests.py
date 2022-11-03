@@ -15,7 +15,7 @@ def get_code(filename):
 
 
 def _get_python_value():
-    dict_member = r"\w+(?:\[(?:\"\w+\"|\d+)\])+"
+    dict_member = r"(?:\.|\w)+(?:\[(?:\"\w+\"|\d+)\])+"
     simple_value = r"[^,\n\]\[]+"
     string_list = r'\["\w+"(?:, "\w+")*\]'
     function_call = r"[^\n(]+\([^\n)]*\)"

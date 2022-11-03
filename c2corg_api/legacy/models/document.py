@@ -28,6 +28,10 @@ class Document:
     def create_new_model(self, data):
         from flask_camp.models import Document
 
+        # TODO: validate using schemas
+        assert "locales" in data
+        assert "associations" in data
+
         self._document = Document.create(comment="Creation", data=data, author=self.default_author)
 
     @property
