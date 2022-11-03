@@ -34,6 +34,6 @@ def post():
     result["user"]["username"] = result["user"]["name"]
     result["user"]["forum_username"] = result["user"]["name"]
     result["user"]["email"] = User.get(id=result["user"]["id"])._email_to_validate
-    result["user"]["name"] = result["user"]["data"]["full_name"]
+    result["user"]["name"] = data.get("name")
 
     return result["user"]

@@ -16,7 +16,7 @@ requires-python = ">=3.7"
 dependencies = [
     "black==22.8.0",
     "bleach==4.0.0",
-    "Flask-Camp==0.0.21",
+    "Flask-Camp==0.0.22",
     "Markdown==3.3.4",  # at next update, please remove replace_marker() function in toc extension 
     "pylint==2.15.4",
     "pytest==7.1.3",
@@ -26,6 +26,8 @@ dependencies = [
     "pydiscourse @ https://github.com/c2corg/pydiscourse/archive/ea03a3a.zip",
 
     "shapely==1.8.5.post1",
+
+    "python-dateutil==2.8.2",  # for legacy test
 ]
 
 [tool.setuptools]
