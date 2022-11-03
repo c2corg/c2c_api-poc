@@ -5,7 +5,7 @@ from flask_camp import allow
 # from werkzeug.exceptions import NotFound
 from c2corg_api.models import ARTICLE_TYPE
 
-from c2corg_api.legacy.views._document_core import DocumentCollectionView, DocumentView
+from c2corg_api.legacy.views._document_core import DocumentCollectionView, DocumentView, VersionView
 
 
 class ArticlesView(DocumentCollectionView):
@@ -19,3 +19,7 @@ class ArticlesView(DocumentCollectionView):
 
 class ArticleView(DocumentView):
     rule = "/articles/<document_id>"
+
+
+class ArticleVersionView(VersionView):
+    rule = "/articles/<document_id>/<lang>/<version_id>"

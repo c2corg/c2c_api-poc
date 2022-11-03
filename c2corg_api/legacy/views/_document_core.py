@@ -1,6 +1,6 @@
 from flask import request
 from flask_camp import allow
-from flask_camp.views.content import documents as documents_view, document as document_view
+from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest
 
@@ -99,3 +99,21 @@ class DocumentView(LegacyView):
             lang=request.args.get("l"),
             cook_lang=request.args.get("cook"),
         )
+
+
+class VersionView(LegacyView):
+    @allow("anonymous", "authenticated")
+    def get(self, document_id, lang, version_id):
+        r = version_view.get(version_id)
+        return {
+            "document": self._get_legacy_doc(r["document"], cook_lang=lang),
+            "previous_version_id": None,  # TODO
+            "next_version_id": None,  # TODO
+            "version": {
+                "comment": "creation",
+                "name": r["document"]["user"]["name"],
+                "user_id": r["document"]["user"]["id"],
+                "version_id": r["document"]["version_id"],
+                "written_at": r["document"]["timestamp"],
+            },
+        }

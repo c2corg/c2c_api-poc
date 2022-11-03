@@ -1,6 +1,8 @@
 from copy import deepcopy
+from dateutil import parser as datetime_parser
 import json
 from os import sync
+
 from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
@@ -70,10 +72,11 @@ class BaseTestRest(BaseTestClass):
         return None
 
     def optimized_login(self, user_name):
-        self.put(
-            "/v7/user/login",
-            json={"name_or_email": self.global_email[user_name], "password": self.global_passwords[user_name]},
-        )
+        if user_name is not None:
+            self.put(
+                "/v7/user/login",
+                json={"name_or_email": self.global_email[user_name], "password": self.global_passwords[user_name]},
+            )
 
     def get_json_with_contributor(self, url, username="contributor", status=200):
         self.optimized_login(username)
@@ -347,6 +350,31 @@ class BaseDocumentTestRest(BaseTestRest):
 
         self.get(f"{self._prefix}/9999999", status=404)
         self.get(f"{self._prefix}/9999999?l=es", status=404)
+
+    def get_version(self, reference, reference_version, user=None):
+        self.add_authorization_header(username=user)
+        response = self.get(f"{self._prefix}/{reference.document_id}/en/{reference_version.id}", status=200)
+        assert response.content_type == "application/json", response.content_type
+
+        body = response.json
+        assert "document" in body
+        assert "version" in body
+        assert "previous_version_id" in body
+        assert "next_version_id" in body
+
+        assert "cooked" in body["document"], list(body["document"].keys())
+        assert "lang" in body["document"]["cooked"]
+
+        assert body["document"]["cooked"]["lang"] == "en"
+        assert body["document"]["document_id"] == reference.document_id
+        assert body["version"]["version_id"] == reference_version.id
+
+        version = body["version"]
+        written_at = version["written_at"]
+        time = datetime_parser.parse(written_at)
+        assert time.tzinfo is not None
+
+        return body
 
     def put_wrong_document_id(self, request_body, user="contributor"):
         self.app_put_json(self._prefix + "/9999999", request_body, status=403)
