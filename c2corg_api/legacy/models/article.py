@@ -19,6 +19,6 @@ class Article(LegacyDocument):
                     "article_type": article_type,
                     "locales": {},
                     "associations": [],
-                    "author": None,
+                    "author": {"user_id": 666},
                 }
             )

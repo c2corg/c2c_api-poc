@@ -10,10 +10,7 @@
       "type": "array",
       "items": { "$ref": "/entities/langs.json" }
     },
-    "activities": {
-      "type": "array",
-      "items": { "$ref": "/entities/activities.json" }
-    },
+    "activities": { "$ref": "/entities/activity_array.json" },
     "follow": {
       "type": "array",
       "items": { "type": "integer" }

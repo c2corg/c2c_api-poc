@@ -173,9 +173,9 @@ class TestArticleRest(BaseDocumentTestRest):
         }
         self.post_missing_title(body_post, user="moderator")
 
-    # def test_post_non_whitelisted_attribute(self):
-    #     body = {"article_type": "collab", "protected": True, "locales": [{"lang": "en", "title": "Lac d'Annecy"}]}
-    #     self.post_non_whitelisted_attribute(body, user="moderator")
+    def test_post_non_whitelisted_attribute(self):
+        body = {"article_type": "collab", "protected": True, "locales": [{"lang": "en", "title": "Lac d'Annecy"}]}
+        self.post_non_whitelisted_attribute(body, user="moderator")
 
     # def test_post_missing_content_type(self):
     #     self.post_missing_content_type({})

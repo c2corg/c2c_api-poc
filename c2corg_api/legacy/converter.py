@@ -100,6 +100,9 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         result["data"] |= {
             "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
             "associations": [],  # TODO
+            "activities": legacy_document.pop("activities", []),
+            "categories": legacy_document.pop("categories", []),
+            "article_type": legacy_document["article_type"],
         }
     else:
         raise NotImplementedError(f"Dont know how to convert {document_type}")

@@ -104,7 +104,8 @@ class DocumentCollectionView(LegacyView):
         request._cached_json = (body, body)
 
         r = documents_view.post()
-        return r
+
+        return self._get_legacy_doc(r["document"])
 
 
 class DocumentView(LegacyView):

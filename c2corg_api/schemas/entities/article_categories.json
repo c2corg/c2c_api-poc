@@ -1,0 +1,15 @@
+{
+  "enum": [
+    "mountain_environment",
+    "gear",
+    "technical",
+    "topoguide_supplements",
+    "soft_mobility",
+    "expeditions",
+    "stories",
+    "c2c_meetings",
+    "tags",
+    "site_info",
+    "association"
+  ]
+}

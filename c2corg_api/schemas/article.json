@@ -7,18 +7,26 @@
           "type": "object",
           "properties": {
             "lang": { "$ref": "entities/langs.json" },
+            "title": { "type": "string" },
             "description": { "type": ["string", "null"] },
-            "topic_id":  { "type": ["integer", "null"] }
+            "topic_id": { "type": ["integer", "null"] }
           },
-          "required": ["lang", "description", "title", "topic_id"],
+          "required": ["lang", "title"],
           "aditionnalProperties": false
         }
       }
     },
-    "author": { "type": "null" },
-    "associations": { "$ref": "entities/association_array.json" }
+    "author": {
+      "type": "object",
+      "properties": { "user_id": { "type": "integer" } },
+      "required": ["user_id"],
+      "aditionnalProperties": false
+    },
+    "associations": { "$ref": "entities/association_array.json" },
+    "article_type": { "$ref": "entities/article_types.json" },
+    "activities": { "$ref": "/entities/activity_array.json" },
+    "categories": { "$ref": "/entities/article_category_array.json" }
   },
-  "required": ["locales", "type", "author", "associations"],
+  "required": ["locales", "type", "author", "associations", "activities", "categories", "article_type"],
   "aditionnalProperties": false
-
 }

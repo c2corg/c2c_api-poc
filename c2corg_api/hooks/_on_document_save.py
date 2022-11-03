@@ -19,11 +19,14 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
     if document_type not in [USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE]:
         raise BadRequest(f"Unknow document type: {document_type}")
 
-    schema_validator.validate(new_version.data, f"{document_type}.json")
-
     if old_version is None:  # it's a creation
         if document_type == USERPROFILE_TYPE:
             raise BadRequest("Profile page can't be created without an user")
+
+        if document_type == ARTICLE_TYPE:
+            new_version.data |= {"author": {"user_id": current_user.id}}
+
+    schema_validator.validate(new_version.data, f"{document_type}.json")
 
     if old_version is not None and new_version is not None:
         if document_type == USERPROFILE_TYPE:

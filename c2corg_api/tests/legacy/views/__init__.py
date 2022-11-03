@@ -393,9 +393,21 @@ class BaseDocumentTestRest(BaseTestRest):
 
         body = response.json
         assert body.get("status") == "error"
-        assert "'title' is a required property on instance ['locales']['en']\n" in body.get("description"), body
+        assert "'title' is a required property on instance ['locales']['en']" in body.get("description"), body
 
         return body
+
+    def post_non_whitelisted_attribute(self, request_body, user="contributor"):
+        """`protected` is a non-whitelisted attribute, which is ignored when given in a request."""
+        self.add_authorization_header(username=user)
+        response = self.app_post_json(self._prefix, request_body, status=200)
+
+        body = response.json
+        document_id = body.get("document_id")
+        document = self.session.query(Document).get(document_id)
+        # the value for `protected` was ignored
+        assert document.protected is False
+        return (body, document)
 
     def put_wrong_document_id(self, request_body, user="contributor"):
         self.app_put_json(self._prefix + "/9999999", request_body, status=403)
