@@ -17,7 +17,7 @@ Before starting edition/tests, you must activate the environment and have a [red
 
 ```bash
 source venv/bin/activate   # activate the environment (if it's not automatic, see IDE section)
-flask_camp dev_env         # start redis and postgresql
+docker-compose up -d       # start redis and postgresql
 flask_camp init_db         # init the database, only if you want to run the app
 ```
 
