@@ -1,3 +1,6 @@
+from c2corg_api.schemas import schema_validator
+
+
 class _AlwaysTrue:
     def __eq__(self, o):
         return True
@@ -28,9 +31,7 @@ class Document:
     def create_new_model(self, data):
         from flask_camp.models import Document
 
-        # TODO: validate using schemas
-        assert "locales" in data
-        assert "associations" in data
+        schema_validator.validate(data, f"{data['type']}.json")
 
         self._document = Document.create(comment="Creation", data=data, author=self.default_author)
 
