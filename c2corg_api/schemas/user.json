@@ -1,5 +1,9 @@
 {
   "properties": {
+    "name": { "type": "string" },
+    "email": { "type": "string" },
+    "password": { "type": "string" },
+    "blocked": { "type": "boolean" },
     "data": {
       "properties": {
         "full_name": { "type": "string" },
@@ -7,7 +11,9 @@
         "lang": { "$ref": "entities/langs.json" },
         "feed": { "$ref": "entities/user_feed_preferences.json" }
       },
-      "required": ["full_name", "lang", "is_profile_public", "feed"]
+      "required": ["full_name", "lang", "is_profile_public", "feed"],
+      "additionalProperties": false
     }
-  }
+  },
+  "additionalProperties": false
 }

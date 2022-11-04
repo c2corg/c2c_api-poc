@@ -44,7 +44,7 @@ class LegacyView:
 
         result = convert_to_legacy_doc(document)
 
-        locales = document["data"]["locales"]
+        locales = {locale["lang"]: locale for locale in result["locales"]}
 
         if lang is not None:
             if lang in locales:

@@ -1,0 +1,16 @@
+{
+  "enum": [
+    "amateur",
+    "mountain_guide",
+    "mountain_leader",
+    "ski_instructor",
+    "climbing_instructor",
+    "mountainbike_instructor",
+    "paragliding_instructor",
+    "hut_warden",
+    "ski_patroller",
+    "avalanche_forecaster",
+    "club",
+    "institution"
+  ]
+}

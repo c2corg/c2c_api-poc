@@ -1,4 +1,5 @@
 from c2corg_api.schemas import schema_validator
+from c2corg_api.models import USERPROFILE_TYPE
 
 
 class _AlwaysTrue:
@@ -67,7 +68,7 @@ class Document:
 
     @property
     def locales(self):
-        return LocaleDictProxy(self._document.last_version.data["locales"])
+        return LocaleDictProxy(self._document.last_version.data["locales"], self.type)
 
     @property
     def geometry(self):
@@ -98,10 +99,12 @@ class DocumentGeometry:
 
 
 class LocaleDictProxy:
-    def __init__(self, json):
+    def __init__(self, json, document_type):
         self._json = json
+        self._document_type = document_type
 
     def append(self, locale):
+        locale.set_document_type(self._document_type)
         self._json[locale.lang] = locale.to_json()
 
     def get_locale(self, lang):
@@ -117,7 +120,6 @@ class LocaleDictProxy:
 
     def __getitem__(self, i):
         json = list(self._json.values())[i]
-        print(json)
         return DocumentLocale(json=json)
 
 
@@ -127,6 +129,11 @@ class DocumentLocale:
             self._json = json
         else:
             self._json = {"lang": lang, "title": title, "description": description, "topic_id": None}
+
+    def set_document_type(self, document_type):
+        if document_type == USERPROFILE_TYPE:
+            self._json.pop("title", None)
+            self._json.pop("topic_id", None)
 
     def to_json(self):
         return self._json

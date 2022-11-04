@@ -7,14 +7,23 @@
           "type": "object",
           "properties": {
             "lang": { "$ref": "entities/langs.json" },
-            "description": { "type": ["string", "null"] }
-          }
+            "description": { "type": ["string", "null"] },
+            "summary": { "type" : ["string", "null"] }
+          },
+          "additionalProperties": false
         }
       }
     },
     "areas": {},
     "associations": { "$ref": "entities/association_array.json" },
-    "name": { "type": "string" }
+    "name": { "type": "string" },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "entities/user_categories.json" }
+    },
+    "geometry": {},
+    "user_id": { "type": "integer" }
   },
-  "required": ["locales", "type", "areas", "name", "associations"]
+  "required": ["locales", "type", "areas", "name", "associations"],
+  "additionalProperties": false
 }

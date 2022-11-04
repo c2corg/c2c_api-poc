@@ -14,6 +14,7 @@ class Article(LegacyDocument):
             self.create_new_model(
                 data={
                     "type": ARTICLE_TYPE,
+                    "quality": "draft",
                     "categories": categories,
                     "activities": activities,
                     "article_type": article_type,

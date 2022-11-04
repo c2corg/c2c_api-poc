@@ -105,8 +105,9 @@ class BaseTestRest(BaseTestClass):
 
     def session_add(self, instance):
         if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
-            data = instance._document.last_version.data
+            data = json.loads(instance._document.last_version._data)
             schema_validator.validate(data, f"{data['type']}.json")
+
             self.session.add(instance._document)
 
             update_document_search_table(instance._document, self.session)
@@ -338,7 +339,7 @@ class BaseDocumentTestRest(BaseTestRest):
         assert locale_en.get("lang") == self.locale_en.lang
 
         assert "protected" in body
-        assert "topic_id" in locale_en
+        assert "topic_id" in locale_en, locale_en
         return body
 
     def get_new_lang(self, reference, user=None):

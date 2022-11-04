@@ -46,6 +46,9 @@ def convert_to_legacy_doc(document):
             "areas": data["areas"],
             "geometry": data["geometry"] | {"version": 0},
         }
+        for locale in result["locales"]:
+            locale["topic_id"] = None
+
     elif data["type"] == ARTICLE_TYPE:
         result |= {
             "categories": data["categories"],
@@ -61,6 +64,7 @@ def convert_to_legacy_doc(document):
 def convert_from_legacy_doc(legacy_document, document_type, expected_document_id=None):
 
     result = {
+        "protected": legacy_document.pop("protected", False),
         "data": {
             "type": legacy_document.pop("type", document_type),
         },
@@ -81,33 +85,68 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         old_version = current_api.get_document(result["id"])
         old_data = old_version["data"]
     else:
+        legacy_document.pop("document_id", None)  # it can be zero
         old_data = {}
 
     old_locales = old_data.get("locales", {})
 
     if document_type == USERPROFILE_TYPE:  # rely on old version to get document type
         result["data"] |= {
-            "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
+            "locales": old_locales
+            | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
             "areas": legacy_document.pop("areas", {}),
             "name": legacy_document.pop("name", old_data["name"]),
             "geometry": {"geom": "{}"},
-            "associations": [],  # TODO
+            "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
         }
 
         if "geometry" in legacy_document:
             result["data"]["geometry"]["geom"] = json.loads(legacy_document.pop("geometry")["geom"])
 
+        # clean
+        legacy_document.pop("quality", None)
+
         # other props
         result["data"] |= legacy_document
+
     elif document_type == ARTICLE_TYPE:
         result["data"] |= {
-            "locales": old_locales | {locale["lang"]: locale for locale in legacy_document.pop("locales", {})},
-            "associations": [],  # TODO
+            "locales": old_locales
+            | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
+            "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
             "activities": legacy_document.pop("activities", []),
             "categories": legacy_document.pop("categories", []),
-            "article_type": legacy_document["article_type"],
+            "article_type": legacy_document.pop("article_type"),
+            "quality": legacy_document.pop("quality", "draft"),
         }
+
+        # other props
+        result["data"] |= legacy_document
+
     else:
         raise NotImplementedError(f"Dont know how to convert {document_type}")
 
     return result
+
+
+def convert_from_legacy_locales(locales, document_type):
+    for locale in locales:
+        locale.pop("version", None)
+        if document_type == USERPROFILE_TYPE:
+            locale.pop("title", None)
+            locale.pop("topic_id", None)
+
+    return {locale["lang"]: locale for locale in locales}
+
+
+def convert_from_legacy_associations(associations):
+    result = set()
+
+    associations.pop("all_routes", None)
+    associations.pop("recent_outings", None)
+
+    for array in associations.values():
+        for document in array:
+            result.add(document["document_id"])
+
+    return list(result)

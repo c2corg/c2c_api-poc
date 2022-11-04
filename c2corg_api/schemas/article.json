@@ -1,6 +1,7 @@
 {
   "properties": {
     "type": { "const": "article" },
+    "quality": { "$ref": "entities/qualities.json" },
     "locales": {
       "patternProperties": {
         "(fr|en)": {
@@ -8,11 +9,12 @@
           "properties": {
             "lang": { "$ref": "entities/langs.json" },
             "title": { "type": "string" },
+            "summary": { "type": "string" },
             "description": { "type": ["string", "null"] },
             "topic_id": { "type": ["integer", "null"] }
           },
           "required": ["lang", "title"],
-          "aditionnalProperties": false
+          "additionalProperties": false
         }
       }
     },
@@ -20,13 +22,13 @@
       "type": "object",
       "properties": { "user_id": { "type": "integer" } },
       "required": ["user_id"],
-      "aditionnalProperties": false
+      "additionalProperties": false
     },
     "associations": { "$ref": "entities/association_array.json" },
     "article_type": { "$ref": "entities/article_types.json" },
     "activities": { "$ref": "/entities/activity_array.json" },
     "categories": { "$ref": "/entities/article_category_array.json" }
   },
-  "required": ["locales", "type", "author", "associations", "activities", "categories", "article_type"],
-  "aditionnalProperties": false
+  "required": ["locales", "type", "author", "associations", "activities", "categories", "article_type", "quality"],
+  "additionalProperties": false
 }
