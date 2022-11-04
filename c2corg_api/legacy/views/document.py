@@ -1,5 +1,5 @@
 import json
-from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
+from c2corg_api.models import ARTICLE_TYPE, XREPORT_TYPE
 
 
 class DocumentRest:
@@ -7,7 +7,7 @@ class DocumentRest:
     def create_new_version(document, author):
         last_version = document._document.last_version
         data = last_version.data
-        if last_version.data["type"] == ARTICLE_TYPE:
+        if last_version.data["type"] in (ARTICLE_TYPE, XREPORT_TYPE):
             data |= {"author": {"user_id": author}}
         else:
             pass

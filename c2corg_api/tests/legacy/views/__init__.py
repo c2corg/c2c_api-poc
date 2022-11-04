@@ -279,6 +279,9 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return response.json
 
+    def get_locale(self, lang, locales):
+        return next(filter(lambda locale: locale["lang"] == lang, locales), None)
+
     def get_custom(self, reference, user=None, check_title=True, ignore_checks=False):
         if user:
             self.optimized_login(user)

@@ -1,5 +1,9 @@
 {
   "properties": {
+    "author": { "$ref": "entities/author.json" },
+    "date": {
+      "oneOf": [{ "$ref": "entities/date.json" }, { "type": "null" }]
+    },
     "type": { "const": "xreport" },
     "quality": { "$ref": "attributes/quality_types.json" },
 
@@ -7,11 +11,13 @@
     "event_type": { "$ref": "attributes/event_types.json" },
 
     "associations": { "$ref": "entities/association_array.json" },
-    "nb_participants": { "type": "integer" }, 
-    "nb_impacted": { "type": "integer" },  
-    "age": { "type": "integer" }, 
-    "geometry": { "$ref": "entities/geometry.json" },
-    
+    "nb_participants": { "type": "integer" },
+    "nb_impacted": { "type": "integer" },
+    "age": { "type": "integer" },
+    "geometry": {
+      "oneOf": [{ "$ref": "entities/geometry.json" }, { "type": "null" }]
+    },
+
     "locales": {
       "patternProperties": {
         "(fr|en)": {
@@ -37,7 +43,9 @@
     "locales",
     "quality",
     "type",
-    "geometry"
+    "geometry",
+    "author",
+    "date"
   ],
   "additionalProperties": false
 }

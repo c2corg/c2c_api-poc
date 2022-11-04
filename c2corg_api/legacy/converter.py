@@ -72,8 +72,17 @@ def convert_to_legacy_doc(document):
         }
     elif data["type"] == XREPORT_TYPE:
         result |= {
-            "geometry": data["geometry"] | {"version": 0},
+            "geometry": data["geometry"],
+            "author": data["author"],
+            "date": data["date"],
+            "event_type": data["event_type"],
+            "event_activity": data["event_activity"],
+            "nb_participants": data.get("nb_participants"),
+            "nb_impacted": data.get("nb_impacted"),
         }
+
+        if result["geometry"] is not None:
+            result["geometry"] |= {"version": 0}
 
     else:
         raise NotImplementedError(f"Don't know how to convert {data['type']}")

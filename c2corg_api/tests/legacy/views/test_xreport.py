@@ -184,6 +184,7 @@ class TestXreportRest(BaseDocumentTestRest):
         response = self.get(url, status=304, headers=auth_headers)
         assert response.headers.get("Cache-Control") == None
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_version_caching(self):
         headers = self.add_authorization_header(username="contributor")
         url = "{0}/{1}/en/{2}".format(self._prefix, str(self.xreport1.document_id), str(self.xreport1_version.id))
@@ -208,17 +209,21 @@ class TestXreportRest(BaseDocumentTestRest):
         body = response.json
         assert body == fake_cache_value
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.xreport1)
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         _, locale = self.get_info(self.xreport1, "en")
         assert locale.get("lang") == "en"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_best_lang(self):
         _, locale = self.get_info(self.xreport1, "es")
         assert locale.get("lang") == "fr"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_404(self):
         self.get_info_404()
 
@@ -693,6 +698,7 @@ class TestXreportRest(BaseDocumentTestRest):
         assert body["status"] == "error"
         assert body["name"] == "Forbidden"
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.xreport1)
 

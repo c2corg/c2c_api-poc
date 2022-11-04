@@ -32,12 +32,14 @@ class Xreport(LegacyDocument):
         if document is None:
             data = {
                 "type": XREPORT_TYPE,
+                "date": str(date) if date is not None else None,
                 "quality": "draft",
                 "event_activity": event_activity,
                 "event_type": event_type,
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": [],
-                "geometry": {},
+                "geometry": None,
+                "author": {"user_id": 666},
             }
 
             if nb_participants is not None:
@@ -51,9 +53,9 @@ class Xreport(LegacyDocument):
 
             self.create_new_model(data=data)
 
-    # @property
-    # def activities(self):
-    #     return self._document.last_version.data["activities"]
+    @property
+    def event_activity(self):
+        return self._document.last_version.data["event_activity"]
 
     # @property
     # def xreport_types(self):

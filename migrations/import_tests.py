@@ -256,6 +256,14 @@ skipped_methods_by_file = {
         "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
         "test_get_associations_history": "This view is not relevant in new model",
     },
+    "views/test_xreport.py": {
+        "test_get_version_caching": "caching is handled and tested in flask-camp",
+        "test_get_caching": "caching is handled and tested in flask-camp",
+        "test_get_info": "test_get_info is not used in UI",
+        "test_get_info_best_lang": "test_get_info is not used in UI",
+        "test_get_info_404": "test_get_info is not used in UI",
+        "test_get_associations_history": "This view is not relevant in new model",
+    },
 }
 
 skipped_classes = {
