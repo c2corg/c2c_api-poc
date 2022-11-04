@@ -180,36 +180,36 @@ class TestArticleRest(BaseDocumentTestRest):
     def test_post_missing_content_type(self):
         self.post_missing_content_type({})
 
-    # def test_post_empty_assoc_in_new_c_document(self):
-    #     body = {
-    #         "document_id": 0,
-    #         "type": "",
-    #         "quality": "great",
-    #         "activities": ["hiking", "skitouring"],
-    #         "categories": ["mountain_environment"],
-    #         "article_type": "collab",
-    #         "associations": {
-    #             "waypoints": [],
-    #             "waypoint_children": [],
-    #             "routes": [],
-    #             "all_routes": {"total": 0, "documents": []},
-    #             "users": [],
-    #             "recent_outings": {"total": 0, "documents": []},
-    #             "articles": [],
-    #             "images": [],
-    #             "areas": [],
-    #         },
-    #         "locales": [
-    #             {
-    #                 "lang": "en",
-    #                 "title": "new testing article",
-    #                 "description": "some description",
-    #                 "summary": "some summary",
-    #             }
-    #         ],
-    #     }
+    def test_post_empty_assoc_in_new_c_document(self):
+        body = {
+            "document_id": 0,
+            "type": "",
+            "quality": "great",
+            "activities": ["hiking", "skitouring"],
+            "categories": ["mountain_environment"],
+            "article_type": "collab",
+            "associations": {
+                "waypoints": [],
+                "waypoint_children": [],
+                "routes": [],
+                "all_routes": {"total": 0, "documents": []},
+                "users": [],
+                "recent_outings": {"total": 0, "documents": []},
+                "articles": [],
+                "images": [],
+                "areas": [],
+            },
+            "locales": [
+                {
+                    "lang": "en",
+                    "title": "new testing article",
+                    "description": "some description",
+                    "summary": "some summary",
+                }
+            ],
+        }
 
-    #     body, doc = self.post_success(body, user="moderator")
+        body, doc = self.post_success(body, user="moderator")
 
     # def test_post_success(self):
     #     body = {

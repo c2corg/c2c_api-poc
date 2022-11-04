@@ -1,5 +1,7 @@
+from flask_camp.models import Document
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
-from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.legacy.models.article import Article as LegacyArticle
+from c2corg_api.models import USERPROFILE_TYPE, ARTICLE_TYPE
 from c2corg_api.search import search
 
 elasticsearch_config = {"index": None}
@@ -21,6 +23,9 @@ class Search:
         if self.document_type == USERPROFILE_TYPE:
             return LegacyUserProfile.from_document_id(document_ids[0])
 
+        if self.document_type == ARTICLE_TYPE:
+            return LegacyArticle(document=Document.get(document_ids[0]))
+
         raise NotImplementedError()
 
 
@@ -32,7 +37,7 @@ class SearchUser:
 
 search_documents = {
     # AREA_TYPE: SearchArea,
-    # ARTICLE_TYPE: SearchArticle,
+    ARTICLE_TYPE: Search(ARTICLE_TYPE),
     # BOOK_TYPE: SearchBook,
     # IMAGE_TYPE: SearchImage,
     # OUTING_TYPE: SearchOuting,

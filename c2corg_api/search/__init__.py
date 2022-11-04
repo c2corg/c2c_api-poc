@@ -1,6 +1,7 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document, User
 from sqlalchemy import Column, ForeignKey, String, select
+from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE, ProfilePageLink
@@ -53,16 +54,18 @@ def update_document_search_table(document, session=None):
 
 
 def search(document_type=None, id=None, user_id=None):
-    query = select(DocumentSearch.id)
+    criterions = []
 
     if document_type is not None:
-        query = query.where(DocumentSearch.document_type == document_type)
+        criterions.append(DocumentSearch.document_type == document_type)
 
     if id is not None:
-        query = query.where(Document.id == id)
+        criterions.append(DocumentSearch.id == id)
 
     if user_id is not None:
-        query = query.where(DocumentSearch.user_id == user_id)
+        criterions.append(DocumentSearch.user_id == user_id)
+
+    query = select(DocumentSearch.id).where(and_(*criterions))
 
     result = list(current_api.database.session.execute(query))
 

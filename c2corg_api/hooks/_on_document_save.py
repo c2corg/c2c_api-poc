@@ -14,7 +14,7 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
         delete(DocumentSearch).where(DocumentSearch.id == document.id)
         return
 
-    document_type = new_version.data.get("type")
+    document_type = new_version.data["type"]
 
     if document_type not in [USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE]:
         raise BadRequest(f"Unknow document type: {document_type}")

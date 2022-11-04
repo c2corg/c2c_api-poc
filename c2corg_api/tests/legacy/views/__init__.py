@@ -13,8 +13,10 @@ from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyD
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
+from c2corg_api.legacy.models.route import Route as LegacyRoute
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
+from c2corg_api.legacy.search import search_documents
 from c2corg_api.schemas import schema_validator
 from c2corg_api.search import search, update_document_search_table
 from c2corg_api.tests.conftest import BaseTestClass, get_default_data
@@ -139,6 +141,10 @@ class BaseTestRest(BaseTestClass):
         if klass is LegacyUserProfile:
             return LegacyUserProfile.from_document_id(parameter_value)
 
+        if klass is LegacyArticle:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyArticle(document=doc)
+
         raise TypeError("TODO...")
 
     def extract_nonce(self, _send_mail, key):
@@ -186,7 +192,7 @@ class BaseTestRest(BaseTestClass):
         document_as_dict = self.api.get_cooked_document(document_ids[0])
         data = document_as_dict["data"]
 
-        result = {"doc_type": document_as_dict["data"].get("type")}
+        result = {"doc_type": document_as_dict["data"].get("type"), "document_id": document_as_dict["id"]}
 
         if document_as_dict["data"].get("type") == USERPROFILE_TYPE:
             user = User.get(id=document_as_dict["data"]["user_id"])
@@ -214,6 +220,7 @@ class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):
         self._prefix = prefix
         self._model = document_class
+        self._doc_type = document_type
 
     def get_collection(self, params=None, user=None):
         if user:
@@ -571,6 +578,64 @@ class BaseDocumentTestRest(BaseTestRest):
     def _add_association(self, association, user_id):
         """used for setup"""
         association.propagate_in_documents()
+
+    def post_success(self, request_body, user="contributor", validate_with_auth=False, skip_validation=False):
+        self.app_post_json(self._prefix, request_body, status=403)
+
+        self.add_authorization_header(username=user)
+        response = self.app_post_json(self._prefix, request_body, status=200)
+
+        body = response.json
+        if skip_validation:
+            document_id = body.get("document_id")
+            response = self.app.get(self._prefix + "/" + str(document_id), status=200)
+            doc = self.query_get(self._model, id=document_id)
+            return response.json, doc
+        else:
+            return self._validate_document(body, validate_with_auth)
+
+    def _validate_document(self, body, headers=None, validate_with_auth=False):
+        document_id = body.get("document_id")
+        assert document_id is not None
+
+        if validate_with_auth:
+            response = self.get(self._prefix + "/" + str(document_id), headers=headers, status=200)
+        else:
+            self.delete("/v7/user/login")
+            response = self.get(self._prefix + "/" + str(document_id), status=200)
+        assert response.content_type == "application/json"
+
+        body = response.json
+        assert body.get("version") is not None
+        assert body.get("protected") == False
+
+        # check that the version was created correctly
+        doc = self.query_get(self._model, id=document_id)
+
+        versions = doc.versions
+        assert len(versions) == 1
+        version = versions[0]
+
+        assert version.comment == "creation", version.comment
+        assert version.written_at is not None
+
+        # check updates to the search index
+        self.sync_es()
+        search_doc = self.search_document(self._doc_type, id=doc.document_id)
+
+        assert search_doc["document_id"] == doc.document_id, search_doc
+        assert search_doc["doc_type"] is not None
+        assert search_doc["doc_type"] == doc.type
+
+        locale_en = doc.locales[0]
+
+        if isinstance(doc, LegacyRoute):
+            title = locale_en.title_prefix + " : " + locale_en.title
+            assert search_doc["title_en"] == title
+        else:
+            assert search_doc["title_en"] == locale_en.title, f"{search_doc['title_en']} vs {locale_en.title}"
+
+        return (body, doc)
 
 
 def get_locale(locales, lang):

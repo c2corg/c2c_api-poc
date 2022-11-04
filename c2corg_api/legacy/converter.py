@@ -66,10 +66,13 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         },
     }
 
+    if result["data"]["type"] == "":
+        result["data"]["type"] = document_type
+
     if "version" in legacy_document:  # new doc do not have any version id
         result["version_id"] = legacy_document.pop("version")
 
-    if "document_id" in legacy_document:
+    if "document_id" in legacy_document and legacy_document["document_id"] != 0:
         result["id"] = int(legacy_document.pop("document_id"))
 
         if result["id"] != expected_document_id:

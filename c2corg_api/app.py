@@ -44,5 +44,5 @@ def create_app(**config):
     api.add_modules(app, discourse_login_url_view)
 
     add_legacy_modules(app, api)
-    
+
     return app, api

@@ -23,6 +23,14 @@ class DocumentArchive:
     def document_geometry_archive(self):
         return Geometry(self._version.data.get("geometry", {}))
 
+    @property
+    def comment(self):
+        return self._version.comment
+
+    @property
+    def written_at(self):
+        return self._version.timestamp
+
 
 class Document:
     def __init__(self, document=None):
@@ -40,6 +48,10 @@ class Document:
         from flask_camp.models import User
 
         return User.query.first()
+
+    @property
+    def type(self):
+        return self._document.last_version.data["type"]
 
     @property
     def version(self):
@@ -102,6 +114,11 @@ class LocaleDictProxy:
 
     def __str__(self):
         return str(self._json)
+
+    def __getitem__(self, i):
+        json = list(self._json.values())[i]
+        print(json)
+        return DocumentLocale(json=json)
 
 
 class DocumentLocale:

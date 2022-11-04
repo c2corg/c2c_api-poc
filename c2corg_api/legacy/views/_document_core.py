@@ -102,7 +102,7 @@ class DocumentCollectionView(LegacyView):
 
         legacy_doc = request.get_json()
         new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type)
-        body = {"document": new_model, "comment": "Default comment on creation"}
+        body = {"document": new_model, "comment": "creation"}
 
         request._cached_json = (body, body)
 
