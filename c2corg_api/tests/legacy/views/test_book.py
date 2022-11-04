@@ -175,6 +175,7 @@ class TestBookRest(BaseDocumentTestRest):
     def test_post_missing_content_type(self):
         self.post_missing_content_type({})
 
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_post_success(self):
         body = {
             "document_id": 12345678,

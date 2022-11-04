@@ -1,5 +1,13 @@
 from c2corg_api.schemas import schema_validator
-from c2corg_api.models import USERPROFILE_TYPE, ARTICLE_TYPE
+from c2corg_api.models import (
+    USERPROFILE_TYPE,
+    ARTICLE_TYPE,
+    BOOK_TYPE,
+    ROUTE_TYPE,
+    WAYPOINT_TYPE,
+    AREA_TYPE,
+    IMAGE_TYPE,
+)
 
 
 class _AlwaysTrue:
@@ -52,11 +60,15 @@ class DocumentArchive:
 
     @property
     def activities(self):
-        return self._get_attribute("activities", {ARTICLE_TYPE: "activities"})
+        return self._get_attribute("activities", {ARTICLE_TYPE: "activities", BOOK_TYPE: "activities"})
 
     @property
     def article_type(self):
         return self._get_attribute("article_type", {ARTICLE_TYPE: "article_type"})
+
+    @property
+    def book_types(self):
+        return self._get_attribute("book_types", {BOOK_TYPE: "book_types"})
 
     def _get_attribute(self, attribute_name, mapping):
         if self._document_type not in mapping:

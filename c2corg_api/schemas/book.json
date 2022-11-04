@@ -1,28 +1,41 @@
 {
-    "properties": {
-      "type": { "const": "book" },
-      "quality": { "$ref": "attributes/quality_types.json" },
-      "locales": {
-        "patternProperties": {
-          "(fr|en)": {
-            "type": "object",
-            "properties": {
-              "lang": { "$ref": "attributes/default_langs.json" },
-              "title": { "type": "string" },
-              "summary": { "type": "string" },
-              "description": { "type": ["string", "null"] },
-              "topic_id": { "type": ["integer", "null"] }
-            },
-            "required": ["lang", "title"],
-            "additionalProperties": false
-          }
+  "properties": {
+    "type": { "const": "book" },
+    "quality": { "$ref": "attributes/quality_types.json" },
+    "locales": {
+      "patternProperties": {
+        "(fr|en)": {
+          "type": "object",
+          "properties": {
+            "lang": { "$ref": "attributes/default_langs.json" },
+            "title": { "type": "string" },
+            "summary": { "type": "string" },
+            "description": { "type": ["string", "null"] },
+            "topic_id": { "type": ["integer", "null"] }
+          },
+          "required": ["lang", "title"],
+          "additionalProperties": false
         }
-      },
-      "associations": { "$ref": "entities/association_array.json" },
-      "activities": { "$ref": "entities/activity_array.json" },
-      "book_types": { "$ref": "entities/book_type_array.json" }
+      }
     },
-    "required": ["locales", "type", "associations", "activities", "book_types", "quality"],
-    "additionalProperties": false
-  }
-  
+    "associations": { "$ref": "entities/association_array.json" },
+    "activities": { "$ref": "entities/activity_array.json" },
+    "book_types": { "$ref": "entities/book_type_array.json" },
+
+    "author": { "type": "string" },
+    "editor": { "type": "string" },
+    "isbn": { "type": "string" },
+    "nb_pages": { "type": "integer" },
+    "publication_date": { "type": "string" },
+    "url": { "type": "string" }
+  },
+  "required": [
+    "locales",
+    "type",
+    "associations",
+    "activities",
+    "book_types",
+    "quality"
+  ],
+  "additionalProperties": false
+}

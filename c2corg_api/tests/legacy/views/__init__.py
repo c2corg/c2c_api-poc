@@ -159,7 +159,11 @@ class BaseTestRest(BaseTestClass):
             doc = self.session.query(Document).get(parameter_value)
             return LegacyArticle(document=doc)
 
-        raise TypeError("TODO...")
+        if klass is LegacyBook:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyBook(document=doc)
+
+        raise NotImplementedError(f"TODO...: {klass}")
 
     def extract_nonce(self, _send_mail, key):
         message = _send_mail.call_args_list[0][0][0]

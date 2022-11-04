@@ -145,6 +145,9 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
             "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
         }
 
+        # clean
+        legacy_document.pop("geometry", None)
+
         # other props
         result["data"] |= legacy_document
 
