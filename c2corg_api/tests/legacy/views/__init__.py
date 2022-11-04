@@ -15,9 +15,11 @@ from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.book import Book as LegacyBook
 from c2corg_api.legacy.models.image import Image as LegacyImage
+from c2corg_api.legacy.models.outing import Outing as LegacyOuting
 from c2corg_api.legacy.models.route import Route as LegacyRoute
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
+from c2corg_api.legacy.models.xreport import Xreport as LegacyXreport
 from c2corg_api.legacy.search import search_documents
 from c2corg_api.schemas import schema_validator
 from c2corg_api.search import search, update_document_search_table
@@ -112,8 +114,10 @@ class BaseTestRest(BaseTestClass):
             LegacyBook,
             LegacyImage,
             LegacyRoute,
+            LegacyOuting,
             LegacyUserProfile,
             LegacyWaypoint,
+            LegacyXreport,
         )
 
         if isinstance(instance, legacy_document):

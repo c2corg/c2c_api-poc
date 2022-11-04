@@ -1,3 +1,4 @@
+import json
 from c2corg_api.schemas import schema_validator
 from c2corg_api.models import (
     USERPROFILE_TYPE,
@@ -83,6 +84,8 @@ class Document:
 
     def create_new_model(self, data):
         from flask_camp.models import Document
+
+        print(json.dumps(data, indent=4))
 
         schema_validator.validate(data, f"{data['type']}.json")
 
