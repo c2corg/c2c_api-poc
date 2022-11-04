@@ -101,7 +101,12 @@ class DocumentCollectionView(LegacyView):
             raise UnsupportedMediaType()
 
         legacy_doc = request.get_json()
+
+        # document_id is allowed in old model, even if it does not make sense
+        legacy_doc.pop("document_id", None)
+
         new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type)
+
         body = {"document": new_model, "comment": "creation"}
 
         request._cached_json = (body, body)
@@ -121,6 +126,16 @@ class DocumentView(LegacyView):
             lang=request.args.get("l"),
             cook_lang=request.args.get("cook"),
         )
+
+    @allow("authenticated")
+    def put(self, document_id):
+        body = request.get_json()
+        new_body = self._from_legacy_doc(body, document_id)
+        request._cached_json = (new_body, new_body)
+
+        result = document_view.post(document_id)
+
+        return result
 
 
 class VersionView(LegacyView):

@@ -1,7 +1,7 @@
 import json
 from flask_camp import current_api
 from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
 
 def get_legacy_doc(document_id):
@@ -79,10 +79,13 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
     if "document_id" in legacy_document and legacy_document["document_id"] != 0:
         result["id"] = int(legacy_document.pop("document_id"))
 
+        old_version = current_api.get_document(expected_document_id)
+        if old_version is None:
+            raise NotFound()
+
         if result["id"] != expected_document_id:
             raise BadRequest("Id in body does not match id in URI")
 
-        old_version = current_api.get_document(result["id"])
         old_data = old_version["data"]
     else:
         legacy_document.pop("document_id", None)  # it can be zero
@@ -119,6 +122,9 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
             "article_type": legacy_document.pop("article_type"),
             "quality": legacy_document.pop("quality", "draft"),
         }
+
+        # clean
+        legacy_document.pop("geometry", None)
 
         # other props
         result["data"] |= legacy_document

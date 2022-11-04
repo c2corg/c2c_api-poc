@@ -431,6 +431,15 @@ class BaseDocumentTestRest(BaseTestRest):
         self.add_authorization_header(username=user)
         self.app_put_json(self._prefix + "/9999999", request_body, status=404)
 
+    def put_wrong_ids(self, request_body, id, user="contributor"):
+        """The id given in the URL does not equal the document_id in the request body."""
+        request_body["document"]["document_id"] = 9999
+        self.add_authorization_header(username=user)
+        r = self.app_put_json(self._prefix + "/" + str(id), request_body, status=400).json
+
+        assert r["status"] == "error", r
+        assert r["description"] == "Id in body does not match id in URI", r
+
     def put_wrong_version(self, request_body, id, user="contributor"):
         self.app_put_json(self._prefix + "/" + str(id), request_body, status=403)
 
@@ -441,15 +450,6 @@ class BaseDocumentTestRest(BaseTestRest):
         # body = response.json
         # self.assertEqual(body["status"], "error")
         # self.assertEqual(body["errors"][0]["name"], "Conflict")
-
-    def put_wrong_ids(self, request_body, id, user="contributor"):
-        """The id given in the URL does not equal the document_id in the request body."""
-        request_body["document"]["document_id"] = 9999
-        self.add_authorization_header(username=user)
-        r = self.app_put_json(self._prefix + "/" + str(id), request_body, status=400).json
-
-        assert r["status"] == "error", r
-        assert r["description"] == "Id in body does not match id in URI", r
 
     def put_put_no_document(self, id, user="contributor"):
         request_body = {"message": "..."}

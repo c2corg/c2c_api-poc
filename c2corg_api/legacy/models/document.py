@@ -1,5 +1,5 @@
 from c2corg_api.schemas import schema_validator
-from c2corg_api.models import USERPROFILE_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, ARTICLE_TYPE
 
 
 class _AlwaysTrue:
@@ -21,6 +21,10 @@ class DocumentArchive:
         self._version = version
 
     @property
+    def _document_type(self):
+        return self._version.data["type"]
+
+    @property
     def document_geometry_archive(self):
         return Geometry(self._version.data.get("geometry", {}))
 
@@ -31,6 +35,34 @@ class DocumentArchive:
     @property
     def written_at(self):
         return self._version.timestamp
+
+    @property
+    def document_archive(self):
+        return self
+
+    @property
+    def document_locales_archive(self):
+        return LocaleDictProxy(json=self._version.data["locales"], document_type=self._document_type).get_locale(
+            "en"
+        )  # damn :(
+
+    @property
+    def categories(self):
+        return self._get_attribute("categories", {ARTICLE_TYPE: "categories"})
+
+    @property
+    def activities(self):
+        return self._get_attribute("activities", {ARTICLE_TYPE: "activities"})
+
+    @property
+    def article_type(self):
+        return self._get_attribute("article_type", {ARTICLE_TYPE: "article_type"})
+
+    def _get_attribute(self, attribute_name, mapping):
+        if self._document_type not in mapping:
+            raise AttributeError(f"'{DocumentArchive}' has no attribute '{attribute_name}' for {self._document_type}")
+
+        return self._version.data[mapping[self._document_type]]
 
 
 class Document:
@@ -72,6 +104,9 @@ class Document:
 
     @property
     def geometry(self):
+        if "geometry" not in self._document.last_version.data:
+            return None
+
         return DocumentGeometry(json=self._document.last_version.data["geometry"])
 
     def get_locale(self, lang):

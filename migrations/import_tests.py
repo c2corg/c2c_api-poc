@@ -231,6 +231,7 @@ skipped_methods_by_file = {
         "test_get_info_best_lang": "test_get_info is not used in UI",
         "test_get_info_404": "test_get_info is not used in UI",
         "test_post_error": "useless test: empty payload...",
+        "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
     },
 }
 
