@@ -50,6 +50,10 @@ def _legacy_model_replacements():
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
         (r"from c2corg_api.models.association ", "from c2corg_api.legacy.models.association "),
+        (r"from c2corg_api.models.book ", "from c2corg_api.legacy.models.book "),
+        (r"from c2corg_api.models.document_topic ", "from c2corg_api.legacy.models.document_topic "),
+        (r"from c2corg_api.models.image ", "from c2corg_api.legacy.models.image "),
+        (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
         (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
         (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
         (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
@@ -313,3 +317,4 @@ convert_test_file("views/test_user_follow.py")
 convert_test_file("views/test_user_mailinglists.py")
 convert_test_file("views/test_user_profile.py")
 convert_test_file("views/test_article.py")
+convert_test_file("views/test_book.py")

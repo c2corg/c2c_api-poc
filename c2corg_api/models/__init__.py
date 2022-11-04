@@ -3,9 +3,10 @@ from flask_camp.models import Document, BaseModel, User
 from sqlalchemy import Column, ForeignKey, Integer, delete, select
 from sqlalchemy.orm import relationship
 
-USERPROFILE_TYPE = "profile"
 AREA_TYPE = "area"
 ARTICLE_TYPE = "article"
+BOOK_TYPE = "book"
+USERPROFILE_TYPE = "profile"
 WAYPOINT_TYPE = "waypoint"
 
 VALIDATION_EXPIRE_DAYS = 3
