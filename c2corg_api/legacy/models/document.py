@@ -109,6 +109,12 @@ class Document:
 
         return DocumentGeometry(json=self._document.last_version.data["geometry"])
 
+    @geometry.setter
+    def geometry(self, value):
+        data = self._document.last_version.data
+        data["geometry"] = value._json
+        self._document.last_version.data = data
+
     def get_locale(self, lang):
         return self.locales.get_locale(lang)
 
@@ -159,11 +165,13 @@ class LocaleDictProxy:
 
 
 class DocumentLocale:
-    def __init__(self, lang=None, title=None, description="", json=None):
+    def __init__(self, lang=None, title=None, description="", document_topic=None, json=None):
         if json is not None:
             self._json = json
         else:
             self._json = {"lang": lang, "title": title, "description": description, "topic_id": None}
+            if document_topic is not None:
+                self._json["topic_id"] = document_topic.topic_id
 
     def set_document_type(self, document_type):
         if document_type == USERPROFILE_TYPE:

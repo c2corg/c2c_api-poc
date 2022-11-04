@@ -1,0 +1,4 @@
+{
+  "type": "array",
+  "items": { "$ref": "/attributes/book_types.json" }
+}

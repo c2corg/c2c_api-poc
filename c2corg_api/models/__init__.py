@@ -6,6 +6,8 @@ from sqlalchemy.orm import relationship
 AREA_TYPE = "area"
 ARTICLE_TYPE = "article"
 BOOK_TYPE = "book"
+IMAGE_TYPE = "image"
+ROUTE_TYPE = "route"
 USERPROFILE_TYPE = "profile"
 WAYPOINT_TYPE = "waypoint"
 

@@ -13,6 +13,8 @@ from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyD
 from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
+from c2corg_api.legacy.models.book import Book as LegacyBook
+from c2corg_api.legacy.models.image import Image as LegacyImage
 from c2corg_api.legacy.models.route import Route as LegacyRoute
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
@@ -104,7 +106,17 @@ class BaseTestRest(BaseTestClass):
         return getattr(self, action)(url=url, json=json, **kwargs)
 
     def session_add(self, instance):
-        if isinstance(instance, (LegacyUserProfile, LegacyArticle, LegacyArea, LegacyWaypoint)):
+        legacy_document = (
+            LegacyArea,
+            LegacyArticle,
+            LegacyBook,
+            LegacyImage,
+            LegacyRoute,
+            LegacyUserProfile,
+            LegacyWaypoint,
+        )
+
+        if isinstance(instance, legacy_document):
             data = json.loads(instance._document.last_version._data)
             schema_validator.validate(data, f"{data['type']}.json")
 
@@ -120,7 +132,7 @@ class BaseTestRest(BaseTestClass):
             instance.profile._document.last_version._data = json.dumps(data)
             self.session.flush()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(f"Don't know how to add {instance}")
 
     def session_add_all(self, instances):
         for instance in instances:

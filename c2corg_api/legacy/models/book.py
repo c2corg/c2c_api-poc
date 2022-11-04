@@ -7,7 +7,7 @@ class ArchiveBook:
 
 
 class Book(LegacyDocument):
-    def __init__(self, categories=None, activities=None, article_type=None, document=None):
+    def __init__(self, activities=None, book_types=None, document=None):
         super().__init__(document=document)
 
         if document is None:
@@ -15,15 +15,13 @@ class Book(LegacyDocument):
                 data={
                     "type": BOOK_TYPE,
                     "quality": "draft",
-                    # "categories": categories,
-                    # "activities": activities,
-                    # "article_type": article_type,
-                    # "locales": {},
-                    # "associations": [],
-                    # "author": {"user_id": 666},
+                    "activities": activities,
+                    "book_types": book_types,
+                    "locales": {"fr": {"lang": "fr", "title": "..."}},
+                    "associations": [],
                 }
             )
 
-    # @property
-    # def activities(self):
-    #     return self._document.last_version.data["activities"]
+    @property
+    def activities(self):
+        return self._document.last_version.data["activities"]

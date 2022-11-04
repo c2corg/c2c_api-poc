@@ -4,7 +4,16 @@ from sqlalchemy import Column, ForeignKey, String, select
 from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from c2corg_api.models import USERPROFILE_TYPE, AREA_TYPE, ARTICLE_TYPE, WAYPOINT_TYPE, ProfilePageLink
+from c2corg_api.models import (
+    USERPROFILE_TYPE,
+    AREA_TYPE,
+    ARTICLE_TYPE,
+    WAYPOINT_TYPE,
+    BOOK_TYPE,
+    IMAGE_TYPE,
+    ROUTE_TYPE,
+    ProfilePageLink,
+)
 
 
 class DocumentSearch(BaseModel):
@@ -36,6 +45,16 @@ class DocumentSearch(BaseModel):
             pass
         elif self.document_type == AREA_TYPE:
             pass
+        elif self.document_type == AREA_TYPE:
+            pass
+        elif self.document_type == BOOK_TYPE:
+            self.activities = new_version.data["activities"]
+        elif self.document_type == BOOK_TYPE:
+            self.activities = new_version.data["activities"]
+        elif self.document_type == IMAGE_TYPE:
+            self.activities = new_version.data["activities"]
+        elif self.document_type == ROUTE_TYPE:
+            self.activities = new_version.data["activities"]
         else:
             raise NotImplementedError(f"Please set how to search {self.document_type}")
 

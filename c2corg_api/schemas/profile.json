@@ -21,7 +21,7 @@
       "type": "array",
       "items": { "$ref": "attributes/user_categories.json" }
     },
-    "geometry": {},
+    "geometry": { "$ref": "entities/geometry.json" },
     "user_id": { "type": "integer" }
   },
   "required": ["locales", "type", "areas", "name", "associations"],

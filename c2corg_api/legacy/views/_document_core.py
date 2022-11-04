@@ -15,15 +15,15 @@ class LegacyView:
     @staticmethod
     def _get_preferred_locale(preferred_lang, locales):
         if preferred_lang in locales:
-            return locales[preferred_lang]
+            return [locales[preferred_lang]]
 
         langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
 
         for lang in langs_priority:
             if lang in locales:
-                return locales[lang]
+                return [locales[lang]]
 
-        return None  # raise ?
+        return []
 
     def _from_legacy_doc(self, body, uri_document_id):
 
@@ -53,12 +53,13 @@ class LegacyView:
                 result["locales"] = []
 
         if preferred_lang is not None:
-            result["locales"] = [cls._get_preferred_locale(preferred_lang, locales)]
+            result["locales"] = cls._get_preferred_locale(preferred_lang, locales)
 
         if cook_lang is not None:
             cooked_locales = document["cooked_data"]["locales"]
-            result["locales"] = [cls._get_preferred_locale(cook_lang, locales)]
-            result["cooked"] = cls._get_preferred_locale(cook_lang, cooked_locales)
+            result["locales"] = cls._get_preferred_locale(cook_lang, locales)
+            cooked = cls._get_preferred_locale(cook_lang, cooked_locales)
+            result["cooked"] = None if len(cooked) == 0 else cooked[0]
 
         if collection_view:
             if "geometry" in result:

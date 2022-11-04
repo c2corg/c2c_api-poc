@@ -1,0 +1,34 @@
+{
+    "properties": {
+      "type": { "const": "route" },
+      "quality": { "$ref": "attributes/quality_types.json" },
+      "locales": {
+        "patternProperties": {
+          "(fr|en)": {
+            "type": "object",
+            "properties": {
+              "lang": { "$ref": "attributes/default_langs.json" },
+              "title": { "type": "string" },
+              "summary": { "type": "string" },
+              "description": { "type": ["string", "null"] },
+              "topic_id": { "type": ["integer", "null"] },
+              "gear": { "type": "string" }
+            },
+            "required": ["lang", "title"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "associations": { "$ref": "entities/association_array.json" },
+      "activities": { "$ref": "entities/activity_array.json" },
+      "geometry": { "$ref": "entities/geometry.json" },
+      "height_diff_up": { "type": "integer" },
+      "height_diff_down": { "type": "integer" },
+      "elevation_min": { "type": "integer" },
+      "elevation_max": { "type": "integer" },
+      "durations": { "type": "string" }
+    },
+    "required": ["locales", "type", "associations", "activities", "quality"],
+    "additionalProperties": false
+  }
+  

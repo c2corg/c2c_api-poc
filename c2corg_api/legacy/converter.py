@@ -1,6 +1,6 @@
 import json
 from flask_camp import current_api
-from c2corg_api.models import AREA_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
+from c2corg_api.models import AREA_TYPE, BOOK_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
 from werkzeug.exceptions import BadRequest, NotFound
 
 
@@ -56,7 +56,14 @@ def convert_to_legacy_doc(document):
             "article_type": data["article_type"],
             "author": data["author"],
         }
+    elif data["type"] == BOOK_TYPE:
+        result |= {
+            "activities": data["activities"],
+        }
+    else:
+        raise NotImplementedError(f"Don't know how to convert {data['type']}")
 
+    # print(json.dumps(result, indent=4))
     return result
 
 
@@ -125,6 +132,18 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
 
         # clean
         legacy_document.pop("geometry", None)
+
+        # other props
+        result["data"] |= legacy_document
+
+    elif document_type == BOOK_TYPE:
+        result["data"] |= {
+            "locales": old_locales
+            | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
+            "quality": legacy_document.pop("quality", "draft"),
+            "activities": legacy_document.pop("activities", []),
+            "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
+        }
 
         # other props
         result["data"] |= legacy_document
