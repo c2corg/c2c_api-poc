@@ -282,114 +282,116 @@ class TestArticleRest(BaseDocumentTestRest):
         }
         self.put_wrong_document_id(body, user="moderator")
 
-    # def test_put_wrong_document_version(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.article1.document_id,
-    #             "version": -9999,
-    #             "categories": ["site_info"],
-    #             "activities": ["hiking"],
-    #             "article_type": "collab",
-    #             "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": self.locale_en.version}],
-    #         }
-    #     }
-    #     self.put_wrong_version(body, self.article1.document_id, user="moderator")
+    def test_put_wrong_document_version(self):
+        body = {
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": -9999,
+                "categories": ["site_info"],
+                "activities": ["hiking"],
+                "article_type": "collab",
+                "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": self.locale_en.version}],
+            }
+        }
+        self.put_wrong_version(body, self.article1.document_id, user="moderator")
 
-    # def test_put_wrong_locale_version(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.article1.document_id,
-    #             "version": self.article1.version,
-    #             "categories": ["site_info"],
-    #             "activities": ["hiking"],
-    #             "article_type": "collab",
-    #             "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": -9999}],
-    #         }
-    #     }
-    #     self.put_wrong_version(body, self.article1.document_id, user="moderator")
+    @pytest.mark.skip(reason="...")
+    def test_put_wrong_locale_version(self):
+        body = {
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": self.article1.version,
+                "categories": ["site_info"],
+                "activities": ["hiking"],
+                "article_type": "collab",
+                "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": -9999}],
+            }
+        }
+        self.put_wrong_version(body, self.article1.document_id, user="moderator")
 
-    # def test_put_wrong_ids(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.article1.document_id,
-    #             "version": self.article1.version,
-    #             "categories": ["site_info"],
-    #             "activities": ["hiking"],
-    #             "article_type": "collab",
-    #             "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": self.locale_en.version}],
-    #         }
-    #     }
-    #     self.put_wrong_ids(body, self.article1.document_id, user="moderator")
+    def test_put_wrong_ids(self):
+        body = {
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": self.article1.version,
+                "categories": ["site_info"],
+                "activities": ["hiking"],
+                "article_type": "collab",
+                "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": self.locale_en.version}],
+            }
+        }
+        self.put_wrong_ids(body, self.article1.document_id, user="moderator")
 
-    # def test_put_no_document(self):
-    #     self.put_put_no_document(self.article1.document_id, user="moderator")
+    def test_put_no_document(self):
+        self.put_put_no_document(self.article1.document_id, user="moderator")
 
-    # def test_put_success_all(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.article1.document_id,
-    #             "version": self.article1.version,
-    #             "quality": quality_types[1],
-    #             "categories": ["site_info"],
-    #             "activities": ["hiking"],
-    #             "article_type": "personal",
-    #             "associations": {
-    #                 "waypoints": [{"document_id": self.waypoint2.document_id}],
-    #                 "articles": [{"document_id": self.article2.document_id}],
-    #                 "images": [],
-    #             },
-    #             "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
-    #             "locales": [{"lang": "en", "title": "New title", "version": self.locale_en.version}],
-    #         },
-    #     }
-    #     (body, article1) = self.put_success_all(body, self.article1, user="moderator", cache_version=3)
+    @pytest.mark.skip(reason="...")
+    def test_put_success_all(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": self.article1.version,
+                "quality": quality_types[1],
+                "categories": ["site_info"],
+                "activities": ["hiking"],
+                "article_type": "personal",
+                "associations": {
+                    "waypoints": [{"document_id": self.waypoint2.document_id}],
+                    "articles": [{"document_id": self.article2.document_id}],
+                    "images": [],
+                },
+                "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
+                "locales": [{"lang": "en", "title": "New title", "version": self.locale_en.version}],
+            },
+        }
+        (body, article1) = self.put_success_all(body, self.article1, user="moderator", cache_version=3)
 
-    #     assert article1.activities == ["hiking"]
-    #     locale_en = article1.get_locale("en")
-    #     assert locale_en.title == "New title"
+        assert article1.activities == ["hiking"]
+        locale_en = article1.get_locale("en")
+        assert locale_en.title == "New title"
 
-    #     # version with lang 'en'
-    #     versions = article1.versions
-    #     version_en = self.get_latest_version("en", versions)
-    #     archive_locale = version_en.document_locales_archive
-    #     assert archive_locale.title == "New title"
+        # version with lang 'en'
+        versions = article1.versions
+        version_en = self.get_latest_version("en", versions)
+        archive_locale = version_en.document_locales_archive
+        assert archive_locale.title == "New title"
 
-    #     archive_document_en = version_en.document_archive
-    #     assert archive_document_en.categories == ["site_info"]
-    #     assert archive_document_en.activities == ["hiking"]
-    #     assert archive_document_en.article_type == "personal"
+        archive_document_en = version_en.document_archive
+        assert archive_document_en.categories == ["site_info"]
+        assert archive_document_en.activities == ["hiking"]
+        assert archive_document_en.article_type == "personal"
 
-    #     # version with lang 'fr'
-    #     version_fr = self.get_latest_version("fr", versions)
-    #     archive_locale = version_fr.document_locales_archive
-    #     assert archive_locale.title == "Lac d'Annecy"
+        # version with lang 'fr'
+        version_fr = self.get_latest_version("fr", versions)
+        archive_locale = version_fr.document_locales_archive
+        assert archive_locale.title == "Lac d'Annecy"
 
-    #     # check if geometry is not stored in database afterwards
-    #     assert article1.geometry is None
-    #     # check that a link to the associated waypoint is created
-    #     association_wp = self.session.query(Association).get((self.waypoint2.document_id, article1.document_id))
-    #     assert association_wp is not None
+        # check if geometry is not stored in database afterwards
+        assert article1.geometry is None
+        # check that a link to the associated waypoint is created
+        association_wp = self.session.query(Association).get((self.waypoint2.document_id, article1.document_id))
+        assert association_wp is not None
 
-    #     association_wp_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == self.waypoint2.document_id)
-    #         .filter(AssociationLog.child_document_id == article1.document_id)
-    #         .first()
-    #     )
-    #     assert association_wp_log is not None
+        association_wp_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == self.waypoint2.document_id)
+            .filter(AssociationLog.child_document_id == article1.document_id)
+            .first()
+        )
+        assert association_wp_log is not None
 
-    #     # check that a link to the associated article is created
-    #     association_main_art = self.session.query(Association).get((article1.document_id, self.article2.document_id))
-    #     assert association_main_art is not None
+        # check that a link to the associated article is created
+        association_main_art = self.session.query(Association).get((article1.document_id, self.article2.document_id))
+        assert association_main_art is not None
 
-    #     association_main_art_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == article1.document_id)
-    #         .filter(AssociationLog.child_document_id == self.article2.document_id)
-    #         .first()
-    #     )
-    #     assert association_main_art_log is not None
+        association_main_art_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == article1.document_id)
+            .filter(AssociationLog.child_document_id == self.article2.document_id)
+            .first()
+        )
+        assert association_main_art_log is not None
 
     # def test_put_success_figures_only(self):
     #     body = {

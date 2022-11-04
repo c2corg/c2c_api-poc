@@ -54,9 +54,8 @@ def convert_to_legacy_doc(document):
             "categories": data["categories"],
             "activities": data["activities"],
             "article_type": data["article_type"],
+            "author": data["author"],
         }
-
-        result |= {"author": {"user_id": data.get("author", None)}}
 
     return result
 
@@ -121,6 +120,7 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
             "categories": legacy_document.pop("categories", []),
             "article_type": legacy_document.pop("article_type"),
             "quality": legacy_document.pop("quality", "draft"),
+            "author": legacy_document.pop("author", old_data.get("author", None)),
         }
 
         # clean

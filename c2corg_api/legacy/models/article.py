@@ -23,3 +23,7 @@ class Article(LegacyDocument):
                     "author": {"user_id": 666},
                 }
             )
+
+    @property
+    def activities(self):
+        return self._document.last_version.data["activities"]

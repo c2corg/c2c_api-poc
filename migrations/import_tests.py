@@ -232,6 +232,8 @@ skipped_methods_by_file = {
         "test_get_info_404": "test_get_info is not used in UI",
         "test_post_error": "useless test: empty payload...",
         "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
+        "test_put_wrong_locale_version": "Locales are not versionned in the new model",
+        "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
     },
 }
 

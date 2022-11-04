@@ -56,6 +56,50 @@ class TestArticleRest(BaseDocumentTestRest):
         # check if geometry is not stored in database afterwards
         assert doc.geometry is None
 
+    def test_put_success_all(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": self.article1.version,
+                "quality": quality_types[1],
+                "categories": ["site_info"],
+                "activities": ["hiking"],
+                "article_type": "personal",
+                "associations": {
+                    "waypoints": [{"document_id": self.waypoint2.document_id}],
+                    "articles": [{"document_id": self.article2.document_id}],
+                    "images": [],
+                },
+                "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
+                "locales": [{"lang": "en", "title": "New title", "version": self.locale_en.version}],
+            },
+        }
+        (body, article1) = self.put_success_all(body, self.article1, user="moderator", cache_version=3)
+
+        assert article1.activities == ["hiking"]
+        locale_en = article1.get_locale("en")
+        assert locale_en.title == "New title"
+
+        # version with lang 'en'
+        versions = article1.versions
+        version_en = self.get_latest_version("en", versions)
+        archive_locale = version_en.document_locales_archive
+        assert archive_locale.title == "New title"
+
+        archive_document_en = version_en.document_archive
+        assert archive_document_en.categories == ["site_info"]
+        assert archive_document_en.activities == ["hiking"]
+        assert archive_document_en.article_type == "personal"
+
+        # version with lang 'fr'
+        version_fr = self.get_latest_version("fr", versions)
+        archive_locale = version_fr.document_locales_archive
+        assert archive_locale.title == "Lac d'Annecy"
+
+        # check if geometry is not stored in database afterwards
+        assert article1.geometry is None
+
     def _add_test_data(self):
         self.article1 = Article(categories=["site_info"], activities=["hiking"], article_type="collab")
         self.locale_en = DocumentLocale(lang="en", title="Lac d'Annecy")

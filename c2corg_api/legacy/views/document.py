@@ -8,7 +8,7 @@ class DocumentRest:
         last_version = document._document.last_version
         data = last_version.data
         if last_version.data["type"] == ARTICLE_TYPE:
-            data |= {"author": author}
+            data |= {"author": {"user_id": author}}
         else:
             pass
 

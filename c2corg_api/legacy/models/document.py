@@ -19,6 +19,7 @@ class Geometry:
 class DocumentArchive:
     def __init__(self, version):
         self._version = version
+        self._expected_legacy_lang = None
 
     @property
     def _document_type(self):
@@ -42,9 +43,8 @@ class DocumentArchive:
 
     @property
     def document_locales_archive(self):
-        return LocaleDictProxy(json=self._version.data["locales"], document_type=self._document_type).get_locale(
-            "en"
-        )  # damn :(
+        locales = LocaleDictProxy(json=self._version.data["locales"], document_type=self._document_type)
+        return locales.get_locale("en" if self._expected_legacy_lang is None else self._expected_legacy_lang)
 
     @property
     def categories(self):

@@ -638,6 +638,10 @@ class BaseDocumentTestRest(BaseTestRest):
 
         return (body, doc)
 
+    def get_latest_version(self, lang, versions):
+        versions[-1]._expected_legacy_lang = lang
+        return versions[-1]
+
 
 def get_locale(locales, lang):
     return next(filter(lambda locale: locale["lang"] == lang, locales), None)
