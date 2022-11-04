@@ -236,6 +236,7 @@ skipped_methods_by_file = {
         "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
         "test_put_wrong_locale_version": "Locales are not versionned in the new model",
         "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
+        "test_get_associations_history": "This view is not relevant in new model",
     },
 }
 

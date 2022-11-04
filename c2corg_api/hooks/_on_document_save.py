@@ -45,10 +45,16 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
                     raise Forbidden("You are not allowed to change author")
 
             articles_types = (old_version.data["article_type"], new_version.data["article_type"])
+
             if articles_types == ("collab", "personal"):  # from collab to personal
-                raise BadRequest("A collaborative article can't be moved to personal")
-            elif articles_types == ("collab", "personal"):  # from personal to collab
+                if not current_user.is_moderator:
+                    raise BadRequest("Article type cannot be changed for collaborative articles")
+            elif articles_types == ("personal", "collab"):  # from personal to collab
                 if new_version.data["author"]["user_id"] != current_user.id:
                     raise Forbidden("You are not allowed to change article type")
+
+            if new_version.data["article_type"] == "personal":
+                if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
+                    raise Forbidden("You are not allowed to edit this article")
 
     update_document_search_table(document)

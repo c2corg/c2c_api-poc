@@ -475,73 +475,73 @@ class TestArticleRest(BaseDocumentTestRest):
         assert body["status"] == "error"
         assert body["name"] == "Bad Request"
 
-    # def test_put_as_author(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.article4.document_id,
-    #             "version": self.article4.version,
-    #             "quality": quality_types[1],
-    #             "activities": ["paragliding"],
-    #             "categories": ["technical"],
-    #             "article_type": "personal",
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "Another final EN title",
-    #                     "version": self.locale_en.version,
-    #                     "description": "put should be allowed",
-    #                 }
-    #             ],
-    #         },
-    #     }
+    def test_put_as_author(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.article4.document_id,
+                "version": self.article4.version,
+                "quality": quality_types[1],
+                "activities": ["paragliding"],
+                "categories": ["technical"],
+                "article_type": "personal",
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "Another final EN title",
+                        "version": self.locale_en.version,
+                        "description": "put should be allowed",
+                    }
+                ],
+            },
+        }
 
-    #     (body, article4) = self.put_success_all(body, self.article4, user="contributor", cache_version=2)
+        (body, article4) = self.put_success_all(body, self.article4, user="contributor", cache_version=2)
 
-    #     # version with lang 'en'
-    #     versions = article4.versions
-    #     version_en = self.get_latest_version("en", versions)
-    #     archive_locale = version_en.document_locales_archive
-    #     assert archive_locale.title == "Another final EN title"
+        # version with lang 'en'
+        versions = article4.versions
+        version_en = self.get_latest_version("en", versions)
+        archive_locale = version_en.document_locales_archive
+        assert archive_locale.title == "Another final EN title"
 
-    #     archive_document_en = version_en.document_archive
-    #     assert archive_document_en.activities == ["paragliding"]
-    #     assert archive_document_en.categories == ["technical"]
-    #     assert archive_document_en.article_type == "personal"
+        archive_document_en = version_en.document_archive
+        assert archive_document_en.activities == ["paragliding"]
+        assert archive_document_en.categories == ["technical"]
+        assert archive_document_en.article_type == "personal"
 
-    # def test_put_as_non_author(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.article4.document_id,
-    #             "version": self.article4.version,
-    #             "quality": quality_types[1],
-    #             "activities": ["rock_climbing"],
-    #             "categories": ["technical"],
-    #             "article_type": "personal",
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "Another final EN title",
-    #                     "version": self.locale_en.version,
-    #                     "description": "put should not be allowed",
-    #                 }
-    #             ],
-    #         },
-    #     }
+    def test_put_as_non_author(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.article4.document_id,
+                "version": self.article4.version,
+                "quality": quality_types[1],
+                "activities": ["rock_climbing"],
+                "categories": ["technical"],
+                "article_type": "personal",
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "Another final EN title",
+                        "version": self.locale_en.version,
+                        "description": "put should not be allowed",
+                    }
+                ],
+            },
+        }
 
-    #     headers = self.add_authorization_header(username="contributor2")
-    #     response = self.app_put_json(
-    #         self._prefix + "/" + str(self.article4.document_id), body, headers=headers, status=403
-    #     )
+        headers = self.add_authorization_header(username="contributor2")
+        response = self.app_put_json(
+            self._prefix + "/" + str(self.article4.document_id), body, headers=headers, status=403
+        )
 
-    #     body = response.json
-    #     assert body["status"] == "error"
-    #     assert len(body["errors"]) == 1
-    #     assert body["errors"][0]["name"] == "Forbidden"
+        body = response.json
+        assert body["status"] == "error"
+        assert body["name"] == "Forbidden"
 
-    # def test_get_associations_history(self):
-    #     self._get_association_logs(self.article1)
+    @pytest.mark.skip(reason="...")
+    def test_get_associations_history(self):
+        self._get_association_logs(self.article1)
 
     def _add_test_data(self):
         self.article1 = Article(categories=["site_info"], activities=["hiking"], article_type="collab")
