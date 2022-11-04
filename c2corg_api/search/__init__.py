@@ -33,6 +33,7 @@ class DocumentSearch(BaseModel):
     available_langs = Column(ARRAY(String()), index=True, default=[])
 
     activities = Column(ARRAY(String()), index=True, default=[])
+    event_activity = Column(String, index=True, nullable=True)  # for xreports
 
     def update(self, new_version):
         self.available_langs = [lang for lang in new_version.data["locales"]]
@@ -60,8 +61,7 @@ class DocumentSearch(BaseModel):
         elif self.document_type == ROUTE_TYPE:
             self.activities = new_version.data["activities"]
         elif self.document_type == XREPORT_TYPE:
-            # self.activities = new_version.data["activities"]
-            pass  # TODO
+            self.event_activity = new_version.data["event_activity"]
         else:
             raise NotImplementedError(f"Please set how to search {self.document_type}")
 
