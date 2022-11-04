@@ -1,37 +1,40 @@
+import pytest
 import datetime
 
-from c2corg_api.caching import cache_document_version
-from c2corg_api.models.article import Article
-from c2corg_api.models.association import AssociationLog, Association
-from c2corg_api.models.cache_version import get_cache_key
-from c2corg_api.models.document import DocumentLocale, DocumentGeometry
-from c2corg_api.models.document_history import DocumentVersion
-from c2corg_api.models.image import Image
-from c2corg_api.models.outing import Outing
-from c2corg_api.models.user_profile import USERPROFILE_TYPE
-from c2corg_api.models.xreport import ArchiveXreport, Xreport, XREPORT_TYPE, ArchiveXreportLocale, XreportLocale
-from c2corg_api.models.route import Route
-from c2corg_api.models.waypoint import Waypoint
-from c2corg_api.tests.search import reset_search_index
-from c2corg_api.tests.views import BaseDocumentTestRest
-from c2corg_api.views.document import DocumentRest
+from c2corg_api.legacy.caching import cache_document_version
+from c2corg_api.legacy.models.article import Article
+from c2corg_api.legacy.models.association import AssociationLog, Association
+from c2corg_api.legacy.models.cache_version import get_cache_key
+from c2corg_api.legacy.models.document import DocumentLocale, DocumentGeometry
+from c2corg_api.legacy.models.document_history import DocumentVersion
+from c2corg_api.legacy.models.image import Image
+from c2corg_api.legacy.models.outing import Outing
+from c2corg_api.legacy.models.user_profile import USERPROFILE_TYPE
+from c2corg_api.legacy.models.xreport import ArchiveXreport, Xreport, XREPORT_TYPE, ArchiveXreportLocale, XreportLocale
+from c2corg_api.legacy.models.route import Route
+from c2corg_api.legacy.models.waypoint import Waypoint
+from c2corg_api.tests.legacy.search import reset_search_index
+from c2corg_api.tests.legacy.views import BaseDocumentTestRest
+from c2corg_api.legacy.views.document import DocumentRest
 from c2corg_api.models.common.attributes import quality_types
-from dogpile.cache.api import NO_VALUE
+
+# from dogpile.cache.api import NO_VALUE
 
 
 class TestXreportRest(BaseDocumentTestRest):
-    def setUp(self):  # noqa
+    def setup_method(self):
         self.set_prefix_and_model("/xreports", XREPORT_TYPE, Xreport, ArchiveXreport, ArchiveXreportLocale)
-        BaseDocumentTestRest.setUp(self)
+        BaseDocumentTestRest.setup_method(self)
         self._add_test_data()
+        self.session.commit()
 
     def test_get_collection(self):
         body = self.get_collection()
         doc = body["documents"][0]
-        self.assertIn("geometry", doc)
+        assert "geometry" in doc
 
     def test_get_collection_paginated(self):
-        self.app.get("/xreports?offset=invalid", status=400)
+        self.get("/xreports?offset=invalid", status=400)
 
         self.assertResultsEqual(self.get_collection({"offset": 0, "limit": 0}), [], 4)
 
@@ -65,76 +68,76 @@ class TestXreportRest(BaseDocumentTestRest):
         )
 
     def test_get(self):
-        body = self.get(self.xreport1, user="moderator")
-        self.assertNotIn("xreport", body)
-        self.assertIn("geometry", body)
-        self.assertIsNone(body.get("geometry"))
+        body = self.get_custom(self.xreport1, user="moderator")
+        assert "xreport" not in body
+        assert "geometry" in body
+        assert body.get("geometry") is None
 
-        self.assertIn("author", body)
+        assert "author" in body
         author = body.get("author")
-        self.assertEqual(self.global_userids["contributor"], author.get("user_id"))
+        assert self.global_userids["contributor"] == author.get("user_id")
 
         associations = body["associations"]
-        self.assertIn("images", associations)
-        self.assertIn("articles", associations)
-        self.assertIn("outings", associations)
-        self.assertIn("routes", associations)
+        assert "images" in associations
+        assert "articles" in associations
+        assert "outings" in associations
+        assert "routes" in associations
 
         linked_images = associations.get("images")
-        self.assertEqual(len(linked_images), 0)
+        assert len(linked_images) == 0
         linked_articles = associations.get("articles")
-        self.assertEqual(len(linked_articles), 0)
+        assert len(linked_articles) == 0
         linked_outings = associations.get("outings")
-        self.assertEqual(len(linked_outings), 1)
+        assert len(linked_outings) == 1
         linked_routes = associations.get("routes")
-        self.assertEqual(len(linked_routes), 1)
+        assert len(linked_routes) == 1
 
-        self.assertEqual(body.get("event_activity"), self.xreport1.event_activity)
+        assert body.get("event_activity") == self.xreport1.event_activity
 
-        self.assertIn("nb_participants", body)
-        self.assertIn("nb_impacted", body)
-        self.assertIn("event_type", body)
-        self.assertEqual(body.get("event_type"), "stone_ice_fall")
-        self.assertIn("date", body)
-        self.assertEqual(body.get("date"), "2020-01-01")
+        assert "nb_participants" in body
+        assert "nb_impacted" in body
+        assert "event_type" in body
+        assert body.get("event_type") == "stone_ice_fall"
+        assert "date" in body
+        assert body.get("date") == "2020-01-01"
 
         locale_en = self.get_locale("en", body.get("locales"))
-        self.assertEqual(locale_en.get("place"), "some place descrip. in english")
+        assert locale_en.get("place") == "some place descrip. in english"
         locale_fr = self.get_locale("fr", body.get("locales"))
-        self.assertEqual(locale_fr.get("place"), "some place descrip. in french")
+        assert locale_fr.get("place") == "some place descrip. in french"
 
     def test_get_as_guest(self):
-        body = self.get(self.xreport1, user=None)
+        body = self.get_custom(self.xreport1, user=None)
 
         # common user should not see personal data in the xreport
-        self.assertNotIn("author_status", body)
-        self.assertNotIn("activity_rate", body)
-        self.assertNotIn("age", body)
-        self.assertNotIn("gender", body)
-        self.assertNotIn("previous_injuries", body)
-        self.assertNotIn("autonomy", body)
+        assert "author_status" not in body
+        assert "activity_rate" not in body
+        assert "age" not in body
+        assert "gender" not in body
+        assert "previous_injuries" not in body
+        assert "autonomy" not in body
 
     def test_get_as_contributor_not_author(self):
-        body = self.get(self.xreport1, user="contributor2")
+        body = self.get_custom(self.xreport1, user="contributor2")
 
         # common user should not see personal data in the xreport
-        self.assertNotIn("author_status", body)
-        self.assertNotIn("activity_rate", body)
-        self.assertNotIn("age", body)
-        self.assertNotIn("gender", body)
-        self.assertNotIn("previous_injuries", body)
-        self.assertNotIn("autonomy", body)
+        assert "author_status" not in body
+        assert "activity_rate" not in body
+        assert "age" not in body
+        assert "gender" not in body
+        assert "previous_injuries" not in body
+        assert "autonomy" not in body
 
     def test_get_as_moderator(self):
-        body = self.get(self.xreport1, user="moderator")
+        body = self.get_custom(self.xreport1, user="moderator")
 
         # moderator can see personal data in the xreport
-        self.assertIn("author_status", body)
-        self.assertIn("activity_rate", body)
-        self.assertIn("age", body)
-        self.assertIn("gender", body)
-        self.assertIn("previous_injuries", body)
-        self.assertIn("autonomy", body)
+        assert "author_status" in body
+        assert "activity_rate" in body
+        assert "age" in body
+        assert "gender" in body
+        assert "previous_injuries" in body
+        assert "autonomy" in body
 
     def test_get_cooked(self):
         self.get_cooked(self.xreport1)
@@ -152,12 +155,12 @@ class TestXreportRest(BaseDocumentTestRest):
         self.get_404(user="moderator")
 
     def test_get_cache_headers(self):
-        response = self.app.get(self._prefix + "/" + str(self.xreport1.document_id), status=200)
+        response = self.get(self._prefix + "/" + str(self.xreport1.document_id), status=200)
         headers = response.headers
         etag = headers.get("ETag")
-        self.assertIsNotNone(etag)
+        assert etag is not None
 
-        self.assertEqual(response.headers.get("Cache-Control"), "private")
+        assert response.headers.get("Cache-Control") == "private"
 
     def test_get_version(self):
         self.get_version(self.xreport1, self.xreport1_version, user="contributor")
@@ -165,21 +168,21 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_get_version_etag(self):
         auth_headers = self.add_authorization_header(username="contributor")
         url = "{0}/{1}/en/{2}".format(self._prefix, str(self.xreport1.document_id), str(self.xreport1_version.id))
-        response = self.app.get(url, headers=auth_headers, status=200)
+        response = self.get(url, headers=auth_headers, status=200)
 
         # check that the ETag header is set
         headers = response.headers
 
         # TODO check etag as private
         etag = headers.get("ETag")
-        self.assertIsNotNone(etag)
+        assert etag is not None
 
-        self.assertEqual(response.headers.get("Cache-Control"), None)
+        assert response.headers.get("Cache-Control") == None
 
         # then request the document again with the etag
         auth_headers["If-None-Match"] = etag
-        response = self.app.get(url, status=304, headers=auth_headers)
-        self.assertEqual(response.headers.get("Cache-Control"), None)
+        response = self.get(url, status=304, headers=auth_headers)
+        assert response.headers.get("Cache-Control") == None
 
     def test_get_version_caching(self):
         headers = self.add_authorization_header(username="contributor")
@@ -189,32 +192,32 @@ class TestXreportRest(BaseDocumentTestRest):
         )
 
         cache_value = cache_document_version.get(cache_key)
-        self.assertEqual(cache_value, NO_VALUE)
+        assert cache_value == NO_VALUE
 
         # check that the response is cached
-        self.app.get(url, headers=headers, status=200)
+        self.get(url, headers=headers, status=200)
 
         cache_value = cache_document_version.get(cache_key)
-        self.assertNotEqual(cache_value, NO_VALUE)
+        assert cache_value != NO_VALUE
 
         # check that values are returned from the cache
         fake_cache_value = {"document": "fake doc"}
         cache_document_version.set(cache_key, fake_cache_value)
 
-        response = self.app.get(url, headers=headers, status=200)
+        response = self.get(url, headers=headers, status=200)
         body = response.json
-        self.assertEqual(body, fake_cache_value)
+        assert body == fake_cache_value
 
     def test_get_caching(self):
         self.get_caching(self.xreport1)
 
     def test_get_info(self):
         _, locale = self.get_info(self.xreport1, "en")
-        self.assertEqual(locale.get("lang"), "en")
+        assert locale.get("lang") == "en"
 
     def test_get_info_best_lang(self):
         _, locale = self.get_info(self.xreport1, "es")
-        self.assertEqual(locale.get("lang"), "fr")
+        assert locale.get("lang") == "fr"
 
     def test_get_info_404(self):
         self.get_info_404()
@@ -222,7 +225,7 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_post_error(self):
         body = self.post_error({}, user="moderator")
         errors = body.get("errors")
-        self.assertEqual(len(errors), 1)
+        assert len(errors) == 1
         self.assertCorniceRequired(errors[0], "event_activity")
 
     def test_post_missing_title(self):
@@ -287,7 +290,7 @@ class TestXreportRest(BaseDocumentTestRest):
             body[key] = value
             body = self.post_error(body, user="moderator")
             errors = body.get("errors")
-            self.assertEqual(len(errors), 1)
+            assert len(errors) == 1
             self.assertCorniceNotInEnum(errors[0], key)
 
     def test_post_success(self):
@@ -317,26 +320,26 @@ class TestXreportRest(BaseDocumentTestRest):
         version = doc.versions[0]
 
         archive_xreport = version.document_archive
-        self.assertEqual(archive_xreport.event_activity, "skitouring")
-        self.assertEqual(archive_xreport.event_type, "stone_ice_fall")
-        self.assertEqual(archive_xreport.nb_participants, 5)
-        self.assertFalse(hasattr(archive_xreport, "nb_outings"))
-        # self.assertNotIn('nb_outings', archive_xreport)
-        self.assertEqual(archive_xreport.autonomy, "autonomous")
-        self.assertEqual(archive_xreport.activity_rate, "activity_rate_m2")
-        self.assertEqual(archive_xreport.supervision, "professional_supervision")
-        self.assertEqual(archive_xreport.qualification, "federal_trainer")
+        assert archive_xreport.event_activity == "skitouring"
+        assert archive_xreport.event_type == "stone_ice_fall"
+        assert archive_xreport.nb_participants == 5
+        assert hasattr(archive_xreport, "nb_outings") is False
+        # assert 'nb_outings' not in archive_xreport
+        assert archive_xreport.autonomy == "autonomous"
+        assert archive_xreport.activity_rate == "activity_rate_m2"
+        assert archive_xreport.supervision == "professional_supervision"
+        assert archive_xreport.qualification == "federal_trainer"
 
         archive_locale = version.document_locales_archive
-        self.assertEqual(archive_locale.lang, "en")
-        self.assertEqual(archive_locale.title, "Lac d'Annecy")
+        assert archive_locale.lang == "en"
+        assert archive_locale.title == "Lac d'Annecy"
 
         # check if geometry is stored in database afterwards
-        self.assertIsNotNone(doc.geometry)
+        assert doc.geometry is not None
 
         # check that a link to the associated waypoint is created
         association_img = self.session.query(Association).get((doc.document_id, self.image2.document_id))
-        self.assertIsNotNone(association_img)
+        assert association_img is not None
 
         association_img_log = (
             self.session.query(AssociationLog)
@@ -344,11 +347,11 @@ class TestXreportRest(BaseDocumentTestRest):
             .filter(AssociationLog.child_document_id == self.image2.document_id)
             .first()
         )
-        self.assertIsNotNone(association_img_log)
+        assert association_img_log is not None
 
         # check that a link to the associated xreport is created
         association_art = self.session.query(Association).get((doc.document_id, self.article2.document_id))
-        self.assertIsNotNone(association_art)
+        assert association_art is not None
 
         association_art_log = (
             self.session.query(AssociationLog)
@@ -356,7 +359,7 @@ class TestXreportRest(BaseDocumentTestRest):
             .filter(AssociationLog.child_document_id == self.article2.document_id)
             .first()
         )
-        self.assertIsNotNone(association_art_log)
+        assert association_art_log is not None
 
     def test_post_as_contributor_and_get_as_author(self):
         body_post = {
@@ -379,18 +382,18 @@ class TestXreportRest(BaseDocumentTestRest):
         user_id = self.global_userids["contributor"]
         version = doc.versions[0]
         meta_data = version.history_metadata
-        self.assertEqual(meta_data.user_id, user_id)
+        assert meta_data.user_id == user_id
 
         # authorized contributor can see personal data in the xreport
-        body = self.get(doc, user="contributor", ignore_checks=True)
-        self.assertNotIn("xreport", body)
+        body = self.get_custom(doc, user="contributor", ignore_checks=True)
+        assert "xreport" not in body
 
-        self.assertIn("author_status", body)
-        self.assertIn("activity_rate", body)
-        self.assertIn("age", body)
-        self.assertIn("gender", body)
-        self.assertIn("previous_injuries", body)
-        self.assertIn("autonomy", body)
+        assert "author_status" in body
+        assert "activity_rate" in body
+        assert "age" in body
+        assert "gender" in body
+        assert "previous_injuries" in body
+        assert "autonomy" in body
 
     def test_post_anonymous(self):
         self.app.app.registry.anonymous_user_id = self.global_userids["moderator"]
@@ -411,8 +414,8 @@ class TestXreportRest(BaseDocumentTestRest):
         user_id = self.global_userids["contributor"]
         version = doc.versions[0]
         meta_data = version.history_metadata
-        self.assertNotEqual(meta_data.user_id, user_id)
-        self.assertEqual(meta_data.user_id, self.global_userids["moderator"])
+        assert meta_data.user_id != user_id
+        assert meta_data.user_id == self.global_userids["moderator"]
 
     def test_put_wrong_document_id(self):
         body = {
@@ -499,33 +502,33 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         (body, xreport1) = self.put_success_all(body, self.xreport1, user="moderator", cache_version=3)
 
-        self.assertEqual(xreport1.event_activity, "skitouring")
+        assert xreport1.event_activity == "skitouring"
         locale_en = xreport1.get_locale("en")
-        self.assertEqual(locale_en.title, "New title")
+        assert locale_en.title == "New title"
 
         # version with lang 'en'
         versions = xreport1.versions
         version_en = self.get_latest_version("en", versions)
         archive_locale = version_en.document_locales_archive
-        self.assertEqual(archive_locale.title, "New title")
-        self.assertEqual(archive_locale.place, "some NEW place descrip. in english")
+        assert archive_locale.title == "New title"
+        assert archive_locale.place == "some NEW place descrip. in english"
 
         archive_document_en = version_en.document_archive
-        self.assertEqual(archive_document_en.event_activity, "skitouring")
-        self.assertEqual(archive_document_en.event_type, "stone_ice_fall")
-        self.assertEqual(archive_document_en.nb_participants, 333)
-        self.assertEqual(archive_document_en.nb_impacted, 666)
+        assert archive_document_en.event_activity == "skitouring"
+        assert archive_document_en.event_type == "stone_ice_fall"
+        assert archive_document_en.nb_participants == 333
+        assert archive_document_en.nb_impacted == 666
 
         # version with lang 'fr'
         version_fr = self.get_latest_version("fr", versions)
         archive_locale = version_fr.document_locales_archive
-        self.assertEqual(archive_locale.title, "Lac d'Annecy")
+        assert archive_locale.title == "Lac d'Annecy"
 
         # check if geometry is stored in database afterwards
-        self.assertIsNotNone(xreport1.geometry)
+        assert xreport1.geometry is not None
         # check that a link to the associated image is created
         association_img = self.session.query(Association).get((xreport1.document_id, self.image2.document_id))
-        self.assertIsNotNone(association_img)
+        assert association_img is not None
 
         association_img_log = (
             self.session.query(AssociationLog)
@@ -533,11 +536,11 @@ class TestXreportRest(BaseDocumentTestRest):
             .filter(AssociationLog.child_document_id == self.image2.document_id)
             .first()
         )
-        self.assertIsNotNone(association_img_log)
+        assert association_img_log is not None
 
         # check that a link to the associated article is created
         association_main_art = self.session.query(Association).get((xreport1.document_id, self.article2.document_id))
-        self.assertIsNotNone(association_main_art)
+        assert association_main_art is not None
 
         association_art_log = (
             self.session.query(AssociationLog)
@@ -545,7 +548,7 @@ class TestXreportRest(BaseDocumentTestRest):
             .filter(AssociationLog.child_document_id == self.article2.document_id)
             .first()
         )
-        self.assertIsNotNone(association_art_log)
+        assert association_art_log is not None
 
     def test_put_success_figures_only(self):
         body = {
@@ -572,7 +575,7 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         (body, xreport1) = self.put_success_figures_only(body, self.xreport1, user="moderator")
 
-        self.assertEqual(xreport1.event_activity, "skitouring")
+        assert xreport1.event_activity == "skitouring"
 
     def test_put_success_lang_only(self):
         body = {
@@ -589,7 +592,7 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         (body, xreport1) = self.put_success_lang_only(body, self.xreport1, user="moderator")
 
-        self.assertEqual(xreport1.get_locale("en").title, "New title")
+        assert xreport1.get_locale("en").title == "New title"
 
     def test_put_success_new_lang(self):
         """Test updating a document by adding a new locale."""
@@ -607,7 +610,7 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         (body, xreport1) = self.put_success_new_lang(body, self.xreport1, user="moderator")
 
-        self.assertEqual(xreport1.get_locale("es").title, "Lac d'Annecy")
+        assert xreport1.get_locale("es").title == "Lac d'Annecy"
 
     def test_put_as_author(self):
         body = {
@@ -629,12 +632,12 @@ class TestXreportRest(BaseDocumentTestRest):
         versions = xreport1.versions
         version_en = self.get_latest_version("en", versions)
         archive_locale = version_en.document_locales_archive
-        self.assertEqual(archive_locale.title, "Another final EN title")
+        assert archive_locale.title == "Another final EN title"
 
         archive_document_en = version_en.document_archive
-        self.assertEqual(archive_document_en.event_activity, "sport_climbing")
-        self.assertEqual(archive_document_en.event_type, "person_fall")
-        self.assertEqual(archive_document_en.age, 90)
+        assert archive_document_en.event_activity == "sport_climbing"
+        assert archive_document_en.event_type == "person_fall"
+        assert archive_document_en.age == 90
 
     def test_put_as_associated_user(self):
         body = {
@@ -660,12 +663,12 @@ class TestXreportRest(BaseDocumentTestRest):
         versions = xreport1.versions
         version_en = self.get_latest_version("en", versions)
         archive_locale = version_en.document_locales_archive
-        self.assertEqual(archive_locale.title, "Renamed title by assoc. user")
+        assert archive_locale.title == "Renamed title by assoc. user"
 
         archive_document_en = version_en.document_archive
-        self.assertEqual(archive_document_en.event_activity, "alpine_climbing")
-        self.assertEqual(archive_document_en.event_type, "crevasse_fall")
-        self.assertEqual(archive_document_en.age, 25)
+        assert archive_document_en.event_activity == "alpine_climbing"
+        assert archive_document_en.event_type == "crevasse_fall"
+        assert archive_document_en.age == 25
 
     def test_put_as_non_author(self):
         body = {
@@ -687,9 +690,8 @@ class TestXreportRest(BaseDocumentTestRest):
         )
 
         body = response.json
-        self.assertEqual(body["status"], "error")
-        self.assertEqual(len(body["errors"]), 1)
-        self.assertEqual(body["errors"][0]["name"], "Forbidden")
+        assert body["status"] == "error"
+        assert body["name"] == "Forbidden"
 
     def test_get_associations_history(self):
         self._get_association_logs(self.xreport1)
@@ -704,17 +706,12 @@ class TestXreportRest(BaseDocumentTestRest):
         self.xreport1.locales.append(self.locale_en)
         self.xreport1.locales.append(self.locale_fr)
 
-        self.session.add(self.xreport1)
+        self.session_add(self.xreport1)
         self.session.flush()
 
         user_id = self.global_userids["contributor"]
         DocumentRest.create_new_version(self.xreport1, user_id)
-        self.xreport1_version = (
-            self.session.query(DocumentVersion)
-            .filter(DocumentVersion.document_id == self.xreport1.document_id)
-            .filter(DocumentVersion.lang == "en")
-            .first()
-        )
+        self.xreport1_version = self.session_query_first(DocumentVersion, document_id=self.xreport1.document_id)
 
         user_id3 = self.global_userids["contributor3"]
         self._add_association(
@@ -730,41 +727,41 @@ class TestXreportRest(BaseDocumentTestRest):
         self.xreport2 = Xreport(
             event_activity="skitouring", event_type="avalanche", nb_participants=5, date=datetime.date(2021, 1, 1)
         )
-        self.session.add(self.xreport2)
+        self.session_add(self.xreport2)
         self.xreport3 = Xreport(
             event_activity="skitouring", event_type="avalanche", nb_participants=5, date=datetime.date(2018, 1, 1)
         )
-        self.session.add(self.xreport3)
+        self.session_add(self.xreport3)
         self.xreport4 = Xreport(
             event_activity="skitouring", event_type="avalanche", nb_participants=5, nb_impacted=5, age=50
         )
         self.xreport4.locales.append(DocumentLocale(lang="en", title="Lac d'Annecy"))
         self.xreport4.locales.append(DocumentLocale(lang="fr", title="Lac d'Annecy"))
-        self.session.add(self.xreport4)
+        self.session_add(self.xreport4)
 
         self.article2 = Article(categories=["site_info"], activities=["hiking"], article_type="collab")
-        self.session.add(self.article2)
+        self.session_add(self.article2)
         self.session.flush()
 
         self.image2 = Image(filename="image2.jpg", activities=["paragliding"], height=1500)
-        self.session.add(self.image2)
+        self.session_add(self.image2)
         self.session.flush()
 
         self.waypoint1 = Waypoint(waypoint_type="summit", elevation=2203)
-        self.session.add(self.waypoint1)
+        self.session_add(self.waypoint1)
         self.waypoint2 = Waypoint(
             waypoint_type="climbing_outdoor",
             elevation=2,
             rock_types=[],
             geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
         )
-        self.session.add(self.waypoint2)
+        self.session_add(self.waypoint2)
         self.session.flush()
 
         self.outing3 = Outing(
             activities=["skitouring"], date_start=datetime.date(2016, 2, 1), date_end=datetime.date(2016, 2, 2)
         )
-        self.session.add(self.outing3)
+        self.session_add(self.outing3)
         self.route3 = Route(
             activities=["skitouring"],
             elevation_max=1500,
@@ -773,7 +770,7 @@ class TestXreportRest(BaseDocumentTestRest):
             height_diff_down=500,
             durations="1",
         )
-        self.session.add(self.route3)
+        self.session_add(self.route3)
         self.session.flush()
 
         self._add_association(Association.create(parent_document=self.outing3, child_document=self.xreport1), user_id)

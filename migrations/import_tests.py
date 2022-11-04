@@ -45,20 +45,22 @@ def _assert_unary_replacements(old_foo, operator):
 
 def _legacy_model_replacements():
     return [
-        (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
-        (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
+        (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
         (r"from c2corg_api.models.association ", "from c2corg_api.legacy.models.association "),
         (r"from c2corg_api.models.book ", "from c2corg_api.legacy.models.book "),
-        (r"from c2corg_api.models.document_topic ", "from c2corg_api.legacy.models.document_topic "),
-        (r"from c2corg_api.models.image ", "from c2corg_api.legacy.models.image "),
-        (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
-        (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
-        (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
-        (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
-        (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
+        (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.document_history ", "from c2corg_api.legacy.models.document_history "),
+        (r"from c2corg_api.models.document_topic ", "from c2corg_api.legacy.models.document_topic "),
+        (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
+        (r"from c2corg_api.models.image ", "from c2corg_api.legacy.models.image "),
+        (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
+        (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
+        (r"from c2corg_api.models.outing ", "from c2corg_api.legacy.models.outing "),
+        (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
+        (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
+        (r"from c2corg_api.models.xreport ", "from c2corg_api.legacy.models.xreport "),
     ]
 
 
@@ -330,4 +332,4 @@ convert_test_file("views/test_user_mailinglists.py")
 convert_test_file("views/test_user_profile.py")
 convert_test_file("views/test_article.py")
 convert_test_file("views/test_book.py")
-convert_test_file("views/test_xreport.py", False)
+convert_test_file("views/test_xreport.py")

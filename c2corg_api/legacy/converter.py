@@ -1,6 +1,14 @@
 import json
 from flask_camp import current_api
-from c2corg_api.models import AREA_TYPE, BOOK_TYPE, USERPROFILE_TYPE, ARTICLE_TYPE
+from c2corg_api.models import (
+    AREA_TYPE,
+    BOOK_TYPE,
+    USERPROFILE_TYPE,
+    ARTICLE_TYPE,
+    XREPORT_TYPE,
+    OUTING_TYPE,
+    ROUTE_TYPE,
+)
 from werkzeug.exceptions import BadRequest, NotFound
 
 
@@ -60,6 +68,8 @@ def convert_to_legacy_doc(document):
         result |= {
             "activities": data["activities"],
         }
+    elif data["type"] == XREPORT_TYPE:
+        pass  # TODO
     else:
         raise NotImplementedError(f"Don't know how to convert {data['type']}")
 
@@ -150,7 +160,8 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
 
         # other props
         result["data"] |= legacy_document
-
+    elif document_type == XREPORT_TYPE:
+        pass  # TODO
     else:
         raise NotImplementedError(f"Dont know how to convert {document_type}")
 

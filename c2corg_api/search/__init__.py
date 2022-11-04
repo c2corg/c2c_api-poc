@@ -12,6 +12,7 @@ from c2corg_api.models import (
     BOOK_TYPE,
     IMAGE_TYPE,
     ROUTE_TYPE,
+    XREPORT_TYPE,
     ProfilePageLink,
 )
 
@@ -54,6 +55,8 @@ class DocumentSearch(BaseModel):
         elif self.document_type == IMAGE_TYPE:
             self.activities = new_version.data["activities"]
         elif self.document_type == ROUTE_TYPE:
+            self.activities = new_version.data["activities"]
+        elif self.document_type == XREPORT_TYPE:
             self.activities = new_version.data["activities"]
         else:
             raise NotImplementedError(f"Please set how to search {self.document_type}")
