@@ -143,21 +143,21 @@ class TestArticleRest(BaseDocumentTestRest):
     def test_get_caching(self):
         self.get_caching(self.article1)
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.article1, "en")
         assert locale.get("lang") == "en"
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_best_lang(self):
         body, locale = self.get_info(self.article1, "es")
         assert locale.get("lang") == "fr"
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_404(self):
         self.get_info_404()
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({}, user="moderator")
         errors = body.get("errors")
@@ -211,7 +211,7 @@ class TestArticleRest(BaseDocumentTestRest):
 
         body, doc = self.post_success(body, user="moderator")
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_post_success(self):
         body = {
             "document_id": 123456,
@@ -295,7 +295,7 @@ class TestArticleRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.article1.document_id, user="moderator")
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -325,7 +325,7 @@ class TestArticleRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.article1.document_id, user="moderator")
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_put_success_all(self):
         body = {
             "message": "Update",
@@ -539,7 +539,7 @@ class TestArticleRest(BaseDocumentTestRest):
         assert body["status"] == "error"
         assert body["name"] == "Forbidden"
 
-    @pytest.mark.skip(reason="...")
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.article1)
 

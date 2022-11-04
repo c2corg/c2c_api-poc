@@ -197,7 +197,7 @@ replacements = (
         (r" *self._check_es_index\(\)\n", ""),
         # error messages
         ('"Already used forum name"', '"Name or email already exists"'),
-        (r' *assert len(body\["errors"\]) == 1\n', ""),  # error model is different
+        (r' *assert len\(body\["errors"\]\) == \d\n', ""),  # error model is different
         (r'assert body\["errors"\]\[0\]\["name"\]', 'assert body["name"]'),
     ]
 )
