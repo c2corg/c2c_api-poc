@@ -1,4 +1,4 @@
 {
   "type": "array",
-  "items": { "$ref": "/entities/activities.json" }
+  "items": { "$ref": "/attributes/activities.json" }
 }

@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "empty",
+    "draft",
+    "medium",
+    "fine",
+    "great"
+  ]
+}

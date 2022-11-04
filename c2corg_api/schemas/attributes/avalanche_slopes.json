@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "slope_lt_30",
+    "slope_30_35",
+    "slope_35_40",
+    "slope_40_45",
+    "slope_gt_45"
+  ]
+}

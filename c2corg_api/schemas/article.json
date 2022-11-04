@@ -1,13 +1,13 @@
 {
   "properties": {
     "type": { "const": "article" },
-    "quality": { "$ref": "entities/qualities.json" },
+    "quality": { "$ref": "attributes/quality_types.json" },
     "locales": {
       "patternProperties": {
         "(fr|en)": {
           "type": "object",
           "properties": {
-            "lang": { "$ref": "entities/langs.json" },
+            "lang": { "$ref": "attributes/default_langs.json" },
             "title": { "type": "string" },
             "summary": { "type": "string" },
             "description": { "type": ["string", "null"] },
@@ -25,9 +25,9 @@
       "additionalProperties": false
     },
     "associations": { "$ref": "entities/association_array.json" },
-    "article_type": { "$ref": "entities/article_types.json" },
-    "activities": { "$ref": "/entities/activity_array.json" },
-    "categories": { "$ref": "/entities/article_category_array.json" }
+    "article_type": { "$ref": "attributes/article_types.json" },
+    "activities": { "$ref": "entities/activity_array.json" },
+    "categories": { "$ref": "entities/article_category_array.json" }
   },
   "required": ["locales", "type", "author", "associations", "activities", "categories", "article_type", "quality"],
   "additionalProperties": false

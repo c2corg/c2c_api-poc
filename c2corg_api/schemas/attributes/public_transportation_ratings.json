@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "good service",
+    "seasonal service",
+    "poor service",
+    "nearby service",
+    "no service"
+  ]
+}

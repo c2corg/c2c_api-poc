@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "often",
+    "sometimes",
+    "progressive",
+    "naturally",
+    "closed_in_winter",
+    "non_applicable"
+  ]
+}

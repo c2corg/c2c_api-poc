@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "single",
+    "multi",
+    "bloc",
+    "psicobloc"
+  ]
+}

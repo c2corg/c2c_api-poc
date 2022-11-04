@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "very_safe",
+    "safe",
+    "dangerous",
+    "very_dangerous"
+  ]
+}

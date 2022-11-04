@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "exposed",
+    "partly_protected",
+    "protected",
+    "inside"
+  ]
+}

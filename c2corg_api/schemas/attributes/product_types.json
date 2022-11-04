@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "farm_sale",
+    "restaurant",
+    "grocery",
+    "bar",
+    "sport_shop"
+  ]
+}

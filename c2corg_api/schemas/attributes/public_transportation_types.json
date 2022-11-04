@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "train",
+    "bus",
+    "service_on_demand",
+    "boat"
+  ]
+}

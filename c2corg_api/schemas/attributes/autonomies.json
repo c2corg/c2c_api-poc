@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "non_autonomous",
+    "autonomous",
+    "expert"
+  ]
+}

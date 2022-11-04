@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "easy",
+    "possible",
+    "difficult",
+    "impossible"
+  ]
+}

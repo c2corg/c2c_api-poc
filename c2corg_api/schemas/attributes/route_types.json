@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "return_same_way",
+    "loop",
+    "loop_hut",
+    "traverse",
+    "raid",
+    "expedition"
+  ]
+}

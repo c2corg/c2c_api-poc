@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "collaborative",
+    "personal",
+    "copyright"
+  ]
+}

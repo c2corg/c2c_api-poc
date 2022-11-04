@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "federal_supervisor",
+    "federal_trainer",
+    "professional_diploma"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "severity_no",
+    "1d_to_3d",
+    "4d_to_1m",
+    "1m_to_3m",
+    "more_than_3m"
+  ]
+}

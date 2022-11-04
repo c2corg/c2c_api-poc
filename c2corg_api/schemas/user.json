@@ -8,7 +8,7 @@
       "properties": {
         "full_name": { "type": "string" },
         "is_profile_public": { "type": "boolean" },
-        "lang": { "$ref": "entities/langs.json" },
+        "lang": { "$ref": "attributes/default_langs.json" },
         "feed": { "$ref": "entities/user_feed_preferences.json" }
       },
       "required": ["full_name", "lang", "is_profile_public", "feed"],

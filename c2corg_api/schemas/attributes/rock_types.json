@@ -1,0 +1,19 @@
+{
+  "enum": [
+    "basalte",
+    "calcaire",
+    "conglomerat",
+    "craie",
+    "gneiss",
+    "gres",
+    "granit",
+    "migmatite",
+    "mollasse_calcaire",
+    "pouding",
+    "quartzite",
+    "rhyolite",
+    "schiste",
+    "trachyte",
+    "artificial"
+  ]
+}

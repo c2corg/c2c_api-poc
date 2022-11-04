@@ -1,0 +1,21 @@
+{
+  "enum": [
+    "landscapes",
+    "detail",
+    "action",
+    "track",
+    "rise",
+    "descent",
+    "topo",
+    "people",
+    "fauna",
+    "flora",
+    "nivology",
+    "geology",
+    "hut",
+    "equipment",
+    "book",
+    "help",
+    "misc"
+  ]
+}

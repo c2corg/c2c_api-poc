@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "quiet",
+    "some",
+    "crowded",
+    "overcrowded"
+  ]
+}

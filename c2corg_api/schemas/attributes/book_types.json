@@ -1,0 +1,13 @@
+{
+  "enum": [
+    "topo",
+    "environment",
+    "historical",
+    "biography",
+    "photos-art",
+    "novel",
+    "technics",
+    "tourism",
+    "magazine"
+  ]
+}

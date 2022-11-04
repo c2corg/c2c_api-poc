@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "created",
+    "updated",
+    "added_photos"
+  ]
+}

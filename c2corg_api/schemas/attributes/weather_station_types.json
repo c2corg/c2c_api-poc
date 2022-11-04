@@ -1,0 +1,13 @@
+{
+  "enum": [
+    "temperature",
+    "wind_speed",
+    "wind_direction",
+    "humidity",
+    "pressure",
+    "precipitation",
+    "precipitation_heater",
+    "snow_height",
+    "insolation"
+  ]
+}

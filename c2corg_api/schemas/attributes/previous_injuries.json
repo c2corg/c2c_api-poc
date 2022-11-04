@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "no",
+    "previous_injuries_2",
+    "previous_injuries_3"
+  ]
+}

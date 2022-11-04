@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "range",
+    "admin_limits",
+    "country"
+  ]
+}

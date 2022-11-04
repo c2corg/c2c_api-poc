@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "no_supervision",
+    "federal_supervision",
+    "professional_supervision"
+  ]
+}

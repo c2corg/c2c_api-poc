@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "cleared",
+    "snowy",
+    "closed_snow",
+    "closed_cleared"
+  ]
+}

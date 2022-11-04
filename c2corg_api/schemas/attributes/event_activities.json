@@ -1,0 +1,11 @@
+{
+  "enum": [
+    "sport_climbing",
+    "multipitch_climbing",
+    "alpine_climbing",
+    "snow_ice_mixed",
+    "ice_climbing",
+    "skitouring",
+    "other"
+  ]
+}

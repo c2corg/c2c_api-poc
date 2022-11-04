@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "slab",
+    "vertical",
+    "overhang",
+    "roof",
+    "small_pillar",
+    "crack_dihedral"
+  ]
+}

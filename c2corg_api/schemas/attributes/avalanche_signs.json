@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "no",
+    "danger_sign",
+    "recent_avalanche",
+    "natural_avalanche",
+    "accidental_avalanche"
+  ]
+}

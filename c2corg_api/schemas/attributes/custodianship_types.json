@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "accessible_when_wardened",
+    "always_accessible",
+    "key_needed",
+    "no_warden"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "primary_impacted",
+    "secondary_impacted",
+    "internal_witness",
+    "external_witness"
+  ]
+}

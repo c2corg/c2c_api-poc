@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "activity_rate_y5",
+    "activity_rate_m2",
+    "activity_rate_w1"
+  ]
+}

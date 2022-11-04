@@ -6,7 +6,7 @@
         "(fr|en)": {
           "type": "object",
           "properties": {
-            "lang": { "$ref": "entities/langs.json" },
+            "lang": { "$ref": "attributes/default_langs.json" },
             "description": { "type": ["string", "null"] },
             "summary": { "type" : ["string", "null"] }
           },
@@ -19,7 +19,7 @@
     "name": { "type": "string" },
     "categories": {
       "type": "array",
-      "items": { "$ref": "entities/user_categories.json" }
+      "items": { "$ref": "attributes/user_categories.json" }
     },
     "geometry": {},
     "user_id": { "type": "integer" }

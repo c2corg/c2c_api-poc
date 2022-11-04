@@ -1,0 +1,7 @@
+{
+  "enum": [
+    "open_guarded",
+    "open_non_guarded",
+    "closed_hut"
+  ]
+}

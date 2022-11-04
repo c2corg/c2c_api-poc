@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "edge",
+    "pillar",
+    "face",
+    "corridor",
+    "goulotte",
+    "glacier"
+  ]
+}

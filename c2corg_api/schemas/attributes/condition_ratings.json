@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "excellent",
+    "good",
+    "average",
+    "poor",
+    "awful"
+  ]
+}

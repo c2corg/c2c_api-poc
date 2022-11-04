@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "no",
+    "glacier_safety_gear",
+    "crampons_spring",
+    "crampons_req",
+    "glacier_crampons"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "enum": [
+    "avalanche",
+    "stone_ice_fall",
+    "ice_cornice_collapse",
+    "person_fall",
+    "crevasse_fall",
+    "physical_failure",
+    "injury_without_fall",
+    "blocked_person",
+    "weather_event",
+    "safety_operation",
+    "critical_situation",
+    "other"
+  ]
+}
