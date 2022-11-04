@@ -25,3 +25,7 @@ class Book(LegacyDocument):
     @property
     def activities(self):
         return self._document.last_version.data["activities"]
+
+    @property
+    def book_types(self):
+        return self._document.last_version.data["book_types"]

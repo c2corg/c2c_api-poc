@@ -261,6 +261,7 @@ class TestBookRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.book1.document_id, user="moderator")
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -288,6 +289,7 @@ class TestBookRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.book1.document_id, user="moderator")
 
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_put_success_all(self):
         body = {
             "message": "Update",
@@ -410,6 +412,7 @@ class TestBookRest(BaseDocumentTestRest):
 
         assert book1.get_locale("es").title == "Escalades au Thaurac"
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.book1)
 
