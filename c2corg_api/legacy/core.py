@@ -4,6 +4,7 @@ from c2corg_api.views import cooker as cooker_view
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
+from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportVersionView
 from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import block as block_view
 from c2corg_api.legacy.views.users import unblock as unblock_view
@@ -51,6 +52,7 @@ def add_legacy_modules(app, api):
         url_prefix="",
     )
 
-    api.add_modules(app, ProfilesView(), ProfileView(), url_prefix="")
     api.add_modules(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
     api.add_modules(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
+    api.add_modules(app, ProfilesView(), ProfileView(), url_prefix="")
+    api.add_modules(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")

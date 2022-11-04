@@ -85,8 +85,7 @@ class Document:
     def create_new_model(self, data):
         from flask_camp.models import Document
 
-        print(json.dumps(data, indent=4))
-
+        # print(json.dumps(data, indent=4))
         schema_validator.validate(data, f"{data['type']}.json")
 
         self._document = Document.create(comment="Creation", data=data, author=self.default_author)

@@ -10,6 +10,7 @@
     "nb_participants": { "type": "integer" }, 
     "nb_impacted": { "type": "integer" },  
     "age": { "type": "integer" }, 
+    "geometry": { "$ref": "entities/geometry.json" },
     
     "locales": {
       "patternProperties": {
@@ -35,7 +36,8 @@
     "event_type",
     "locales",
     "quality",
-    "type"
+    "type",
+    "geometry"
   ],
   "additionalProperties": false
 }

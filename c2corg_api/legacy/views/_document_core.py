@@ -7,6 +7,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest, UnsupportedMediaType
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
+from c2corg_api.models import USERPROFILE_TYPE
 
 
 class LegacyView:
@@ -61,7 +62,7 @@ class LegacyView:
             cooked = cls._get_preferred_locale(cook_lang, cooked_locales)
             result["cooked"] = None if len(cooked) == 0 else cooked[0]
 
-        if collection_view:
+        if collection_view and document["data"]["type"] == USERPROFILE_TYPE:
             if "geometry" in result:
                 del result["geometry"]
 

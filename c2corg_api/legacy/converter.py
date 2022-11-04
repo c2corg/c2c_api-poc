@@ -33,10 +33,12 @@ def convert_to_legacy_doc(document):
             "articles": [],
             "books": [],
             "images": [],
-            "waypoints": [],
+            "outings": [],
+            "profiles": [],
             "routes": [],
-            "xreports": [],
             "users": [],
+            "waypoints": [],
+            "xreports": [],
         },
     }
 
@@ -69,7 +71,10 @@ def convert_to_legacy_doc(document):
             "activities": data["activities"],
         }
     elif data["type"] == XREPORT_TYPE:
-        pass  # TODO
+        result |= {
+            "geometry": data["geometry"] | {"version": 0},
+        }
+
     else:
         raise NotImplementedError(f"Don't know how to convert {data['type']}")
 

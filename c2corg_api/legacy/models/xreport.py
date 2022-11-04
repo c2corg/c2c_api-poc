@@ -37,6 +37,7 @@ class Xreport(LegacyDocument):
                 "event_type": event_type,
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": [],
+                "geometry": {},
             }
 
             if nb_participants is not None:
