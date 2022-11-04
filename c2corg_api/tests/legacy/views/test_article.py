@@ -445,36 +445,35 @@ class TestArticleRest(BaseDocumentTestRest):
 
         assert article1.get_locale("es").title == "Lac d'Annecy"
 
-    # def test_put_change_collab_to_personal_as_non_author(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.article1.document_id,
-    #             "version": self.article1.version,
-    #             "quality": quality_types[1],
-    #             "activities": ["paragliding"],
-    #             "categories": ["technical"],
-    #             "article_type": "personal",
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "Another final EN title",
-    #                     "version": self.locale_en.version,
-    #                     "description": "i am just changing the article type",
-    #                 }
-    #             ],
-    #         },
-    #     }
+    def test_put_change_collab_to_personal_as_non_author(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.article1.document_id,
+                "version": self.article1.version,
+                "quality": quality_types[1],
+                "activities": ["paragliding"],
+                "categories": ["technical"],
+                "article_type": "personal",
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "Another final EN title",
+                        "version": self.locale_en.version,
+                        "description": "i am just changing the article type",
+                    }
+                ],
+            },
+        }
 
-    #     headers = self.add_authorization_header(username="contributor2")
-    #     response = self.app_put_json(
-    #         self._prefix + "/" + str(self.article1.document_id), body, headers=headers, status=400
-    #     )
+        headers = self.add_authorization_header(username="contributor2")
+        response = self.app_put_json(
+            self._prefix + "/" + str(self.article1.document_id), body, headers=headers, status=400
+        )
 
-    #     body = response.json
-    #     assert body["status"] == "error"
-    #     assert len(body["errors"]) == 1
-    #     assert body["errors"][0]["name"] == "Bad Request"
+        body = response.json
+        assert body["status"] == "error"
+        assert body["name"] == "Bad Request"
 
     # def test_put_as_author(self):
     #     body = {

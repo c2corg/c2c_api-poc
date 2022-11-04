@@ -29,10 +29,26 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
     schema_validator.validate(new_version.data, f"{document_type}.json")
 
     if old_version is not None and new_version is not None:
+
+        if old_version.data["type"] != new_version.data["type"]:
+            raise BadRequest("type property can't be changed")
+
         if document_type == USERPROFILE_TYPE:
             user_id = get_user_id_from_profile_id(document.id)
             if user_id != current_user.id:
                 if not current_user.is_moderator:
                     raise Forbidden()
+
+        elif document_type == ARTICLE_TYPE:
+            if old_version.data["author"]["user_id"] != new_version.data["author"]["user_id"]:
+                if not current_user.is_moderator:
+                    raise Forbidden("You are not allowed to change author")
+
+            articles_types = (old_version.data["article_type"], new_version.data["article_type"])
+            if articles_types == ("collab", "personal"):  # from collab to personal
+                raise BadRequest("A collaborative article can't be moved to personal")
+            elif articles_types == ("collab", "personal"):  # from personal to collab
+                if new_version.data["author"]["user_id"] != current_user.id:
+                    raise Forbidden("You are not allowed to change article type")
 
     update_document_search_table(document)
