@@ -1,4 +1,4 @@
-from c2corg_api.legacy.models.document import Document as LegacyDocument, LocaleDictProxy, DocumentLocale
+from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale
 from c2corg_api.models import ROUTE_TYPE
 
 

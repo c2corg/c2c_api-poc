@@ -43,7 +43,7 @@ class DocumentArchive:
 
     @property
     def document_locales_archive(self):
-        locales = LocaleDictProxy(json=self._version.data["locales"], document_type=self._document_type)
+        locales = LocaleDictProxy(version=self._version)
         return locales.get_locale("en" if self._expected_legacy_lang is None else self._expected_legacy_lang)
 
     @property
@@ -100,7 +100,7 @@ class Document:
 
     @property
     def locales(self):
-        return LocaleDictProxy(self._document.last_version.data["locales"], self.type)
+        return LocaleDictProxy(version=self._document.last_version)
 
     @property
     def geometry(self):
@@ -140,27 +140,28 @@ class DocumentGeometry:
 
 
 class LocaleDictProxy:
-    def __init__(self, json, document_type):
-        self._json = json
-        self._document_type = document_type
+    def __init__(self, version):
+        self._version = version
+        self._document_type = version.data["type"]
 
     def append(self, locale):
         locale.set_document_type(self._document_type)
-        self._json[locale.lang] = locale.to_json()
+        self._version.data["locales"][locale.lang] = locale.to_json()
+        self._version.data = self._version.data  # force update (need to find a better solution)
 
     def get_locale(self, lang):
-        result = self._json.get(lang)
+        result = self._version.data["locales"].get(lang)
 
         return None if result is None else DocumentLocale(json=result)
 
     def __len__(self):
-        return len(self._json)
+        return len(self._version.data["locales"])
 
     def __str__(self):
-        return str(self._json)
+        return str(self._version.data["locales"])
 
     def __getitem__(self, i):
-        json = list(self._json.values())[i]
+        json = list(self._version.data["locales"].values())[i]
         return DocumentLocale(json=json)
 
 

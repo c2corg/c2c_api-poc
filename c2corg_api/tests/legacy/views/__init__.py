@@ -117,7 +117,8 @@ class BaseTestRest(BaseTestClass):
         )
 
         if isinstance(instance, legacy_document):
-            data = json.loads(instance._document.last_version._data)
+            assert json.dumps(instance._document.last_version.data) == instance._document.last_version._data
+            data = instance._document.last_version.data
             schema_validator.validate(data, f"{data['type']}.json")
 
             self.session.add(instance._document)
