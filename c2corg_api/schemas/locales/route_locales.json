@@ -1,0 +1,17 @@
+{
+  "patternProperties": {
+    "(fr|en)": {
+      "type": "object",
+      "properties": {
+        "description": { "type": ["string", "null"] },
+        "gear": { "type": "string" },
+        "lang": { "$ref": "/attributes/default_langs.json" },
+        "summary": { "type": "string" },
+        "title": { "type": "string" },
+        "topic_id": { "type": ["integer", "null"] }
+      },
+      "required": ["lang", "title"],
+      "additionalProperties": false
+    }
+  }
+}

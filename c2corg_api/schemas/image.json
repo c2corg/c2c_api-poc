@@ -1,32 +1,26 @@
 {
-    "properties": {
-      "type": { "const": "image" },
-      "quality": { "$ref": "attributes/quality_types.json" },
-      "locales": {
-        "patternProperties": {
-          "(fr|en)": {
-            "type": "object",
-            "properties": {
-              "lang": { "$ref": "attributes/default_langs.json" },
-              "title": { "type": "string" },
-              "summary": { "type": "string" },
-              "description": { "type": ["string", "null"] },
-              "topic_id": { "type": ["integer", "null"] }
-            },
-            "required": ["lang", "title"],
-            "additionalProperties": false
-          }
-        }
-      },
-      "associations": { "$ref": "entities/association_array.json" },
-      "activities": { "$ref": "entities/activity_array.json" },
-      "image_type": { "$ref": "attributes/image_types.json" },
-      "height": { "type": ["integer", "null"] },
-      "width": { "type": ["integer", "null"] },
-      "geometry": { "$ref": "entities/geometry.json" },
-      "filename": { "type": "string" }
-    },
-    "required": ["locales", "type", "associations", "activities", "height", "width", "quality", "image_type", "filename"],
-    "additionalProperties": false
-  }
-  
+  "properties": {
+    "activities": { "$ref": "entities/activity_array.json" },
+    "associations": { "$ref": "entities/association_array.json" },
+    "filename": { "type": "string" },
+    "geometry": { "$ref": "entities/geometry.json" },
+    "height": { "type": ["integer", "null"] },
+    "image_type": { "$ref": "attributes/image_types.json" },
+    "locales": { "$ref": "locales/book_locales.json" },
+    "quality": { "$ref": "attributes/quality_types.json" },
+    "type": { "const": "image" },
+    "width": { "type": ["integer", "null"] }
+  },
+  "required": [
+    "activities",
+    "associations",
+    "filename",
+    "height",
+    "image_type",
+    "locales",
+    "quality",
+    "type",
+    "width"
+  ],
+  "additionalProperties": false
+}

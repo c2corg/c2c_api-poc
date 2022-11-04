@@ -1,0 +1,13 @@
+{
+  "patternProperties": {
+    "(fr|en)": {
+      "type": "object",
+      "properties": {
+        "description": { "type": ["string", "null"] },
+        "lang": { "$ref": "/attributes/default_langs.json" },
+        "summary": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

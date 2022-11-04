@@ -1,27 +1,15 @@
 {
   "properties": {
-    "type": { "const": "profile" },
-    "locales": {
-      "patternProperties": {
-        "(fr|en)": {
-          "type": "object",
-          "properties": {
-            "lang": { "$ref": "attributes/default_langs.json" },
-            "description": { "type": ["string", "null"] },
-            "summary": { "type" : ["string", "null"] }
-          },
-          "additionalProperties": false
-        }
-      }
-    },
     "areas": {},
     "associations": { "$ref": "entities/association_array.json" },
-    "name": { "type": "string" },
     "categories": {
       "type": "array",
       "items": { "$ref": "attributes/user_categories.json" }
     },
     "geometry": { "$ref": "entities/geometry.json" },
+    "name": { "type": "string" },
+    "locales": { "$ref": "locales/profile_locales.json" },
+    "type": { "const": "profile" },
     "user_id": { "type": "integer" }
   },
   "required": ["locales", "type", "areas", "name", "associations"],

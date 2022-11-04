@@ -1,51 +1,30 @@
 {
   "properties": {
+    "age": { "type": "integer" },
+    "associations": { "$ref": "entities/association_array.json" },
     "author": { "$ref": "entities/author.json" },
-    "date": {
-      "oneOf": [{ "$ref": "entities/date.json" }, { "type": "null" }]
-    },
-    "type": { "const": "xreport" },
-    "quality": { "$ref": "attributes/quality_types.json" },
-
+    "date": { "oneOf": [{ "$ref": "entities/date.json" }, { "type": "null" }] },
     "event_activity": { "$ref": "attributes/event_activities.json" },
     "event_type": { "$ref": "attributes/event_types.json" },
-
-    "associations": { "$ref": "entities/association_array.json" },
-    "nb_participants": { "type": "integer" },
-    "nb_impacted": { "type": "integer" },
-    "age": { "type": "integer" },
     "geometry": {
       "oneOf": [{ "$ref": "entities/geometry.json" }, { "type": "null" }]
     },
-
-    "locales": {
-      "patternProperties": {
-        "(fr|en)": {
-          "type": "object",
-          "properties": {
-            "lang": { "$ref": "attributes/default_langs.json" },
-            "title": { "type": "string" },
-            "summary": { "type": "string" },
-            "place": { "type": "string" },
-            "description": { "type": ["string", "null"] },
-            "topic_id": { "type": ["integer", "null"] }
-          },
-          "required": ["lang", "title"],
-          "additionalProperties": false
-        }
-      }
-    }
+    "locales": { "$ref": "locales/xreport_locales.json" },
+    "nb_impacted": { "type": "integer" },
+    "nb_participants": { "type": "integer" },
+    "quality": { "$ref": "attributes/quality_types.json" },
+    "type": { "const": "xreport" }
   },
   "required": [
+    "author",
     "associations",
+    "date",
     "event_activity",
     "event_type",
+    "geometry",
     "locales",
     "quality",
-    "type",
-    "geometry",
-    "author",
-    "date"
+    "type"
   ],
   "additionalProperties": false
 }

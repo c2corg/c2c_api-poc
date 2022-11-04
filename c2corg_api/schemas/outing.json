@@ -1,39 +1,21 @@
 {
   "properties": {
-    "type": { "const": "outing" },
-    "quality": { "$ref": "attributes/quality_types.json" },
-
-    "associations": { "$ref": "entities/association_array.json" },
     "activities": { "$ref": "entities/activity_array.json" },
-    
-    "date_start": { "$ref": "entities/date.json"},
+    "associations": { "$ref": "entities/association_array.json" },
     "date_end": { "$ref": "entities/date.json"},
-
-    "locales": {
-      "patternProperties": {
-        "(fr|en)": {
-          "type": "object",
-          "properties": {
-            "lang": { "$ref": "attributes/default_langs.json" },
-            "title": { "type": "string" },
-            "summary": { "type": "string" },
-            "description": { "type": ["string", "null"] },
-            "topic_id": { "type": ["integer", "null"] }
-          },
-          "required": ["lang", "title"],
-          "additionalProperties": false
-        }
-      }
-    }
+    "date_start": { "$ref": "entities/date.json"},
+    "locales": { "$ref": "locales/outing_locales.json" },
+    "quality": { "$ref": "attributes/quality_types.json" },
+    "type": { "const": "outing" }
   },
   "required": [
-    "associations",
     "activities",
+    "associations",
+    "date_end",
+    "date_start",
     "locales",
     "quality",
-    "type",
-    "date_start",
-    "date_end"
+    "type"
   ],
   "additionalProperties": false
 }
