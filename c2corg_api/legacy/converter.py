@@ -1,5 +1,6 @@
 import json
 from flask_camp import current_api
+from flask_login import current_user
 from c2corg_api.models import (
     AREA_TYPE,
     BOOK_TYPE,
@@ -73,19 +74,20 @@ def convert_to_legacy_doc(document):
     elif data["type"] == XREPORT_TYPE:
         result |= {
             "author": data["author"],
-            "activity_rate": data.get("activity_rate"),
-            "age": data.get("age"),
-            "author_status": data.get("author_status"),
-            "autonomy": data.get("autonomy"),
             "date": data["date"],
             "event_activity": data["event_activity"],
             "event_type": data["event_type"],
-            "gender": data.get("gender"),
             "geometry": data["geometry"],
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
-            "previous_injuries": data.get("previous_injuries"),
         }
+
+        # private field
+        for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
+            if field in data:
+                result[field] = data[field]
+            elif current_user.is_moderator:  # in old model, empty values are reported as none
+                result[field] = None
 
         if result["geometry"] is not None:
             result["geometry"] |= {"version": 0}

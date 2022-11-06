@@ -31,6 +31,7 @@ def create_app(**config):
         cooker=cooker,
         schemas_directory="c2corg_api/schemas",
         user_schema="user.json",
+        after_get_document=hooks.after_get_document,
         on_user_creation=hooks.on_user_creation,
         on_user_validation=hooks.on_user_validation,
         on_user_update=hooks.on_user_update,
