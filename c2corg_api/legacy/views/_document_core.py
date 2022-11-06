@@ -123,11 +123,13 @@ class DocumentView(LegacyView):
     def get(self, document_id):
         result = document_view.get(document_id)
 
-        return self._get_legacy_doc(
+        result.data = self._get_legacy_doc(
             result.data["document"],
             lang=request.args.get("l"),
             cook_lang=request.args.get("cook"),
         )
+
+        return result
 
     @allow("authenticated")
     def put(self, document_id):
