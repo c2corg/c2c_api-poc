@@ -58,5 +58,5 @@ class Xreport(LegacyDocument):
         return self._document.last_version.data["event_activity"]
 
     # @property
-    # def xreport_types(self):
-    #     return self._document.last_version.data["xreport_types"]
+    # def event_activity(self):
+    #     return self._document.last_version.data["event_activity"]

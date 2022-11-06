@@ -8,6 +8,7 @@ from c2corg_api.models import (
     WAYPOINT_TYPE,
     AREA_TYPE,
     IMAGE_TYPE,
+    XREPORT_TYPE,
 )
 
 
@@ -76,6 +77,18 @@ class DocumentArchive:
             raise AttributeError(f"'{DocumentArchive}' has no attribute '{attribute_name}' for {self._document_type}")
 
         return self._version.data[mapping[self._document_type]]
+
+    @property
+    def event_type(self):
+        return self._get_attribute("event_type", {XREPORT_TYPE: "event_type"})
+
+    @property
+    def event_activity(self):
+        return self._get_attribute("event_activity", {XREPORT_TYPE: "event_activity"})
+
+    @property
+    def age(self):
+        return self._get_attribute("age", {XREPORT_TYPE: "age"})
 
 
 class Document:
