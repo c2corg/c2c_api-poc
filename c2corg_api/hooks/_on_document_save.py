@@ -4,7 +4,7 @@ from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.hooks._tools import get_user_id_from_profile_id
-from c2corg_api.models import ARTICLE_TYPE, USERPROFILE_TYPE, ALL_TYPES
+from c2corg_api.models import ARTICLE_TYPE, USERPROFILE_TYPE, XREPORT_TYPE, ALL_TYPES
 from c2corg_api.schemas import schema_validator
 from c2corg_api.search import DocumentSearch, update_document_search_table
 
@@ -56,5 +56,9 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
             if new_version.data["article_type"] == "personal":
                 if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
                     raise Forbidden("You are not allowed to edit this article")
+
+        elif document_type == XREPORT_TYPE:
+            if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
+                raise Forbidden("You are not allowed to edit this document")
 
     update_document_search_table(document)

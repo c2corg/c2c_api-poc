@@ -409,10 +409,10 @@ class BaseDocumentTestRest(BaseTestRest):
         return body
 
     def post_error(self, request_body, user="contributor"):
-        response = self.app_post_json(self._prefix, request_body, expect_errors=True, status=403)
+        response = self.app_post_json(self._prefix, request_body, status=403)
 
         self.add_authorization_header(username=user)
-        response = self.app_post_json(self._prefix, request_body, expect_errors=True, status=400)
+        response = self.app_post_json(self._prefix, request_body, status=400)
 
         body = response.json
         assert body.get("status") == "error"

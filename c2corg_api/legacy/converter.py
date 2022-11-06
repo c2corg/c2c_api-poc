@@ -183,7 +183,18 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         # other props
         result["data"] |= legacy_document
     elif document_type == XREPORT_TYPE:
-        pass  # TODO
+        result["data"] |= {
+            "author": legacy_document.pop("author", old_data["author"]),
+            "date": legacy_document.pop("date", old_data["date"]),
+            "geometry": legacy_document.pop("geometry", old_data["geometry"]),
+            "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
+            "locales": old_locales
+            | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
+        }
+
+        # other props
+        result["data"] |= legacy_document
+
     else:
         raise NotImplementedError(f"Dont know how to convert {document_type}")
 
