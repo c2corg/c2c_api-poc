@@ -72,13 +72,19 @@ def convert_to_legacy_doc(document):
         }
     elif data["type"] == XREPORT_TYPE:
         result |= {
-            "geometry": data["geometry"],
             "author": data["author"],
+            "activity_rate": data.get("activity_rate"),
+            "age": data.get("age"),
+            "author_status": data.get("author_status"),
+            "autonomy": data.get("autonomy"),
             "date": data["date"],
-            "event_type": data["event_type"],
             "event_activity": data["event_activity"],
+            "event_type": data["event_type"],
+            "gender": data.get("gender"),
+            "geometry": data["geometry"],
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
+            "previous_injuries": data.get("previous_injuries"),
         }
 
         if result["geometry"] is not None:

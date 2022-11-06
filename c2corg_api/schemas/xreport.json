@@ -1,17 +1,22 @@
 {
   "properties": {
+    "activity_rate": { "$ref": "attributes/activity_rates.json" },
     "age": { "type": "integer" },
     "associations": { "$ref": "entities/association_array.json" },
     "author": { "$ref": "entities/author.json" },
+    "author_status": { "$ref": "attributes/author_statuses.json" },
+    "autonomy": { "$ref": "attributes/autonomies.json" },
     "date": { "oneOf": [{ "$ref": "entities/date.json" }, { "type": "null" }] },
     "event_activity": { "$ref": "attributes/event_activities.json" },
     "event_type": { "$ref": "attributes/event_types.json" },
+    "gender": { "$ref": "attributes/genders.json" },
     "geometry": {
       "oneOf": [{ "$ref": "entities/geometry.json" }, { "type": "null" }]
     },
     "locales": { "$ref": "locales/xreport_locales.json" },
     "nb_impacted": { "type": "integer" },
     "nb_participants": { "type": "integer" },
+    "previous_injuries": { "$ref": "attributes/previous_injuries.json" },
     "quality": { "$ref": "attributes/quality_types.json" },
     "type": { "const": "xreport" }
   },
