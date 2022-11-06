@@ -18,12 +18,13 @@
     "nb_participants": { "type": "integer" },
     "previous_injuries": { "$ref": "attributes/previous_injuries.json" },
     "quality": { "$ref": "attributes/quality_types.json" },
+    "qualification": { "$ref": "attributes/qualification.json" },
+    "supervision": { "$ref": "attributes/supervision.json" },
     "type": { "const": "xreport" }
   },
   "required": [
     "author",
     "associations",
-    "date",
     "event_activity",
     "event_type",
     "geometry",

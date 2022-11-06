@@ -87,8 +87,28 @@ class DocumentArchive:
         return self._get_attribute("event_activity", {XREPORT_TYPE: "event_activity"})
 
     @property
+    def nb_participants(self):
+        return self._get_attribute("nb_participants", {XREPORT_TYPE: "nb_participants"})
+
+    @property
+    def autonomy(self):
+        return self._get_attribute("autonomy", {XREPORT_TYPE: "autonomy"})
+
+    @property
+    def activity_rate(self):
+        return self._get_attribute("activity_rate", {XREPORT_TYPE: "activity_rate"})
+
+    @property
+    def supervision(self):
+        return self._get_attribute("supervision", {XREPORT_TYPE: "supervision"})
+
+    @property
     def age(self):
         return self._get_attribute("age", {XREPORT_TYPE: "age"})
+
+    @property
+    def qualification(self):
+        return self._get_attribute("qualification", {XREPORT_TYPE: "qualification"})
 
 
 class Document:

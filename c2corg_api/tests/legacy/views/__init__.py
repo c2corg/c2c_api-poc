@@ -167,6 +167,10 @@ class BaseTestRest(BaseTestClass):
             doc = self.session.query(Document).get(parameter_value)
             return LegacyBook(document=doc)
 
+        if klass is LegacyXreport:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyXreport(document=doc)
+
         raise NotImplementedError(f"TODO...: {klass}")
 
     def extract_nonce(self, _send_mail, key):

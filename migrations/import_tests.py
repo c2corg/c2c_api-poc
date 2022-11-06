@@ -264,7 +264,6 @@ skipped_methods_by_file = {
         "test_get_info_404": "test_get_info is not used in UI",
         "test_get_associations_history": "This view is not relevant in new model",
         "test_post_error": "useless test: empty payload...",
-
     },
 }
 

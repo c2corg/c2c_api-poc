@@ -74,13 +74,18 @@ def convert_to_legacy_doc(document):
     elif data["type"] == XREPORT_TYPE:
         result |= {
             "author": data["author"],
-            "date": data["date"],
             "event_activity": data["event_activity"],
             "event_type": data["event_type"],
             "geometry": data["geometry"],
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
         }
+
+        if "date" in data:
+            result["date"] = data["date"]
+
+        if "supervision" in data:
+            result["supervision"] = data["supervision"]
 
         # private field
         for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
@@ -184,16 +189,26 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         result["data"] |= legacy_document
     elif document_type == XREPORT_TYPE:
         result["data"] |= {
-            "author": legacy_document.pop("author", old_data["author"]),
-            "date": legacy_document.pop("date", old_data["date"]),
-            "geometry": legacy_document.pop("geometry", old_data["geometry"]),
+            "quality": legacy_document.pop("quality", "draft"),
+            "author": legacy_document.pop("author", old_data.get("author", "MISSING_AUTHOR")),
+            "geometry": legacy_document.pop("geometry", old_data.get("geometry", "MISSING_GEO")),
             "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
             "locales": old_locales
             | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
         }
 
+        if "date" in legacy_document or "date" in old_data:
+            result["data"]["date"] = legacy_document.pop("date", old_data.get("date", None))
+
+        if "supervision" in legacy_document or "supervision" in old_data:
+            result["data"]["supervision"] = legacy_document.pop("supervision", old_data.get("supervision", None))
+
         # other props
         result["data"] |= legacy_document
+
+        result["data"].pop("nb_outings", None)
+        # result["data"].pop("qualification", None)
+        # result["data"].pop("supervision", None)
 
     else:
         raise NotImplementedError(f"Dont know how to convert {document_type}")

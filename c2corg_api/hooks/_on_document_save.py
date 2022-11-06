@@ -26,6 +26,9 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
         if document_type == ARTICLE_TYPE:
             new_version.data |= {"author": {"user_id": current_user.id}}
 
+        elif document_type == XREPORT_TYPE:
+            new_version.data |= {"author": {"user_id": current_user.id}}
+
     schema_validator.validate(new_version.data, f"{document_type}.json")
 
     if old_version is not None and new_version is not None:
