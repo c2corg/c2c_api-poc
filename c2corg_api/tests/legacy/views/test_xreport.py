@@ -227,6 +227,7 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_get_info_404(self):
         self.get_info_404()
 
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({}, user="moderator")
         errors = body.get("errors")
