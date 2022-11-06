@@ -184,13 +184,25 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         result["data"] |= legacy_document
     elif document_type == XREPORT_TYPE:
         result["data"] |= {
-            "author": legacy_document.pop("author", old_data["author"]),
-            "date": legacy_document.pop("date", old_data["date"]),
-            "geometry": legacy_document.pop("geometry", old_data["geometry"]),
             "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
             "locales": old_locales
             | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
         }
+
+        if "author" in legacy_document:
+            result["author"] = legacy_document["author"]
+        elif  "author" in old_data:
+            result["author"] = old_data["author"]
+
+        if "date" in legacy_document:
+            result["date"] = legacy_document["date"]
+        elif  "date" in old_data:
+            result["date"] = old_data["date"]
+
+        if "geometry" in legacy_document:
+            result["geometry"] = legacy_document["geometry"]
+        elif  "geometry" in old_data:
+            result["geometry"] = old_data["geometry"]
 
         # other props
         result["data"] |= legacy_document
