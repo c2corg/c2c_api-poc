@@ -40,8 +40,8 @@ def create_app(**config):
         url_prefix="/v7",
     )
 
-    api.add_modules(app, health_view, cooker_view)
-    api.add_modules(app, discourse_login_url_view)
+    api.add_views(app, health_view, cooker_view)
+    api.add_views(app, discourse_login_url_view)
 
     add_legacy_modules(app, api)
 

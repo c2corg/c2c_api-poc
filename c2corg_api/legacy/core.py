@@ -24,8 +24,8 @@ from c2corg_api.legacy.views.users import validate_register_email as validate_re
 def add_legacy_modules(app, api):
 
     # define v6 interface
-    api.add_modules(app, health_view, cooker_view, url_prefix="")
-    api.add_modules(
+    api.add_views(app, health_view, cooker_view, url_prefix="")
+    api.add_views(
         app,
         register_view,
         validate_register_email_view,
@@ -34,7 +34,7 @@ def add_legacy_modules(app, api):
         validate_new_password_view,
         url_prefix="",
     )
-    api.add_modules(
+    api.add_views(
         app,
         login_view,
         logout_view,
@@ -45,14 +45,14 @@ def add_legacy_modules(app, api):
         unfollow_view,
         url_prefix="",
     )
-    api.add_modules(
+    api.add_views(
         app,
         block_view,
         unblock_view,
         url_prefix="",
     )
 
-    api.add_modules(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
-    api.add_modules(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
-    api.add_modules(app, ProfilesView(), ProfileView(), url_prefix="")
-    api.add_modules(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
+    api.add_views(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
+    api.add_views(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
+    api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")
+    api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")

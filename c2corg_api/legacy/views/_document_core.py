@@ -1,6 +1,6 @@
 import json
 
-from flask import request, Response
+from flask import request
 from flask_camp import allow
 from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view
 from werkzeug.datastructures import ImmutableMultiDict
@@ -86,14 +86,14 @@ class DocumentCollectionView(LegacyView):
         result = documents_view.get()
 
         return {
-            "total": result["count"],
+            "total": result.data["count"],
             "documents": [
                 self._get_legacy_doc(
                     document,
                     collection_view=True,
                     preferred_lang=request.args.get("pl"),
                 )
-                for document in result["documents"]
+                for document in result.data["documents"]
             ],
         }
 
@@ -115,7 +115,7 @@ class DocumentCollectionView(LegacyView):
 
         r = documents_view.post()
 
-        return self._get_legacy_doc(r["document"])
+        return self._get_legacy_doc(r.data["document"])
 
 
 class DocumentView(LegacyView):
@@ -124,7 +124,7 @@ class DocumentView(LegacyView):
         result = document_view.get(document_id)
 
         return self._get_legacy_doc(
-            result.json["document"],
+            result.data["document"],
             lang=request.args.get("l"),
             cook_lang=request.args.get("cook"),
         )
@@ -143,27 +143,22 @@ class DocumentView(LegacyView):
 class VersionView(LegacyView):
     @allow("anonymous", "authenticated")
     def get(self, document_id, lang, version_id):
-        r = version_view.get(version_id)
-
+        response = version_view.get(version_id)
+        document = response.data["document"]
         legacy_content = {
-            "document": self._get_legacy_doc(r["document"], cook_lang=lang),
+            "document": self._get_legacy_doc(document, cook_lang=lang),
             "previous_version_id": None,  # TODO
             "next_version_id": None,  # TODO
             "version": {
                 "comment": "creation",
-                "name": r["document"]["user"]["name"],
-                "user_id": r["document"]["user"]["id"],
-                "version_id": r["document"]["version_id"],
-                "written_at": r["document"]["timestamp"],
+                "name": document["user"]["name"],
+                "user_id": document["user"]["id"],
+                "version_id": document["version_id"],
+                "written_at": document["timestamp"],
             },
         }
 
-        response = Response(
-            response=json.dumps(legacy_content),
-            content_type="application/json",
-        )
-
-        response.add_etag()
-        response.make_conditional(request)
+        response.data = legacy_content
+        response.add_etag = True
 
         return response
