@@ -1,4 +1,8 @@
+# pylint: disable=unused-import
+
 import json
+from flask_camp import current_api
+from werkzeug.exceptions import BadRequest, NotFound
 from c2corg_api.schemas import schema_validator
 from c2corg_api.models import (
     USERPROFILE_TYPE,
@@ -122,6 +126,80 @@ class Document:
         schema_validator.validate(data, f"{data['type']}.json")
 
         self._document = Document.create(comment="Creation", data=data, author=self.default_author)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+
+        result = {
+            "protected": legacy_document.pop("protected", False),
+            "data": {
+                "type": legacy_document.pop("type", document_type),
+            },
+        }
+
+        if result["data"]["type"] == "":
+            result["data"]["type"] = document_type
+
+        if "version" in legacy_document:  # new doc do not have any version id
+            result["version_id"] = legacy_document.pop("version")
+
+        if "document_id" in legacy_document and legacy_document["document_id"] != 0:
+            result["id"] = int(legacy_document.pop("document_id"))
+        else:
+            legacy_document.pop("document_id", None)  # it can be zero
+
+        # convert locales
+        locales = legacy_document.pop("locales", [])
+        for locale in locales:
+            locale.pop("version", None)
+
+        result["data"]["locales"] = previous_data.get("locales", {}) | {locale["lang"]: locale for locale in locales}
+
+        # convert associations
+        legacy_associations = legacy_document.pop("associations", {})
+        associations = set()
+
+        legacy_associations.pop("all_routes", None)
+        legacy_associations.pop("recent_outings", None)
+
+        for array in legacy_associations.values():
+            for document in array:
+                associations.add(document["document_id"])
+
+        result["data"]["associations"] = list(associations)
+
+        return result
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        """Convert document (as dict) of the new model to the legacy v6 dict"""
+        data = document["data"]
+
+        result = {
+            "document_id": document["id"],
+            "version": document["version_id"],
+            "protected": document["protected"],
+            "type": data["type"],
+            "locales": [locale | {"version": 0} for locale in data["locales"].values()],
+            "available_langs": list(data["locales"].keys()),
+            "associations": {
+                "articles": [],
+                "books": [],
+                "images": [],
+                "outings": [],
+                "profiles": [],
+                "routes": [],
+                "users": [],
+                "waypoints": [],
+                "xreports": [],
+            },
+        }
+
+        # print(json.dumps(document, indent=4))
+        for _, associated_document in document["cooked_data"]["associations"].items():
+            result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
+
+        return result
 
     @property
     def default_author(self):

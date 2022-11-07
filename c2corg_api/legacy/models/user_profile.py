@@ -1,3 +1,4 @@
+import json
 from flask_camp import current_api
 from flask_camp.models import User, Document
 from sqlalchemy import select
@@ -29,6 +30,49 @@ class UserProfile(LegacyDocument):
 
         result._document = Document.get(id=profile_document_id)
         result._versions = list(result._document.versions)
+
+        return result
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        for locale in result["data"]["locales"].values():
+            locale.pop("version", None)
+            locale.pop("title", None)
+            locale.pop("topic_id", None)
+
+        result["data"] |= {
+            "areas": legacy_document.pop("areas", {}),
+            "name": legacy_document.pop("name", previous_data["name"]),
+            "geometry": {"geom": "{}"},
+        }
+
+        if "geometry" in legacy_document:
+            result["data"]["geometry"]["geom"] = json.loads(legacy_document.pop("geometry")["geom"])
+
+        # clean
+        legacy_document.pop("quality", None)
+
+        # other props
+        result["data"] |= legacy_document
+
+        return result
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        result = LegacyDocument.convert_to_legacy_doc(document)
+
+        data = document["data"]
+
+        result |= {
+            "name": data["name"],
+            "forum_username": data["name"],
+            "areas": data["areas"],
+            "geometry": data["geometry"] | {"version": 0},
+        }
+        for locale in result["locales"]:
+            locale["topic_id"] = None
 
         return result
 

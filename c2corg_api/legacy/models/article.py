@@ -24,6 +24,40 @@ class Article(LegacyDocument):
                 }
             )
 
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        result["data"] |= {
+            "activities": legacy_document.pop("activities", []),
+            "categories": legacy_document.pop("categories", []),
+            "article_type": legacy_document.pop("article_type"),
+            "quality": legacy_document.pop("quality", "draft"),
+            "author": legacy_document.pop("author", previous_data.get("author", None)),
+        }
+
+        # clean
+        legacy_document.pop("geometry", None)
+
+        # other props
+        result["data"] |= legacy_document
+
+        return result
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        result = LegacyDocument.convert_to_legacy_doc(document)
+        data = document["data"]
+
+        result |= {
+            "categories": data["categories"],
+            "activities": data["activities"],
+            "article_type": data["article_type"],
+            "author": data["author"],
+        }
+
+        return result
+
     @property
     def activities(self):
         return self._document.last_version.data["activities"]

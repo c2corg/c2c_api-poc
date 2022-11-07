@@ -12,3 +12,7 @@ class Area(LegacyDocument):
             "associations": [],
         }
         self.create_new_model(data=data)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data, result):
+        pass

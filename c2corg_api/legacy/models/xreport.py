@@ -1,3 +1,5 @@
+from flask_login import current_user
+
 from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale
 from c2corg_api.models import XREPORT_TYPE
 
@@ -52,6 +54,63 @@ class Xreport(LegacyDocument):
                 data["age"] = age
 
             self.create_new_model(data=data)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        result["data"] |= {
+            "quality": legacy_document.pop("quality", "draft"),
+            "author": legacy_document.pop("author", previous_data.get("author", "MISSING_AUTHOR")),
+        }
+
+        optionnal_properties = ["date", "supervision", "geometry", "rescue"]
+        for prop in optionnal_properties:
+            if prop in legacy_document and legacy_document[prop] is None:
+                legacy_document.pop(prop)
+
+            elif prop in legacy_document or prop in previous_data:
+                result["data"][prop] = legacy_document.pop(prop, previous_data.get(prop, None))
+
+        # other props
+        result["data"] |= legacy_document
+
+        result["data"].pop("nb_outings", None)
+
+        return result
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        result = LegacyDocument.convert_to_legacy_doc(document)
+        data = document["data"]
+
+        result |= {
+            "author": data["author"],
+            "event_activity": data["event_activity"],
+            "event_type": data["event_type"],
+            "geometry": data.get("geometry", None),
+            "nb_participants": data.get("nb_participants"),
+            "nb_impacted": data.get("nb_impacted"),
+            "rescue": data.get("rescue"),
+        }
+
+        if "date" in data:
+            result["date"] = data["date"]
+
+        if "supervision" in data:
+            result["supervision"] = data["supervision"]
+
+        # private field
+        for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
+            if field in data:
+                result[field] = data[field]
+            elif current_user.is_moderator:  # in old model, empty values are reported as none
+                result[field] = None
+
+        if result["geometry"] is not None:
+            result["geometry"] |= {"version": 0}
+
+        return result
 
     @property
     def event_activity(self):

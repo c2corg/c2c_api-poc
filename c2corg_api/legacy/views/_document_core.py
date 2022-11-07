@@ -1,10 +1,10 @@
 import json
 
 from flask import request
-from flask_camp import allow
+from flask_camp import allow, current_api
 from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view
 from werkzeug.datastructures import ImmutableMultiDict
-from werkzeug.exceptions import BadRequest, UnsupportedMediaType
+from werkzeug.exceptions import BadRequest, UnsupportedMediaType, NotFound
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
 from c2corg_api.models import USERPROFILE_TYPE
@@ -25,20 +25,6 @@ class LegacyView:
                 return [locales[lang]]
 
         return []
-
-    def _from_legacy_doc(self, body, uri_document_id):
-
-        if "document" not in body:
-            raise BadRequest()
-
-        return {
-            "comment": body.get("message", "default comment"),
-            "document": convert_from_legacy_doc(
-                body["document"],
-                document_type=self.document_type,
-                expected_document_id=uri_document_id,
-            ),
-        }
 
     @classmethod
     def _get_legacy_doc(cls, document, collection_view=False, preferred_lang=None, lang=None, cook_lang=None):
@@ -107,7 +93,7 @@ class DocumentCollectionView(LegacyView):
         # document_id is allowed in old model, even if it does not make sense
         legacy_doc.pop("document_id", None)
 
-        new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type)
+        new_model = convert_from_legacy_doc(legacy_doc, document_type=self.document_type, previous_data={})
 
         body = {"document": new_model, "comment": "creation"}
 
@@ -134,7 +120,26 @@ class DocumentView(LegacyView):
     @allow("authenticated")
     def put(self, document_id):
         body = request.get_json()
-        new_body = self._from_legacy_doc(body, document_id)
+
+        if "document" not in body:
+            raise BadRequest()
+
+        old_version = current_api.get_document(document_id)
+        if old_version is None:
+            raise NotFound()
+
+        if document_id != body["document"].get("document_id", None):
+            raise BadRequest("Id in body does not match id in URI")
+
+        new_body = {
+            "comment": body.get("message", "default comment"),
+            "document": convert_from_legacy_doc(
+                body["document"],
+                document_type=self.document_type,
+                previous_data=old_version["data"],
+            ),
+        }
+
         request._cached_json = (new_body, new_body)
 
         result = document_view.post(document_id)
