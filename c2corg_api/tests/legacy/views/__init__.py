@@ -75,7 +75,7 @@ class BaseTestRest(BaseTestClass):
     def add_authorization_header(self, username="contributor"):
         self.optimized_login(username)
 
-        return None
+        return {}
 
     def optimized_login(self, user_name):
         if user_name is not None:
