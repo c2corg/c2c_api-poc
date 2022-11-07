@@ -196,6 +196,34 @@ class TestUserRest(BaseUserTestRest):
         assert json["description"] == "A user still exists with this name"
 
     @patch("flask_camp._services._send_mail.SendMail.send")
+    def test_register_stripped_username(self, _send_email):
+        request_body = {
+            "username": " contributor ",
+            "forum_username": "contributor",
+            "name": "Max Mustermann",
+            "password": "super secret",
+            "email": "some_user@camptocamp.org",
+        }
+        url = self._prefix + "/register"
+        json = self.app_post_json(url, request_body, status=400).json
+        assert json["description"] == "A user still exists with this name"
+
+        request_body = {
+            "username": " username_with_spaces ",
+            "forum_username": "username_with_spaces",
+            "name": "Max Mustermann",
+            "password": "super secret",
+            "email": "space@camptocamp.org",
+        }
+        url = self._prefix + "/register"
+        body = self.app_post_json(url, request_body, status=200).json
+        assert body.get("username") == "username_with_spaces"
+        user_id = body.get("id")
+        user = self.query_get(User, user_id=user_id)
+        assert user is not None
+        assert user.username == "username_with_spaces"
+
+    @patch("flask_camp._services._send_mail.SendMail.send")
     @pytest.mark.skip(reason="username is removed in new model")
     def test_register_username_email_not_equals_email(self, _send_email):
         request_body = {

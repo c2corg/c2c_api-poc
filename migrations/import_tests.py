@@ -149,6 +149,9 @@ replacements = (
             r"from c2corg_api.tests.legacy.search import reset_search_index\n",
         ),
         # targeted replace
+        ('username with spaces', 'username_with_spaces'),
+        ('"forum_username": "Spaceman",', '"forum_username": "username_with_spaces",'),
+        ('"forum_username": "Foo",', '"forum_username": "contributor",'),
         (
             r'self\.session\.query\(User\)\.get\(self\.global_userids\["(\w+)"\]\)',
             r'self.query_get(User, user_id=self.global_userids["\1"])',
@@ -211,6 +214,7 @@ replacements = (
         ),
         (r" *self._check_es_index\(\)\n", ""),
         # error messages
+        ('"This username already exists"', '"A user still exists with this name"'),
         ('"Already used forum name"', '"Name or email already exists"'),
         (r' *assert len\(body\["errors"\]\) == \d\n', ""),  # error model is different
         (r" *assert len\(errors\) == 1\n", ""),  # error model is different
