@@ -19,6 +19,7 @@ from c2corg_api.legacy.views.users import update_preferred_language as update_pr
 from c2corg_api.legacy.views.users import validate_change_email as validate_change_email_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
+from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 
 
 def add_legacy_modules(app, api):
@@ -56,3 +57,4 @@ def add_legacy_modules(app, api):
     api.add_views(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
     api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
+    api.add_views(app, SitemapsView(), url_prefix="")

@@ -242,6 +242,9 @@ class BaseTestRest(BaseTestClass):
         assert string in body["description"], body
         return body["description"]
 
+    def assertIsNotNone(self, value):
+        assert value is not None
+
 
 class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):

@@ -149,7 +149,7 @@ replacements = (
             r"from c2corg_api.tests.legacy.search import reset_search_index\n",
         ),
         # targeted replace
-        ('username with spaces', 'username_with_spaces'),
+        ("username with spaces", "username_with_spaces"),
         ('"forum_username": "Spaceman",', '"forum_username": "username_with_spaces",'),
         ('"forum_username": "Foo",', '"forum_username": "contributor",'),
         (
@@ -193,6 +193,8 @@ replacements = (
             r"self\.app\.app\.registry\.anonymous_user_id =",
             'self.app.config["ANONYMOUS_USER_ID"] =',
         ),
+        (r"/sitemaps/r/", "/sitemaps/route/"),
+        (r"/sitemaps/w/", "/sitemaps/waypoint/"),
         # commit after adding test data, as tst session is not query session
         (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
         # Function that are totally replaced
@@ -359,3 +361,4 @@ convert_test_file("views/test_user_profile.py")
 convert_test_file("views/test_article.py")
 convert_test_file("views/test_book.py")
 convert_test_file("views/test_xreport.py")
+convert_test_file("views/test_sitemap.py")

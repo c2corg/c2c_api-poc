@@ -3,9 +3,10 @@ from c2corg_api.models import ROUTE_TYPE
 
 
 class RouteLocale(DocumentLocale):
-    def __init__(self, lang=None, title="", description="", gear="", json=None):
+    def __init__(self, lang=None, title="", description="", gear="", title_prefix="", json=None):
         super().__init__(lang=lang, title=title, description=description, json=json)
         self._json["gear"] = gear
+        self._json["title_prefix"] = title_prefix
 
 
 class Route(LegacyDocument):
@@ -38,9 +39,9 @@ class Route(LegacyDocument):
                 data["elevation_min"] = elevation_min
             if height_diff_up is not None:
                 data["height_diff_up"] = height_diff_up
-            if elevation_max is not None:
+            if height_diff_down is not None:
                 data["height_diff_down"] = height_diff_down
-            if elevation_max is not None:
+            if durations is not None:
                 data["durations"] = durations
 
             self.create_new_model(data)
