@@ -449,18 +449,19 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.xreport1.document_id, user="moderator")
 
-    # def test_put_wrong_locale_version(self):
-    #     body = {
-    #         "document": {
-    #             "document_id": self.xreport1.document_id,
-    #             "version": self.xreport1.version,
-    #             "event_activity": "skitouring",
-    #             "event_type": "avalanche",
-    #             "nb_participants": 5,
-    #             "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": -9999}],
-    #         }
-    #     }
-    #     self.put_wrong_version(body, self.xreport1.document_id, user="moderator")
+    @pytest.mark.skip("...")
+    def test_put_wrong_locale_version(self):
+        body = {
+            "document": {
+                "document_id": self.xreport1.document_id,
+                "version": self.xreport1.version,
+                "event_activity": "skitouring",
+                "event_type": "avalanche",
+                "nb_participants": 5,
+                "locales": [{"lang": "en", "title": "Lac d'Annecy", "version": -9999}],
+            }
+        }
+        self.put_wrong_version(body, self.xreport1.document_id, user="moderator")
 
     def test_put_wrong_ids(self):
         body = {
@@ -556,32 +557,32 @@ class TestXreportRest(BaseDocumentTestRest):
     #     )
     #     assert association_art_log is not None
 
-    # def test_put_success_figures_only(self):
-    #     body = {
-    #         "message": "Changing figures",
-    #         "document": {
-    #             "document_id": self.xreport1.document_id,
-    #             "version": self.xreport1.version,
-    #             "quality": quality_types[1],
-    #             "event_activity": "skitouring",
-    #             "event_type": "stone_ice_fall",
-    #             "nb_participants": 333,
-    #             "nb_impacted": 666,
-    #             "age": 50,
-    #             "rescue": False,
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "Lac d'Annecy",
-    #                     "place": "some place descrip. in english",
-    #                     "version": self.locale_en.version,
-    #                 }
-    #             ],
-    #         },
-    #     }
-    #     (body, xreport1) = self.put_success_figures_only(body, self.xreport1, user="moderator")
+    def test_put_success_figures_only(self):
+        body = {
+            "message": "Changing figures",
+            "document": {
+                "document_id": self.xreport1.document_id,
+                "version": self.xreport1.version,
+                "quality": quality_types[1],
+                "event_activity": "skitouring",
+                "event_type": "stone_ice_fall",
+                "nb_participants": 333,
+                "nb_impacted": 666,
+                "age": 50,
+                "rescue": False,
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "Lac d'Annecy",
+                        "place": "some place descrip. in english",
+                        "version": self.locale_en.version,
+                    }
+                ],
+            },
+        }
+        (body, xreport1) = self.put_success_figures_only(body, self.xreport1, user="moderator")
 
-    #     assert xreport1.event_activity == "skitouring"
+        assert xreport1.event_activity == "skitouring"
 
     def test_put_success_lang_only(self):
         body = {

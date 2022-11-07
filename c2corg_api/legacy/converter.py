@@ -79,6 +79,7 @@ def convert_to_legacy_doc(document):
             "geometry": data.get("geometry", None),
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
+            "rescue": data.get("rescue"),
         }
 
         if "date" in data:
@@ -196,7 +197,7 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
             | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
         }
 
-        optionnal_properties = ["date", "supervision", "geometry"]
+        optionnal_properties = ["date", "supervision", "geometry", "rescue"]
         for prop in optionnal_properties:
             if prop in legacy_document and legacy_document[prop] is None:
                 legacy_document.pop(prop)

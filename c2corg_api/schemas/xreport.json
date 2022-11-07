@@ -17,6 +17,7 @@
     "previous_injuries": { "$ref": "attributes/previous_injuries.json" },
     "quality": { "$ref": "attributes/quality_types.json" },
     "qualification": { "$ref": "attributes/qualification.json" },
+    "rescue": { "type": "boolean" },
     "supervision": { "$ref": "attributes/supervision.json" },
     "type": { "const": "xreport" }
   },
