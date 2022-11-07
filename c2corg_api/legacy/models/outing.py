@@ -7,10 +7,10 @@ class ArchiveOuting:
 
 
 class Outing(LegacyDocument):
-    def __init__(self, document=None, activities=None, date_start=None, date_end=None):
-        super().__init__(document=document)
+    def __init__(self, activities=None, date_start=None, date_end=None, version=None):
+        super().__init__(version=version)
 
-        if document is None:
+        if version is None:
             data = {
                 "type": OUTING_TYPE,
                 "quality": "draft",
@@ -25,4 +25,4 @@ class Outing(LegacyDocument):
 
     @property
     def activities(self):
-        return self._document.last_version.data["activities"]
+        return self._version.data["activities"]

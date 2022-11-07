@@ -28,11 +28,11 @@ class Xreport(LegacyDocument):
         nb_impacted=None,
         age=None,
         date=None,
-        document=None,
+        version=None,
     ):
-        super().__init__(document=document)
+        super().__init__(version=version)
 
-        if document is None:
+        if version is None:
             data = {
                 "type": XREPORT_TYPE,
                 "date": str(date) if date is not None else None,
@@ -121,9 +121,37 @@ class Xreport(LegacyDocument):
         return result
 
     @property
-    def event_activity(self):
-        return self._document.last_version.data["event_activity"]
+    def event_type(self):
+        return self._version.data["event_type"]
 
-    # @property
-    # def event_activity(self):
-    #     return self._document.last_version.data["event_activity"]
+    @property
+    def event_activity(self):
+        return self._version.data["event_activity"]
+
+    @property
+    def nb_impacted(self):
+        return self._version.data["nb_impacted"]
+
+    @property
+    def nb_participants(self):
+        return self._version.data["nb_participants"]
+
+    @property
+    def autonomy(self):
+        return self._version.data["autonomy"]
+
+    @property
+    def activity_rate(self):
+        return self._version.data["activity_rate"]
+
+    @property
+    def supervision(self):
+        return self._version.data["supervision"]
+
+    @property
+    def age(self):
+        return self._version.data["age"]
+
+    @property
+    def qualification(self):
+        return self._version.data["qualification"]

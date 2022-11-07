@@ -3,7 +3,10 @@
 import json
 from flask_camp import current_api
 from werkzeug.exceptions import BadRequest, NotFound
+
+from c2corg_api.legacy.models.document_history import HistoryMetaData
 from c2corg_api.schemas import schema_validator
+
 from c2corg_api.models import (
     USERPROFILE_TYPE,
     ARTICLE_TYPE,
@@ -30,106 +33,18 @@ class Geometry:
         return _AlwaysTrue()
 
 
-class DocumentArchive:
-    def __init__(self, version):
+class Document:
+    def __init__(self, version=None):
         self._version = version
         self._expected_legacy_lang = None
 
     @property
-    def _document_type(self):
-        return self._version.data["type"]
+    def _document(self):
+        return self._version.document
 
-    @property
-    def document_geometry_archive(self):
-        return Geometry(self._version.data.get("geometry", {}))
-
-    @property
-    def comment(self):
-        return self._version.comment
-
-    @property
-    def written_at(self):
-        return self._version.timestamp
-
-    @property
-    def document_archive(self):
-        return self
-
-    @property
-    def document_locales_archive(self):
-        locales = LocaleDictProxy(version=self._version)
-        return locales.get_locale("en" if self._expected_legacy_lang is None else self._expected_legacy_lang)
-
-    @property
-    def categories(self):
-        return self._get_attribute("categories", {ARTICLE_TYPE: "categories"})
-
-    @property
-    def activities(self):
-        return self._get_attribute("activities", {ARTICLE_TYPE: "activities", BOOK_TYPE: "activities"})
-
-    @property
-    def article_type(self):
-        return self._get_attribute("article_type", {ARTICLE_TYPE: "article_type"})
-
-    @property
-    def book_types(self):
-        return self._get_attribute("book_types", {BOOK_TYPE: "book_types"})
-
-    def _get_attribute(self, attribute_name, mapping):
-        if self._document_type not in mapping:
-            raise AttributeError(f"'{DocumentArchive}' has no attribute '{attribute_name}' for {self._document_type}")
-
-        return self._version.data[mapping[self._document_type]]
-
-    @property
-    def event_type(self):
-        return self._get_attribute("event_type", {XREPORT_TYPE: "event_type"})
-
-    @property
-    def event_activity(self):
-        return self._get_attribute("event_activity", {XREPORT_TYPE: "event_activity"})
-
-    @property
-    def nb_impacted(self):
-        return self._get_attribute("nb_impacted", {XREPORT_TYPE: "nb_impacted"})
-
-    @property
-    def nb_participants(self):
-        return self._get_attribute("nb_participants", {XREPORT_TYPE: "nb_participants"})
-
-    @property
-    def autonomy(self):
-        return self._get_attribute("autonomy", {XREPORT_TYPE: "autonomy"})
-
-    @property
-    def activity_rate(self):
-        return self._get_attribute("activity_rate", {XREPORT_TYPE: "activity_rate"})
-
-    @property
-    def supervision(self):
-        return self._get_attribute("supervision", {XREPORT_TYPE: "supervision"})
-
-    @property
-    def age(self):
-        return self._get_attribute("age", {XREPORT_TYPE: "age"})
-
-    @property
-    def qualification(self):
-        return self._get_attribute("qualification", {XREPORT_TYPE: "qualification"})
-
-    @property
-    def history_metadata(self):
-        return self
-
-    @property
-    def user_id(self):
-        return self._version.data["author"]["user_id"]
-
-
-class Document:
-    def __init__(self, document=None):
-        self._document = document
+    @_document.setter
+    def _document(self, value):
+        self._version = value.last_version
 
     def create_new_model(self, data):
         from flask_camp.models import Document
@@ -219,6 +134,10 @@ class Document:
         return result
 
     @property
+    def history_metadata(self):
+        return HistoryMetaData(version=self._version)
+
+    @property
     def default_author(self):
         from flask_camp.models import User
 
@@ -226,36 +145,57 @@ class Document:
 
     @property
     def type(self):
-        return self._document.last_version.data["type"]
+        return self._version.data["type"]
 
     @property
     def version(self):
-        return self._document.last_version_id
+        return self._version.id
+
+    @property
+    def comment(self):
+        return self._version.comment
+
+    @property
+    def written_at(self):
+        return self._version.timestamp
+
+    @property
+    def document_archive(self):
+        return self
 
     @property
     def versions(self):
-        return [DocumentArchive(version) for version in self._document.versions]
+        return [self.__class__(version=version) for version in self._document.versions]
 
     @property
     def document_id(self):
-        return self._document.id
+        return self._version.document_id
+
+    @property
+    def document_locales_archive(self):
+        locales = LocaleDictProxy(version=self._version)
+        return locales.get_locale("en" if self._expected_legacy_lang is None else self._expected_legacy_lang)
 
     @property
     def locales(self):
-        return LocaleDictProxy(version=self._document.last_version)
+        return LocaleDictProxy(version=self._version)
+
+    @property
+    def document_geometry_archive(self):
+        return Geometry(self._version.data.get("geometry", {}))
 
     @property
     def geometry(self):
-        if "geometry" not in self._document.last_version.data:
+        if "geometry" not in self._version.data:
             return None
 
-        return DocumentGeometry(json=self._document.last_version.data["geometry"])
+        return DocumentGeometry(json=self._version.data["geometry"])
 
     @geometry.setter
     def geometry(self, value):
-        data = self._document.last_version.data
+        data = self._version.data
         data["geometry"] = value._json
-        self._document.last_version.data = data
+        self._version.data = data
 
     def get_locale(self, lang):
         return self.locales.get_locale(lang)
@@ -347,4 +287,8 @@ class DocumentLocale:
 
 
 class ArchiveDocumentLocale:
+    ...
+
+
+class DocumentArchive:
     ...

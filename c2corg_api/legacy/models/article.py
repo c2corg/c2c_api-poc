@@ -7,10 +7,10 @@ class ArchiveArticle:
 
 
 class Article(LegacyDocument):
-    def __init__(self, categories=None, activities=None, article_type=None, document=None):
-        super().__init__(document=document)
+    def __init__(self, categories=None, activities=None, article_type=None, version=None):
+        super().__init__(version=version)
 
-        if document is None:
+        if version is None:
             self.create_new_model(
                 data={
                     "type": ARTICLE_TYPE,
@@ -60,4 +60,12 @@ class Article(LegacyDocument):
 
     @property
     def activities(self):
-        return self._document.last_version.data["activities"]
+        return self._version.data["activities"]
+
+    @property
+    def categories(self):
+        return self._version.data["categories"]
+
+    @property
+    def article_type(self):
+        return self._version.data["article_type"]

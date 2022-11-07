@@ -3,10 +3,10 @@ from c2corg_api.models import WAYPOINT_TYPE
 
 
 class Waypoint(Document):
-    def __init__(self, waypoint_type=None, elevation=None, rock_types=None, geometry=None, document=None):
-        super().__init__(document=document)
+    def __init__(self, waypoint_type=None, elevation=None, rock_types=None, geometry=None, version=None):
+        super().__init__(version=version)
 
-        if waypoint_type is not None and document is None:
+        if version is None:
             if geometry is None:
                 geometry = DocumentGeometry(json={"geom": {}})
 

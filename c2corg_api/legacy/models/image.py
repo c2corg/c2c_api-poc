@@ -3,10 +3,10 @@ from c2corg_api.models import IMAGE_TYPE
 
 
 class Image(LegacyDocument):
-    def __init__(self, filename=None, activities=None, height=1500, image_type="collaborative", document=None):
-        super().__init__(document=document)
+    def __init__(self, filename=None, activities=None, height=1500, image_type="collaborative", version=None):
+        super().__init__(version=version)
 
-        if document is None:
+        if version is None:
             self.create_new_model(
                 data={
                     "type": IMAGE_TYPE,

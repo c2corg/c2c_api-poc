@@ -8,11 +8,11 @@ from c2corg_api.search import DocumentSearch
 
 
 class UserProfile(LegacyDocument):
-    def __init__(self, categories=None, locale_langs=None, document=None):
-        super().__init__(document=document)
+    def __init__(self, categories=None, locale_langs=None, version=None):
+        super().__init__(version=version)
         self._user = None
 
-        if categories and document is None:
+        if version is None:
             self.create_new_model(
                 data=NewUserProfile.get_default_data(
                     self.default_author, categories=categories, locale_langs=locale_langs or []
@@ -25,11 +25,11 @@ class UserProfile(LegacyDocument):
         result = current_api.database.session.execute(query)
         user_id = list(result)[0][0]
 
-        result = UserProfile()
+        result = UserProfile(version=Document.get(id=profile_document_id).last_version)
+
         result._user = User.get(id=user_id)
 
-        result._document = Document.get(id=profile_document_id)
-        result._versions = list(result._document.versions)
+        result._versions = list(result._version.document.versions)
 
         return result
 
@@ -76,11 +76,11 @@ class UserProfile(LegacyDocument):
     def user(self):
         from c2corg_api.legacy.models.user import User as LegacyUser
 
-        return LegacyUser.from_user(User.get(id=self._document.last_version.data["user_id"]))
+        return LegacyUser.from_user(User.get(id=self._version.data["user_id"]))
 
     @property
     def categories(self):
-        return self._document.last_version.data["categories"]
+        return self._version.data["categories"]
 
 
 class ArchiveUserProfile:

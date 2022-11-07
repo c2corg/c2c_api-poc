@@ -18,11 +18,11 @@ class Route(LegacyDocument):
         height_diff_down=None,
         durations=None,
         locales=None,
-        document=None,
+        version=None,
     ):
-        if document is not None:
-            self._document = document
-        else:
+        super().__init__(version=version)
+
+        if version is None:
             data = {
                 "type": ROUTE_TYPE,
                 "activities": activities,

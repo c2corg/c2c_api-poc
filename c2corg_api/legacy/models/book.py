@@ -7,10 +7,10 @@ class ArchiveBook:
 
 
 class Book(LegacyDocument):
-    def __init__(self, activities=None, book_types=None, document=None):
-        super().__init__(document=document)
+    def __init__(self, activities=None, book_types=None, version=None):
+        super().__init__(version=version)
 
-        if document is None:
+        if version is None:
             self.create_new_model(
                 data={
                     "type": BOOK_TYPE,
@@ -51,8 +51,8 @@ class Book(LegacyDocument):
 
     @property
     def activities(self):
-        return self._document.last_version.data["activities"]
+        return self._version.data["activities"]
 
     @property
     def book_types(self):
-        return self._document.last_version.data["book_types"]
+        return self._version.data["book_types"]

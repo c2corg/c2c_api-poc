@@ -24,7 +24,7 @@ class Search:
             return LegacyUserProfile.from_document_id(document_ids[0])
 
         if self.document_type == ARTICLE_TYPE:
-            return LegacyArticle(document=Document.get(document_ids[0]))
+            return LegacyArticle(version=Document.get(document_ids[0]).last_version)
 
         raise NotImplementedError()
 

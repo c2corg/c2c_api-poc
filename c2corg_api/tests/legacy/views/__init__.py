@@ -121,8 +121,8 @@ class BaseTestRest(BaseTestClass):
         )
 
         if isinstance(instance, legacy_document):
-            assert json.dumps(instance._document.last_version.data) == instance._document.last_version._data
-            data = instance._document.last_version.data
+            assert json.dumps(instance._version.data) == instance._version._data
+            data = instance._version.data
             schema_validator.validate(data, f"{data['type']}.json")
 
             self.session.add(instance._document)
@@ -132,9 +132,9 @@ class BaseTestRest(BaseTestClass):
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
             self.session.flush()
-            data = deepcopy(instance.profile._document.last_version.data)
+            data = deepcopy(instance.profile._version.data)
             data["user_id"] = instance.id
-            instance.profile._document.last_version._data = json.dumps(data)
+            instance.profile._version._data = json.dumps(data)
             update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
             self.session.flush()
         else:
@@ -162,15 +162,15 @@ class BaseTestRest(BaseTestClass):
 
         if klass is LegacyArticle:
             doc = self.session.query(Document).get(parameter_value)
-            return LegacyArticle(document=doc)
+            return LegacyArticle(version=doc.last_version)
 
         if klass is LegacyBook:
             doc = self.session.query(Document).get(parameter_value)
-            return LegacyBook(document=doc)
+            return LegacyBook(version=doc.last_version)
 
         if klass is LegacyXreport:
             doc = self.session.query(Document).get(parameter_value)
-            return LegacyXreport(document=doc)
+            return LegacyXreport(version=doc.last_version)
 
         raise NotImplementedError(f"TODO...: {klass}")
 
@@ -511,7 +511,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         # check that the document was updated correctly
         self.session.expire_all()
-        document = self._model(document=self.session.query(Document).get(document_id))
+        document = self._model(version=self.session.query(Document).get(document_id).last_version)
         assert len(document.locales) == 2, document.locales
         locale_en = document.get_locale("en")
 
@@ -541,7 +541,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         # check that the document was updated correctly
         self.session.expire_all()
-        document = self._model(document=self.session.query(Document).get(document_id))
+        document = self._model(version=self.session.query(Document).get(document_id).last_version)
         assert len(document.locales) == 2, document.locales
 
         # check that a new archive_document was created
@@ -569,7 +569,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         # check that the document was updated correctly
         self.session.expire_all()
-        document = self._model(document=self.session.query(Document).get(document_id))
+        document = self._model(version=self.session.query(Document).get(document_id).last_version)
         assert len(document.locales) == 2, document.locales
 
         # check that archive_document was created (not the case in old model)
@@ -598,7 +598,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         # check that the document was updated correctly
         self.session.expire_all()
-        document = self._model(document=self.session.query(Document).get(document_id))
+        document = self._model(version=self.session.query(Document).get(document_id).last_version)
         assert len(document.locales) == 3, document.locales
 
         # check that a new archive_document was created

@@ -47,8 +47,8 @@ class User:
             if email_validated:
                 self._user.validate_email(self._user._email_token)
 
-            profile._document.last_version.user = self._user
-            profile._document.last_version.data["name"] = name
+            profile._version.user = self._user
+            profile._version.data["name"] = name
 
             self._set_proxies()
 
