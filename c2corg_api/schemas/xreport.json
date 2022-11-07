@@ -1,6 +1,7 @@
 {
   "properties": {
     "activity_rate": { "$ref": "attributes/activity_rates.json" },
+    "anonymous": { "type": "boolean" },
     "age": { "type": "integer" },
     "associations": { "$ref": "entities/association_array.json" },
     "author": { "$ref": "entities/author.json" },
@@ -22,6 +23,7 @@
     "type": { "const": "xreport" }
   },
   "required": [
+    "anonymous",
     "author",
     "associations",
     "event_activity",

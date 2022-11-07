@@ -34,6 +34,7 @@ class Xreport(LegacyDocument):
 
         if version is None:
             data = {
+                "anonymous": False,
                 "type": XREPORT_TYPE,
                 "date": str(date) if date is not None else None,
                 "quality": "draft",
@@ -62,6 +63,7 @@ class Xreport(LegacyDocument):
         result["data"] |= {
             "quality": legacy_document.pop("quality", "draft"),
             "author": legacy_document.pop("author", previous_data.get("author", "MISSING_AUTHOR")),
+            "anonymous": legacy_document.pop("anonymous", previous_data.get("anonymous", False))
         }
 
         if "geometry" in legacy_document:

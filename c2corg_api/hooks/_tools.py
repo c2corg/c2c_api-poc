@@ -32,10 +32,3 @@ def get_profile_document(user):
 
     return Document.get(id=document_id)
 
-
-def get_user_id_from_profile_id(profile_id):
-    query = select(DocumentSearch.user_id).where(DocumentSearch.id == profile_id)
-    result = current_api.database.session.execute(query)
-    user_id = list(result)[0][0]
-
-    return user_id

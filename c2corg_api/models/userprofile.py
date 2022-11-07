@@ -1,8 +1,11 @@
 from flask_camp import current_api
 from flask_camp.models import Document
+from flask_login import current_user
+from sqlalchemy import select
+from werkzeug.exceptions import BadRequest, Forbidden
 
-USERPROFILE_TYPE = "profile"
-
+from c2corg_api.search import DocumentSearch
+from c2corg_api.models.types import USERPROFILE_TYPE
 
 class UserProfile:
 
@@ -37,3 +40,22 @@ class UserProfile:
             "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json,
             "associations": [],
         }
+
+    @classmethod
+    def on_creation(cls, version):
+        raise BadRequest("Profile page can't be created without an user")
+
+    @classmethod
+    def on_new_version(cls, old_version, new_version):
+        user_id = UserProfile.get_user_id_from_profile_id(old_version.document_id)
+        if user_id != current_user.id:
+            if not current_user.is_moderator:
+                raise Forbidden()
+
+    @staticmethod
+    def get_user_id_from_profile_id(profile_id):
+        query = select(DocumentSearch.user_id).where(DocumentSearch.id == profile_id)
+        result = current_api.database.session.execute(query)
+        user_id = list(result)[0][0]
+
+        return user_id

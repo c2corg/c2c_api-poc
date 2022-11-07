@@ -3,8 +3,9 @@ from flask_login import current_user
 from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest, Forbidden
 
-from c2corg_api.hooks._tools import get_user_id_from_profile_id
 from c2corg_api.models import ARTICLE_TYPE, USERPROFILE_TYPE, XREPORT_TYPE, ALL_TYPES
+from c2corg_api.models.xreport import Xreport
+from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.schemas import schema_validator
 from c2corg_api.search import DocumentSearch, update_document_search_table
 
@@ -21,13 +22,13 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
 
     if old_version is None:  # it's a creation
         if document_type == USERPROFILE_TYPE:
-            raise BadRequest("Profile page can't be created without an user")
+            UserProfile.on_creation(version=new_version)
 
         if document_type == ARTICLE_TYPE:
             new_version.data |= {"author": {"user_id": current_user.id}}
 
         elif document_type == XREPORT_TYPE:
-            new_version.data |= {"author": {"user_id": current_user.id}}
+            Xreport.on_creation(version=new_version)
 
     schema_validator.validate(new_version.data, f"{document_type}.json")
 
@@ -37,10 +38,7 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
             raise BadRequest("type property can't be changed")
 
         if document_type == USERPROFILE_TYPE:
-            user_id = get_user_id_from_profile_id(document.id)
-            if user_id != current_user.id:
-                if not current_user.is_moderator:
-                    raise Forbidden()
+            UserProfile.on_new_version(old_version=old_version, new_version=new_version)
 
         elif document_type == ARTICLE_TYPE:
             if old_version.data["author"]["user_id"] != new_version.data["author"]["user_id"]:
@@ -61,7 +59,6 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
                     raise Forbidden("You are not allowed to edit this article")
 
         elif document_type == XREPORT_TYPE:
-            if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
-                raise Forbidden("You are not allowed to edit this document")
+            Xreport.on_new_version(old_version=old_version, new_version=new_version)
 
     update_document_search_table(document)

@@ -403,27 +403,27 @@ class TestXreportRest(BaseDocumentTestRest):
         assert "previous_injuries" in body
         assert "autonomy" in body
 
-    # def test_post_anonymous(self):
-    #     self.app.app.registry.anonymous_user_id = self.global_userids["moderator"]
-    #     body_post = {
-    #         "document_id": 111,
-    #         "version": 1,
-    #         "event_activity": "skitouring",
-    #         "event_type": "stone_ice_fall",
-    #         "nb_participants": 666,
-    #         "nb_impacted": 666,
-    #         "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
-    #         "anonymous": True,
-    #     }
+    def test_post_anonymous(self):
+        self.app.config["ANONYMOUS_USER_ID"] = self.global_userids["moderator"]  # TODO migration regex
+        body_post = {
+            "document_id": 111,
+            "version": 1,
+            "event_activity": "skitouring",
+            "event_type": "stone_ice_fall",
+            "nb_participants": 666,
+            "nb_impacted": 666,
+            "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
+            "anonymous": True,
+        }
 
-    #     body_post, doc = self.post_success(body_post, user="contributor")
+        body_post, doc = self.post_success(body_post, user="contributor")
 
-    #     # Check that the contributor is not set as author
-    #     user_id = self.global_userids["contributor"]
-    #     version = doc.versions[0]
-    #     meta_data = version.history_metadata
-    #     assert meta_data.user_id != user_id
-    #     assert meta_data.user_id == self.global_userids["moderator"]
+        # Check that the contributor is not set as author
+        user_id = self.global_userids["contributor"]
+        version = doc.versions[0]
+        meta_data = version.history_metadata
+        assert meta_data.user_id != user_id
+        assert meta_data.user_id == self.global_userids["moderator"]
 
     def test_put_wrong_document_id(self):
         body = {
