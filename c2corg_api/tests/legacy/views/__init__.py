@@ -7,7 +7,7 @@ from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
-from c2corg_api.models import create_user_profile, ProfilePageLink, USERPROFILE_TYPE
+from c2corg_api.models import create_user_profile, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.user import User as LegacyUser
@@ -127,7 +127,7 @@ class BaseTestRest(BaseTestClass):
 
             self.session.add(instance._document)
 
-            update_document_search_table(instance._document, self.session)
+            update_document_search_table(instance._document, session=self.session)
 
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
@@ -135,6 +135,7 @@ class BaseTestRest(BaseTestClass):
             data = deepcopy(instance.profile._document.last_version.data)
             data["user_id"] = instance.id
             instance.profile._document.last_version._data = json.dumps(data)
+            update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
             self.session.flush()
         else:
             raise NotImplementedError(f"Don't know how to add {instance}")

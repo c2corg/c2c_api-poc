@@ -1,6 +1,6 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document, User
-from sqlalchemy import Column, ForeignKey, String, select
+from sqlalchemy import Column, ForeignKey, String, select, Boolean
 from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -14,7 +14,6 @@ from c2corg_api.models import (
     OUTING_TYPE,
     ROUTE_TYPE,
     XREPORT_TYPE,
-    ProfilePageLink,
 )
 
 
@@ -29,19 +28,23 @@ class DocumentSearch(BaseModel):
 
     # for profile document
     user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=True)
+    user_is_validated = Column(Boolean, index=True, default=False, nullable=True)
 
     available_langs = Column(ARRAY(String()), index=True, default=[])
 
     activities = Column(ARRAY(String()), index=True, default=[])
     event_activity = Column(String, index=True, nullable=True)  # for xreports
 
-    def update(self, new_version):
+    def update(self, new_version, user: User = None):
         self.available_langs = [lang for lang in new_version.data["locales"]]
 
         self.document_type = new_version.data["type"]
 
         if self.document_type == USERPROFILE_TYPE:
             self.user_id = new_version.data.get("user_id")
+            if user is not None:
+                self.user_is_validated = user.email_is_validated
+
         elif self.document_type == ARTICLE_TYPE:
             self.activities = new_version.data["activities"]
         elif self.document_type == WAYPOINT_TYPE:
@@ -66,7 +69,7 @@ class DocumentSearch(BaseModel):
             raise NotImplementedError(f"Please set how to search {self.document_type}")
 
 
-def update_document_search_table(document, session=None):
+def update_document_search_table(document, user=None, session=None):
     # TODO: on remove legacy, removes session parameters
     session = current_api.database.session if session is None else session
 
@@ -76,7 +79,7 @@ def update_document_search_table(document, session=None):
         search_item = DocumentSearch(id=document.id)
         session.add(search_item)
 
-    search_item.update(document.last_version)
+    search_item.update(document.last_version, user=user)
 
 
 def search(document_type=None, id=None, user_id=None):
@@ -84,6 +87,9 @@ def search(document_type=None, id=None, user_id=None):
 
     if document_type is not None:
         criterions.append(DocumentSearch.document_type == document_type)
+
+        if document_type == USERPROFILE_TYPE:
+            criterions.append(DocumentSearch.user_is_validated == True)
 
     if id is not None:
         criterions.append(DocumentSearch.id == id)

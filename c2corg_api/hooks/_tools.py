@@ -4,7 +4,7 @@ from flask_camp.models import Document
 from sqlalchemy import select
 from werkzeug.exceptions import BadRequest
 
-from c2corg_api.models import ProfilePageLink
+from c2corg_api.search import DocumentSearch
 
 
 # https://github.com/discourse/discourse/blob/master/app/models/username_validator.rb
@@ -26,13 +26,16 @@ def check_user_name(value):
 
 
 def get_profile_document(user):
-    query = select(ProfilePageLink.document_id).where(ProfilePageLink.user_id == user.id)
+    query = select(DocumentSearch.id).where(DocumentSearch.user_id == user.id)
     result = current_api.database.session.execute(query)
     document_id = list(result)[0][0]
+
     return Document.get(id=document_id)
 
 
 def get_user_id_from_profile_id(profile_id):
-    query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == profile_id)
+    query = select(DocumentSearch.user_id).where(DocumentSearch.id == profile_id)
     result = current_api.database.session.execute(query)
-    return list(result)[0][0]
+    user_id = list(result)[0][0]
+
+    return user_id

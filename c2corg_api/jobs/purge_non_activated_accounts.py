@@ -4,7 +4,8 @@ from flask_camp.models import User, Document, DocumentVersion
 from datetime import datetime, timedelta
 from sqlalchemy.sql.expression import and_
 
-from c2corg_api.models import ProfilePageLink, VALIDATION_EXPIRE_DAYS
+from c2corg_api.models import VALIDATION_EXPIRE_DAYS
+from c2corg_api.search import DocumentSearch
 
 
 log = logging.getLogger(__name__)
@@ -33,9 +34,9 @@ def purge_account():
     log.info("Deleting %d non activated users: %s", len(user_ids), user_ids)
 
     if len(user_ids) > 0:
-        rows = session.query(ProfilePageLink.document_id).filter(ProfilePageLink.user_id.in_(user_ids)).all()
+        rows = session.query(DocumentSearch.id).filter(DocumentSearch.user_id.in_(user_ids)).all()
         document_ids = [row[0] for row in rows]
-        delete(ProfilePageLink, ProfilePageLink.user_id, user_ids)
+        delete(DocumentSearch, DocumentSearch.user_id, user_ids)
 
         Document.query.filter(Document.id.in_(document_ids)).update({"last_version_id": None})
         delete(DocumentVersion, DocumentVersion.document_id, document_ids)

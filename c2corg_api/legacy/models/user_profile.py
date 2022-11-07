@@ -1,10 +1,10 @@
-import json
 from flask_camp import current_api
 from flask_camp.models import User, Document
 from sqlalchemy import select
 
-from c2corg_api.models import get_default_user_profile_data, ProfilePageLink, USERPROFILE_TYPE  # Do not remove
+from c2corg_api.models import get_default_user_profile_data, USERPROFILE_TYPE  # Do not remove
 from c2corg_api.legacy.models.document import Document as LegacyDocument
+from c2corg_api.search import DocumentSearch
 
 
 class UserProfile(LegacyDocument):
@@ -21,7 +21,7 @@ class UserProfile(LegacyDocument):
 
     @staticmethod
     def from_document_id(profile_document_id):
-        query = select(ProfilePageLink.user_id).where(ProfilePageLink.document_id == profile_document_id)
+        query = select(DocumentSearch.user_id).where(DocumentSearch.id == profile_document_id)
         result = current_api.database.session.execute(query)
         user_id = list(result)[0][0]
 

@@ -9,7 +9,7 @@ def on_user_validation(user, sync_sso=True):
 
     profile_document = get_profile_document(user)
 
-    update_document_search_table(profile_document)
+    update_document_search_table(profile_document, user=user)
 
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)

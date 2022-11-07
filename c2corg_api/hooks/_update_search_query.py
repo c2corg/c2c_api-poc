@@ -2,7 +2,7 @@ from flask import request
 from sqlalchemy import and_
 from werkzeug.exceptions import BadRequest
 
-from c2corg_api.models import XREPORT_TYPE
+from c2corg_api.models import XREPORT_TYPE, USERPROFILE_TYPE
 from c2corg_api.search import DocumentSearch
 
 
@@ -15,6 +15,7 @@ def update_search_query(query):
 
     if document_type is not None:
         criterions.append(DocumentSearch.document_type == document_type)
+        # TODO : for user profile, exclude not validated users
 
     if locale_lang is not None:
         criterions.append(DocumentSearch.available_langs.contains([locale_lang]))
