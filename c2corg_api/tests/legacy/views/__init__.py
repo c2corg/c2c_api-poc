@@ -413,7 +413,6 @@ class BaseDocumentTestRest(BaseTestRest):
         return body
 
     def post_error(self, request_body, user="contributor"):
-        response = self.app_post_json(self._prefix, request_body, status=403)
 
         self.add_authorization_header(username=user)
         response = self.app_post_json(self._prefix, request_body, status=400)
@@ -444,6 +443,16 @@ class BaseDocumentTestRest(BaseTestRest):
         # the value for `protected` was ignored
         assert document.protected is False
         return (body, document)
+
+    def post_wrong_geom_type(self, request_body):
+
+        self.add_authorization_header(username="contributor")
+        response = self.app_post_json(self._prefix, request_body, status=400)
+
+        body = response.json
+        assert body.get("status") == "error"
+        errors = body.get("description")
+        return errors
 
     def post_missing_content_type(self, request_body):
         self.add_authorization_header(username="contributor")

@@ -91,6 +91,10 @@ class DocumentArchive:
         return self._get_attribute("event_activity", {XREPORT_TYPE: "event_activity"})
 
     @property
+    def nb_impacted(self):
+        return self._get_attribute("nb_impacted", {XREPORT_TYPE: "nb_impacted"})
+
+    @property
     def nb_participants(self):
         return self._get_attribute("nb_participants", {XREPORT_TYPE: "nb_participants"})
 
@@ -113,6 +117,14 @@ class DocumentArchive:
     @property
     def qualification(self):
         return self._get_attribute("qualification", {XREPORT_TYPE: "qualification"})
+
+    @property
+    def history_metadata(self):
+        return self
+
+    @property
+    def user_id(self):
+        return self._version.data["author"]["user_id"]
 
 
 class Document:
@@ -328,6 +340,10 @@ class DocumentLocale:
     @property
     def title(self):
         return self._json.get("title", "")
+
+    @property
+    def place(self):
+        return self._json.get("place", "")
 
 
 class ArchiveDocumentLocale:

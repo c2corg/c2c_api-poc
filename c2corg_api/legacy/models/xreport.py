@@ -65,9 +65,7 @@ class Xreport(LegacyDocument):
         }
 
         if "geometry" in legacy_document:
-            result["data"]["geometry"] = {
-                "geom": json.loads(legacy_document["geometry"]["geom"])
-            }
+            result["data"]["geometry"] = {"geom": json.loads(legacy_document["geometry"]["geom"])}
 
         optionnal_properties = ["date", "supervision", "rescue"]
         for prop in optionnal_properties:
@@ -99,9 +97,7 @@ class Xreport(LegacyDocument):
         }
 
         if "geometry" in data:
-            result["geometry"] = {
-                "geom": json.dumps(data["geometry"]["geom"])
-            }
+            result["geometry"] = {"geom": json.dumps(data["geometry"]["geom"])}
         else:
             result["geometry"] = None
 
@@ -115,7 +111,8 @@ class Xreport(LegacyDocument):
         for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
             if field in data:
                 result[field] = data[field]
-            elif current_user.is_moderator:  # in old model, empty values are reported as none
+            elif current_user.is_moderator or current_user.id == data["author"]["user_id"]:
+                # in old model, empty values are reported as none
                 result[field] = None
 
         if result["geometry"] is not None:

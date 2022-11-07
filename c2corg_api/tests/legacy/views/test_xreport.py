@@ -256,150 +256,152 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_post_missing_content_type(self):
         self.post_missing_content_type({})
 
-    # def test_post_wrong_geom_type(self):
-    #     body = {
-    #         "document_id": 123456,
-    #         "version": 567890,
-    #         "event_activity": "skitouring",
-    #         "event_type": "stone_ice_fall",
-    #         "nb_participants": 5,
-    #         "associations": {
-    #             "images": [{"document_id": self.image2.document_id}],
-    #             "articles": [{"document_id": self.article2.document_id}],
-    #         },
-    #         "geometry": {
-    #             "id": 5678,
-    #             "version": 6789,
-    #             "geom": '{"type": "LineString", "coordinates": ' + "[[635956, 5723604], [635966, 5723644]]}",
-    #         },
-    #         "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
-    #     }
-    #     errors = self.post_wrong_geom_type(body)
-    #     self.assertEqual(errors[0]["description"], "Invalid geometry type. Expected: ['POINT']. Got: LINESTRING.")
+    def test_post_wrong_geom_type(self):
+        body = {
+            "document_id": 123456,
+            "version": 567890,
+            "event_activity": "skitouring",
+            "event_type": "stone_ice_fall",
+            "nb_participants": 5,
+            "associations": {
+                "images": [{"document_id": self.image2.document_id}],
+                "articles": [{"document_id": self.article2.document_id}],
+            },
+            "geometry": {
+                "id": 5678,
+                "version": 6789,
+                "geom": '{"type": "LineString", "coordinates": ' + "[[635956, 5723604], [635966, 5723644]]}",
+            },
+            "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
+        }
+        errors = self.post_wrong_geom_type(body)
+        assert (
+            errors == "'LineString' is not one of ['Point'] on instance ['geometry']['geom']['type']"
+        )  # TODO migration regex
 
-    # def test_post_outdated_attributes_error(self):
-    #     outdated_attributes = [
-    #         # api not checking additional parameters,
-    #         # nb_outings raises no error
-    #         # ('nb_outings', 'nb_outings_9'),
-    #         ("autonomy", "initiator"),
-    #         ("activity_rate", "activity_rate_10"),
-    #         ("event_type", "roped_fall"),
-    #         ("event_activity", "hiking"),
-    #     ]
-    #     for (key, value) in outdated_attributes:
-    #         body = {
-    #             "document_id": 123456,
-    #             "event_activity": "skitouring",
-    #             "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
-    #         }
-    #         body[key] = value
-    #         body = self.post_error(body, user="moderator")
-    #         errors = body.get("errors")
-    #         assert len(errors) == 1
-    #         self.assertCorniceNotInEnum(errors[0], key)
+    def test_post_outdated_attributes_error(self):
+        outdated_attributes = [
+            # api not checking additional parameters,
+            # nb_outings raises no error
+            # ('nb_outings', 'nb_outings_9'),
+            ("autonomy", "initiator"),
+            ("activity_rate", "activity_rate_10"),
+            ("event_type", "roped_fall"),
+            ("event_activity", "hiking"),
+        ]
+        for (key, value) in outdated_attributes:
+            body = {
+                "document_id": 123456,
+                "event_activity": "skitouring",
+                "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
+            }
+            body[key] = value
+            body = self.post_error(body, user="moderator")
+            errors = body.get("description")  # TODO migration regex
+            assert key in errors, key
 
-    # def test_post_success(self):
-    #     body = {
-    #         "document_id": 123456,
-    #         "version": 567890,
-    #         "event_activity": "skitouring",
-    #         "event_type": "stone_ice_fall",
-    #         "nb_participants": 5,
-    #         "nb_outings": "nb_outings9",
-    #         "autonomy": "autonomous",
-    #         "activity_rate": "activity_rate_m2",
-    #         "supervision": "professional_supervision",
-    #         "qualification": "federal_trainer",
-    #         "associations": {
-    #             "images": [{"document_id": self.image2.document_id}],
-    #             "articles": [{"document_id": self.article2.document_id}],
-    #         },
-    #         "geometry": {
-    #             "version": 1,
-    #             "document_id": self.waypoint2.document_id,
-    #             "geom": '{"type": "Point", "coordinates": [635956, 5723604]}',
-    #         },
-    #         "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
-    #     }
-    #     body, doc = self.post_success(body, user="moderator", validate_with_auth=True)
-    #     version = doc.versions[0]
+    @pytest.mark.skip("...")
+    def test_post_success(self):
+        body = {
+            "document_id": 123456,
+            "version": 567890,
+            "event_activity": "skitouring",
+            "event_type": "stone_ice_fall",
+            "nb_participants": 5,
+            "nb_outings": "nb_outings9",
+            "autonomy": "autonomous",
+            "activity_rate": "activity_rate_m2",
+            "supervision": "professional_supervision",
+            "qualification": "federal_trainer",
+            "associations": {
+                "images": [{"document_id": self.image2.document_id}],
+                "articles": [{"document_id": self.article2.document_id}],
+            },
+            "geometry": {
+                "version": 1,
+                "document_id": self.waypoint2.document_id,
+                "geom": '{"type": "Point", "coordinates": [635956, 5723604]}',
+            },
+            "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
+        }
+        body, doc = self.post_success(body, user="moderator", validate_with_auth=True)
+        version = doc.versions[0]
 
-    #     archive_xreport = version.document_archive
-    #     assert archive_xreport.event_activity == "skitouring"
-    #     assert archive_xreport.event_type == "stone_ice_fall"
-    #     assert archive_xreport.nb_participants == 5
-    #     assert hasattr(archive_xreport, "nb_outings") is False
-    #     # assert 'nb_outings' not in archive_xreport
-    #     assert archive_xreport.autonomy == "autonomous"
-    #     assert archive_xreport.activity_rate == "activity_rate_m2"
-    #     assert archive_xreport.supervision == "professional_supervision"
-    #     assert archive_xreport.qualification == "federal_trainer"
+        archive_xreport = version.document_archive
+        assert archive_xreport.event_activity == "skitouring"
+        assert archive_xreport.event_type == "stone_ice_fall"
+        assert archive_xreport.nb_participants == 5
+        assert hasattr(archive_xreport, "nb_outings") is False
+        # assert 'nb_outings' not in archive_xreport
+        assert archive_xreport.autonomy == "autonomous"
+        assert archive_xreport.activity_rate == "activity_rate_m2"
+        assert archive_xreport.supervision == "professional_supervision"
+        assert archive_xreport.qualification == "federal_trainer"
 
-    #     archive_locale = version.document_locales_archive
-    #     assert archive_locale.lang == "en"
-    #     assert archive_locale.title == "Lac d'Annecy"
+        archive_locale = version.document_locales_archive
+        assert archive_locale.lang == "en"
+        assert archive_locale.title == "Lac d'Annecy"
 
-    #     # check if geometry is stored in database afterwards
-    #     assert doc.geometry is not None
+        # check if geometry is stored in database afterwards
+        assert doc.geometry is not None
 
-    #     # check that a link to the associated waypoint is created
-    #     association_img = self.session.query(Association).get((doc.document_id, self.image2.document_id))
-    #     assert association_img is not None
+        # check that a link to the associated waypoint is created
+        association_img = self.session.query(Association).get((doc.document_id, self.image2.document_id))
+        assert association_img is not None
 
-    #     association_img_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == doc.document_id)
-    #         .filter(AssociationLog.child_document_id == self.image2.document_id)
-    #         .first()
-    #     )
-    #     assert association_img_log is not None
+        association_img_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == doc.document_id)
+            .filter(AssociationLog.child_document_id == self.image2.document_id)
+            .first()
+        )
+        assert association_img_log is not None
 
-    #     # check that a link to the associated xreport is created
-    #     association_art = self.session.query(Association).get((doc.document_id, self.article2.document_id))
-    #     assert association_art is not None
+        # check that a link to the associated xreport is created
+        association_art = self.session.query(Association).get((doc.document_id, self.article2.document_id))
+        assert association_art is not None
 
-    #     association_art_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == doc.document_id)
-    #         .filter(AssociationLog.child_document_id == self.article2.document_id)
-    #         .first()
-    #     )
-    #     assert association_art_log is not None
+        association_art_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == doc.document_id)
+            .filter(AssociationLog.child_document_id == self.article2.document_id)
+            .first()
+        )
+        assert association_art_log is not None
 
-    # def test_post_as_contributor_and_get_as_author(self):
-    #     body_post = {
-    #         "document_id": 111,
-    #         "version": 1,
-    #         "event_activity": "skitouring",
-    #         "event_type": "stone_ice_fall",
-    #         "nb_participants": 666,
-    #         "nb_impacted": 666,
-    #         "locales": [
-    #             # {'title': 'Lac d\'Annecy', 'lang': 'fr'},
-    #             {"title": "Lac d'Annecy", "lang": "en"}
-    #         ],
-    #     }
+    def test_post_as_contributor_and_get_as_author(self):
+        body_post = {
+            "document_id": 111,
+            "version": 1,
+            "event_activity": "skitouring",
+            "event_type": "stone_ice_fall",
+            "nb_participants": 666,
+            "nb_impacted": 666,
+            "locales": [
+                # {'title': 'Lac d\'Annecy', 'lang': 'fr'},
+                {"title": "Lac d'Annecy", "lang": "en"}
+            ],
+        }
 
-    #     # create document (POST uses GET schema inside validation)
-    #     body_post, doc = self.post_success(body_post, user="contributor")
+        # create document (POST uses GET schema inside validation)
+        body_post, doc = self.post_success(body_post, user="contributor")
 
-    #     # the contributor is successfully set as author in DB
-    #     user_id = self.global_userids["contributor"]
-    #     version = doc.versions[0]
-    #     meta_data = version.history_metadata
-    #     assert meta_data.user_id == user_id
+        # the contributor is successfully set as author in DB
+        user_id = self.global_userids["contributor"]
+        version = doc.versions[0]
+        meta_data = version.history_metadata
+        assert meta_data.user_id == user_id
 
-    #     # authorized contributor can see personal data in the xreport
-    #     body = self.get_custom(doc, user="contributor", ignore_checks=True)
-    #     assert "xreport" not in body
+        # authorized contributor can see personal data in the xreport
+        body = self.get_custom(doc, user="contributor", ignore_checks=True)
+        assert "xreport" not in body
 
-    #     assert "author_status" in body
-    #     assert "activity_rate" in body
-    #     assert "age" in body
-    #     assert "gender" in body
-    #     assert "previous_injuries" in body
-    #     assert "autonomy" in body
+        assert "author_status" in body
+        assert "activity_rate" in body
+        assert "age" in body
+        assert "gender" in body
+        assert "previous_injuries" in body
+        assert "autonomy" in body
 
     # def test_post_anonymous(self):
     #     self.app.app.registry.anonymous_user_id = self.global_userids["moderator"]
@@ -479,83 +481,84 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.xreport1.document_id, user="moderator")
 
-    # def test_put_success_all(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.xreport1.document_id,
-    #             "version": self.xreport1.version,
-    #             "quality": quality_types[1],
-    #             "event_activity": "skitouring",
-    #             "event_type": "stone_ice_fall",
-    #             "nb_participants": 333,
-    #             "nb_impacted": 666,
-    #             "age": 50,
-    #             "rescue": False,
-    #             "associations": {
-    #                 "images": [{"document_id": self.image2.document_id}],
-    #                 "articles": [{"document_id": self.article2.document_id}],
-    #             },
-    #             "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
-    #             "locales": [
-    #                 {
-    #                     "lang": "en",
-    #                     "title": "New title",
-    #                     "place": "some NEW place descrip. in english",
-    #                     "version": self.locale_en.version,
-    #                 }
-    #             ],
-    #         },
-    #     }
-    #     (body, xreport1) = self.put_success_all(body, self.xreport1, user="moderator", cache_version=3)
+    @pytest.mark.skip("...")
+    def test_put_success_all(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.xreport1.document_id,
+                "version": self.xreport1.version,
+                "quality": quality_types[1],
+                "event_activity": "skitouring",
+                "event_type": "stone_ice_fall",
+                "nb_participants": 333,
+                "nb_impacted": 666,
+                "age": 50,
+                "rescue": False,
+                "associations": {
+                    "images": [{"document_id": self.image2.document_id}],
+                    "articles": [{"document_id": self.article2.document_id}],
+                },
+                "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
+                "locales": [
+                    {
+                        "lang": "en",
+                        "title": "New title",
+                        "place": "some NEW place descrip. in english",
+                        "version": self.locale_en.version,
+                    }
+                ],
+            },
+        }
+        (body, xreport1) = self.put_success_all(body, self.xreport1, user="moderator", cache_version=3)
 
-    #     assert xreport1.event_activity == "skitouring"
-    #     locale_en = xreport1.get_locale("en")
-    #     assert locale_en.title == "New title"
+        assert xreport1.event_activity == "skitouring"
+        locale_en = xreport1.get_locale("en")
+        assert locale_en.title == "New title"
 
-    #     # version with lang 'en'
-    #     versions = xreport1.versions
-    #     version_en = self.get_latest_version("en", versions)
-    #     archive_locale = version_en.document_locales_archive
-    #     assert archive_locale.title == "New title"
-    #     assert archive_locale.place == "some NEW place descrip. in english"
+        # version with lang 'en'
+        versions = xreport1.versions
+        version_en = self.get_latest_version("en", versions)
+        archive_locale = version_en.document_locales_archive
+        assert archive_locale.title == "New title"
+        assert archive_locale.place == "some NEW place descrip. in english"
 
-    #     archive_document_en = version_en.document_archive
-    #     assert archive_document_en.event_activity == "skitouring"
-    #     assert archive_document_en.event_type == "stone_ice_fall"
-    #     assert archive_document_en.nb_participants == 333
-    #     assert archive_document_en.nb_impacted == 666
+        archive_document_en = version_en.document_archive
+        assert archive_document_en.event_activity == "skitouring"
+        assert archive_document_en.event_type == "stone_ice_fall"
+        assert archive_document_en.nb_participants == 333
+        assert archive_document_en.nb_impacted == 666
 
-    #     # version with lang 'fr'
-    #     version_fr = self.get_latest_version("fr", versions)
-    #     archive_locale = version_fr.document_locales_archive
-    #     assert archive_locale.title == "Lac d'Annecy"
+        # version with lang 'fr'
+        version_fr = self.get_latest_version("fr", versions)
+        archive_locale = version_fr.document_locales_archive
+        assert archive_locale.title == "Lac d'Annecy"
 
-    #     # check if geometry is stored in database afterwards
-    #     assert xreport1.geometry is not None
-    #     # check that a link to the associated image is created
-    #     association_img = self.session.query(Association).get((xreport1.document_id, self.image2.document_id))
-    #     assert association_img is not None
+        # check if geometry is stored in database afterwards
+        assert xreport1.geometry is not None
+        # check that a link to the associated image is created
+        association_img = self.session.query(Association).get((xreport1.document_id, self.image2.document_id))
+        assert association_img is not None
 
-    #     association_img_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == xreport1.document_id)
-    #         .filter(AssociationLog.child_document_id == self.image2.document_id)
-    #         .first()
-    #     )
-    #     assert association_img_log is not None
+        association_img_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == xreport1.document_id)
+            .filter(AssociationLog.child_document_id == self.image2.document_id)
+            .first()
+        )
+        assert association_img_log is not None
 
-    #     # check that a link to the associated article is created
-    #     association_main_art = self.session.query(Association).get((xreport1.document_id, self.article2.document_id))
-    #     assert association_main_art is not None
+        # check that a link to the associated article is created
+        association_main_art = self.session.query(Association).get((xreport1.document_id, self.article2.document_id))
+        assert association_main_art is not None
 
-    #     association_art_log = (
-    #         self.session.query(AssociationLog)
-    #         .filter(AssociationLog.parent_document_id == xreport1.document_id)
-    #         .filter(AssociationLog.child_document_id == self.article2.document_id)
-    #         .first()
-    #     )
-    #     assert association_art_log is not None
+        association_art_log = (
+            self.session.query(AssociationLog)
+            .filter(AssociationLog.parent_document_id == xreport1.document_id)
+            .filter(AssociationLog.child_document_id == self.article2.document_id)
+            .first()
+        )
+        assert association_art_log is not None
 
     def test_put_success_figures_only(self):
         body = {
