@@ -649,36 +649,36 @@ class TestXreportRest(BaseDocumentTestRest):
         assert archive_document_en.event_type == "person_fall"
         assert archive_document_en.age == 90
 
-    # def test_put_as_associated_user(self):
-    #     body = {
-    #         "message": "Update",
-    #         "document": {
-    #             "document_id": self.xreport1.document_id,
-    #             "version": self.xreport1.version,
-    #             "quality": quality_types[1],
-    #             "event_activity": "alpine_climbing",  # changed
-    #             "event_type": "crevasse_fall",  # changed
-    #             "age": 25,  # PERSONAL DATA CHANGED
-    #             "locales": [{"lang": "en", "title": "Renamed title by assoc. user", "version": self.locale_en.version}],
-    #             "associations": {  # added associations
-    #                 "articles": [{"document_id": self.article2.document_id}],
-    #                 "routes": [{"document_id": self.route3.document_id}],
-    #             },
-    #         },
-    #     }
+    def test_put_as_associated_user(self):
+        body = {
+            "message": "Update",
+            "document": {
+                "document_id": self.xreport1.document_id,
+                "version": self.xreport1.version,
+                "quality": quality_types[1],
+                "event_activity": "alpine_climbing",  # changed
+                "event_type": "crevasse_fall",  # changed
+                "age": 25,  # PERSONAL DATA CHANGED
+                "locales": [{"lang": "en", "title": "Renamed title by assoc. user", "version": self.locale_en.version}],
+                "associations": {  # added associations
+                    "articles": [{"document_id": self.article2.document_id}],
+                    "routes": [{"document_id": self.route3.document_id}],
+                },
+            },
+        }
 
-    #     (body, xreport1) = self.put_success_all(body, self.xreport1, user="contributor3", cache_version=3)
+        (body, xreport1) = self.put_success_all(body, self.xreport1, user="contributor3", cache_version=3)
 
-    #     # version with lang 'en'
-    #     versions = xreport1.versions
-    #     version_en = self.get_latest_version("en", versions)
-    #     archive_locale = version_en.document_locales_archive
-    #     assert archive_locale.title == "Renamed title by assoc. user"
+        # version with lang 'en'
+        versions = xreport1.versions
+        version_en = self.get_latest_version("en", versions)
+        archive_locale = version_en.document_locales_archive
+        assert archive_locale.title == "Renamed title by assoc. user"
 
-    #     archive_document_en = version_en.document_archive
-    #     assert archive_document_en.event_activity == "alpine_climbing"
-    #     assert archive_document_en.event_type == "crevasse_fall"
-    #     assert archive_document_en.age == 25
+        archive_document_en = version_en.document_archive
+        assert archive_document_en.event_activity == "alpine_climbing"
+        assert archive_document_en.event_type == "crevasse_fall"
+        assert archive_document_en.age == 25
 
     def test_put_as_non_author(self):
         body = {

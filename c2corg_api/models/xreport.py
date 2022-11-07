@@ -5,8 +5,6 @@ from werkzeug.exceptions import BadRequest, Forbidden
 
 
 class Xreport:
-    fixed_attributes = ["anonymous"]
-
     @classmethod
     def on_creation(cls, version: DocumentVersion):
         if version.data["anonymous"]:
@@ -17,11 +15,19 @@ class Xreport:
             version.data |= {"author": {"user_id": current_user.id}}
 
     @classmethod
-    def on_new_version(cls, old_version, new_version):
+    def on_new_version(cls, old_version: DocumentVersion, new_version: DocumentVersion):
+        # only moderator can change author
+        if old_version.data["author"]["user_id"] != new_version.data["author"]["user_id"]:
+            if not current_user.is_moderator:
+                raise Forbidden("You are not allowed to change author")
 
-        if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
+        if (
+            old_version.data["author"]["user_id"] != current_user.id
+            and not current_user.is_moderator
+            and current_user.id not in old_version.data["associations"]
+        ):
             raise Forbidden("You are not allowed to edit this document")
 
-        for attribute in cls.fixed_attributes:
+        for attribute in ["anonymous"]:
             if old_version.data[attribute] != new_version.data[attribute]:
                 raise BadRequest(f"You cannot modify {attribute}")
