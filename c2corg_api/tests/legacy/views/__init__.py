@@ -420,6 +420,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         body = response.json
         assert body.get("status") == "error"
+        body["errors"] = body["description"]  # make legacy test happy
         return body
 
     def post_missing_title(self, request_body, user="contributor", prefix=""):

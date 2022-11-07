@@ -180,7 +180,16 @@ replacements = (
             r"self.([\w\d]+)_version = \(\n *self.session.query\(DocumentVersion\)\n *.filter\(DocumentVersion.document_id == self.([\w\d]+).document_id\)\n *.filter\(DocumentVersion.lang == \"en\"\)\n *.first\(\)\n *\)",
             r"self.\1_version = self.session_query_first(DocumentVersion, document_id = self.\2.document_id)\n",
         ),
+        (
+            r'self\.assertEqual\(errors\[0\]\["description"\], "Invalid geometry type\. Expected: \[\'POINT\'\]\. Got: LINESTRING\."\)',
+            r'assert (errors == "\'LineString\' is not one of [\'Point\'] on instance [\'geometry\'][\'geom\'][\'type\']")',
+        ),
         (r"(# version with lang 'en'\n *version_en = profile\.versions)\[2\]", r"\1[1]"),
+        (r"self\.assertCorniceNotInEnum\(errors\[0\], key\)", "assert key in errors, key"),
+        (
+            r"self\.app\.app\.registry\.anonymous_user_id =",
+            'self.app.config["ANONYMOUS_USER_ID"] =',
+        ),
         # commit after adding test data, as tst session is not query session
         (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
         # Function that are totally replaced
@@ -204,6 +213,7 @@ replacements = (
         # error messages
         ('"Already used forum name"', '"Name or email already exists"'),
         (r' *assert len\(body\["errors"\]\) == \d\n', ""),  # error model is different
+        (r" *assert len\(errors\) == 1\n", ""),  # error model is different
         (r'assert body\["errors"\]\[0\]\["name"\]', 'assert body["name"]'),
     ]
 )
@@ -265,6 +275,8 @@ skipped_methods_by_file = {
         "test_get_associations_history": "This view is not relevant in new model",
         "test_post_error": "useless test: empty payload...",
         "test_put_wrong_locale_version": "Locales are not versionned in the new model",
+        "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
+        "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
     },
 }
 

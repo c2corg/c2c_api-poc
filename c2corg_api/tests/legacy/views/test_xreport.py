@@ -231,7 +231,6 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_post_error(self):
         body = self.post_error({}, user="moderator")
         errors = body.get("errors")
-        assert len(errors) == 1
         self.assertCorniceRequired(errors[0], "event_activity")
 
     def test_post_missing_title(self):
@@ -275,9 +274,7 @@ class TestXreportRest(BaseDocumentTestRest):
             "locales": [{"title": "Lac d'Annecy", "lang": "en"}],
         }
         errors = self.post_wrong_geom_type(body)
-        assert (
-            errors == "'LineString' is not one of ['Point'] on instance ['geometry']['geom']['type']"
-        )  # TODO migration regex
+        assert errors == "'LineString' is not one of ['Point'] on instance ['geometry']['geom']['type']"
 
     def test_post_outdated_attributes_error(self):
         outdated_attributes = [
@@ -297,10 +294,10 @@ class TestXreportRest(BaseDocumentTestRest):
             }
             body[key] = value
             body = self.post_error(body, user="moderator")
-            errors = body.get("description")  # TODO migration regex
+            errors = body.get("errors")
             assert key in errors, key
 
-    @pytest.mark.skip("...")
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_post_success(self):
         body = {
             "document_id": 123456,
@@ -404,7 +401,7 @@ class TestXreportRest(BaseDocumentTestRest):
         assert "autonomy" in body
 
     def test_post_anonymous(self):
-        self.app.config["ANONYMOUS_USER_ID"] = self.global_userids["moderator"]  # TODO migration regex
+        self.app.config["ANONYMOUS_USER_ID"] = self.global_userids["moderator"]
         body_post = {
             "document_id": 111,
             "version": 1,
@@ -451,7 +448,7 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.xreport1.document_id, user="moderator")
 
-    @pytest.mark.skip("...")
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -481,7 +478,7 @@ class TestXreportRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.xreport1.document_id, user="moderator")
 
-    @pytest.mark.skip("...")
+    @pytest.mark.skip(reason="Rewritted without the part on associations, as it does not exists in the mew model")
     def test_put_success_all(self):
         body = {
             "message": "Update",
