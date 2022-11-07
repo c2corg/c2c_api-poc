@@ -2,10 +2,7 @@ from flask_camp.models import Document, DocumentVersion
 from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest
 
-from c2corg_api.models import ARTICLE_TYPE, USERPROFILE_TYPE, XREPORT_TYPE, ALL_TYPES
-from c2corg_api.models.article import Article
-from c2corg_api.models.userprofile import UserProfile
-from c2corg_api.models.xreport import Xreport
+from c2corg_api.models import models
 from c2corg_api.schemas import schema_validator
 from c2corg_api.search import DocumentSearch, update_document_search_table
 
@@ -17,14 +14,10 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
 
     document_type = new_version.data["type"]
 
-    if document_type not in ALL_TYPES:
+    if document_type not in models:
         raise BadRequest(f"Unknow document type: {document_type}")
 
-    model = {
-        ARTICLE_TYPE: Article,
-        USERPROFILE_TYPE: UserProfile,
-        XREPORT_TYPE: Xreport,
-    }[document_type]
+    model = models[document_type]
 
     if old_version is None:  # it's a creation
         model.on_creation(version=new_version)
