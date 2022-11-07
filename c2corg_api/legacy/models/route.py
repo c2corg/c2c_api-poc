@@ -29,6 +29,7 @@ class Route(LegacyDocument):
                 "locales": {} if locales is None else {locale.lang: locale._json for locale in locales},
                 "associations": [],
                 "quality": "draft",
+                "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
             }
 
             if elevation_max is not None:

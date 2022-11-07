@@ -45,11 +45,7 @@ class UserProfile(LegacyDocument):
         result["data"] |= {
             "areas": legacy_document.pop("areas", {}),
             "name": legacy_document.pop("name", previous_data["name"]),
-            "geometry": {"geom": "{}"},
         }
-
-        if "geometry" in legacy_document:
-            result["data"]["geometry"]["geom"] = json.loads(legacy_document.pop("geometry")["geom"])
 
         # clean
         legacy_document.pop("quality", None)
@@ -69,7 +65,7 @@ class UserProfile(LegacyDocument):
             "name": data["name"],
             "forum_username": data["name"],
             "areas": data["areas"],
-            "geometry": data["geometry"] | {"version": 0},
+            "geometry": data.get("geometry", {}) | {"version": 0},
         }
         for locale in result["locales"]:
             locale["topic_id"] = None

@@ -36,11 +36,12 @@ class Article(LegacyDocument):
             "author": legacy_document.pop("author", previous_data.get("author", None)),
         }
 
-        # clean
-        legacy_document.pop("geometry", None)
 
         # other props
         result["data"] |= legacy_document
+
+        # clean
+        result["data"].pop("geometry", None)
 
         return result
 

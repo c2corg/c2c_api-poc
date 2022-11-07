@@ -31,11 +31,11 @@ class Book(LegacyDocument):
             "activities": legacy_document.pop("activities", []),
         }
 
-        # clean
-        legacy_document.pop("geometry", None)
-
         # other props
         result["data"] |= legacy_document
+
+        # clean
+        result["data"].pop("geometry", None)
 
         return result
 

@@ -1,3 +1,4 @@
+import json
 from flask_login import current_user
 
 from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale
@@ -40,7 +41,6 @@ class Xreport(LegacyDocument):
                 "event_type": event_type,
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": [],
-                # "geometry": None,
                 "author": {"user_id": 666},
             }
 
@@ -64,7 +64,12 @@ class Xreport(LegacyDocument):
             "author": legacy_document.pop("author", previous_data.get("author", "MISSING_AUTHOR")),
         }
 
-        optionnal_properties = ["date", "supervision", "geometry", "rescue"]
+        if "geometry" in legacy_document:
+            result["data"]["geometry"] = {
+                "geom": json.loads(legacy_document["geometry"]["geom"])
+            }
+
+        optionnal_properties = ["date", "supervision", "rescue"]
         for prop in optionnal_properties:
             if prop in legacy_document and legacy_document[prop] is None:
                 legacy_document.pop(prop)
@@ -88,11 +93,17 @@ class Xreport(LegacyDocument):
             "author": data["author"],
             "event_activity": data["event_activity"],
             "event_type": data["event_type"],
-            "geometry": data.get("geometry", None),
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
             "rescue": data.get("rescue"),
         }
+
+        if "geometry" in data:
+            result["geometry"] = {
+                "geom": json.dumps(data["geometry"]["geom"])
+            }
+        else:
+            result["geometry"] = None
 
         if "date" in data:
             result["date"] = data["date"]

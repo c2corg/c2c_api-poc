@@ -168,6 +168,11 @@ class Document:
 
         result["data"]["associations"] = list(associations)
 
+        # convert geometry
+        geometry = legacy_document.pop("geometry", None)
+        if geometry is not None:
+            result["data"]["geometry"] = {"geom": json.loads(geometry["geom"])}
+
         return result
 
     @staticmethod

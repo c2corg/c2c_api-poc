@@ -12,6 +12,13 @@
     "quality": { "$ref": "attributes/quality_types.json" },
     "type": { "const": "route" }
   },
-  "required": ["locales", "type", "associations", "activities", "quality"],
+  "required": [
+    "activities",
+    "associations",
+    "geometry",
+    "locales",
+    "quality",
+    "type"
+  ],
   "additionalProperties": false
 }
