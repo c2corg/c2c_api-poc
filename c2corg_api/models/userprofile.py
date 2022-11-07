@@ -7,8 +7,8 @@ from werkzeug.exceptions import BadRequest, Forbidden
 from c2corg_api.search import DocumentSearch
 from c2corg_api.models.types import USERPROFILE_TYPE
 
-class UserProfile:
 
+class UserProfile:
     @staticmethod
     def create(user, locale_langs, session=None):
         # TODO on legacy removal, removes session parameter

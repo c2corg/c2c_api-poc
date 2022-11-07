@@ -1,3 +1,5 @@
+from flask import current_app
+from flask_camp.models import DocumentVersion
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest, Forbidden
 
@@ -6,8 +8,13 @@ class Xreport:
     fixed_attributes = ["anonymous"]
 
     @classmethod
-    def on_creation(cls, version):
-        version.data |= {"author": {"user_id": current_user.id}}
+    def on_creation(cls, version: DocumentVersion):
+        if version.data["anonymous"]:
+            anonymous_user_id = current_app.config["ANONYMOUS_USER_ID"]
+            version.data |= {"author": {"user_id": anonymous_user_id}}
+            version.user_id = anonymous_user_id
+        else:
+            version.data |= {"author": {"user_id": current_user.id}}
 
     @classmethod
     def on_new_version(cls, old_version, new_version):

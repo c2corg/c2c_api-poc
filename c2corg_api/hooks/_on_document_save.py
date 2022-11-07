@@ -27,7 +27,7 @@ def on_document_save(document: Document, old_version: DocumentVersion, new_versi
     if old_version is not None and new_version is not None:
 
         if old_version.data["type"] != new_version.data["type"]:
-            raise BadRequest("type property can't be changed")
+            raise BadRequest("'type' attribute can't be changed")
 
         model.on_new_version(old_version=old_version, new_version=new_version)
 

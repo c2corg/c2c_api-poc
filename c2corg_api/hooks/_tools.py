@@ -31,4 +31,3 @@ def get_profile_document(user):
     document_id = list(result)[0][0]
 
     return Document.get(id=document_id)
-

@@ -20,11 +20,18 @@ def create_app(**config):
             "discourse.public_url": "https://forum.demov6.camptocamp.org",
             "discourse.api_key": "4647c0d98e8beb793da099ff103b9793d8d4f94fff7cdd52d58391c6fa025845",
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            "ANONYMOUS_USER_ID": "271737",
         }
     )
 
     app.config.from_prefixed_env()
     app.config.from_mapping(config)
+
+    try:
+        if isinstance(app.config["ANONYMOUS_USER_ID"], str):
+            app.config["ANONYMOUS_USER_ID"] = int(app.config["ANONYMOUS_USER_ID"])
+    except ValueError as e:
+        raise ValueError("Please set a numeric value for FLASK_ANONYMOUS_USER_ID") from e
 
     api = RestApi(
         app=app,
