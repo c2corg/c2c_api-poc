@@ -11,8 +11,6 @@ class UserProfile:
 
     @staticmethod
     def create(user, locale_langs, session=None):
-        from c2corg_api.search import DocumentSearch
-
         # TODO on legacy removal, removes session parameter
         session = current_api.database.session if session is None else session
         assert user.id is not None, "Dev check..."
