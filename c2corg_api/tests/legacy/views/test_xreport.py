@@ -243,15 +243,15 @@ class TestXreportRest(BaseDocumentTestRest):
         }
         self.post_missing_title(body_post, user="moderator")
 
-    # def test_post_non_whitelisted_attribute(self):
-    #     body = {
-    #         "event_activity": "skitouring",
-    #         "event_type": "stone_ice_fall",
-    #         "nb_participants": 5,
-    #         "protected": True,
-    #         "locales": [{"lang": "en", "place": "some place description", "title": "Lac d'Annecy"}],
-    #     }
-    #     self.post_non_whitelisted_attribute(body, user="moderator")
+    def test_post_non_whitelisted_attribute(self):
+        body = {
+            "event_activity": "skitouring",
+            "event_type": "stone_ice_fall",
+            "nb_participants": 5,
+            "protected": True,
+            "locales": [{"lang": "en", "place": "some place description", "title": "Lac d'Annecy"}],
+        }
+        self.post_non_whitelisted_attribute(body, user="moderator")
 
     def test_post_missing_content_type(self):
         self.post_missing_content_type({})

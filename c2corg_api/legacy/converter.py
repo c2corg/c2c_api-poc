@@ -76,7 +76,7 @@ def convert_to_legacy_doc(document):
             "author": data["author"],
             "event_activity": data["event_activity"],
             "event_type": data["event_type"],
-            "geometry": data["geometry"],
+            "geometry": data.get("geometry", None),
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
         }
@@ -191,17 +191,18 @@ def convert_from_legacy_doc(legacy_document, document_type, expected_document_id
         result["data"] |= {
             "quality": legacy_document.pop("quality", "draft"),
             "author": legacy_document.pop("author", old_data.get("author", "MISSING_AUTHOR")),
-            "geometry": legacy_document.pop("geometry", old_data.get("geometry", "MISSING_GEO")),
             "associations": convert_from_legacy_associations(legacy_document.pop("associations", {})),
             "locales": old_locales
             | convert_from_legacy_locales(legacy_document.pop("locales", []), document_type=document_type),
         }
 
-        if "date" in legacy_document or "date" in old_data:
-            result["data"]["date"] = legacy_document.pop("date", old_data.get("date", None))
+        optionnal_properties = ["date", "supervision", "geometry"]
+        for prop in optionnal_properties:
+            if prop in legacy_document and legacy_document[prop] is None:
+                legacy_document.pop(prop)
 
-        if "supervision" in legacy_document or "supervision" in old_data:
-            result["data"]["supervision"] = legacy_document.pop("supervision", old_data.get("supervision", None))
+            elif prop in legacy_document or prop in old_data:
+                result["data"][prop] = legacy_document.pop(prop, old_data.get(prop, None))
 
         # other props
         result["data"] |= legacy_document
