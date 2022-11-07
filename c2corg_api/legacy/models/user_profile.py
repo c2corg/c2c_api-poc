@@ -2,7 +2,7 @@ from flask_camp import current_api
 from flask_camp.models import User, Document
 from sqlalchemy import select
 
-from c2corg_api.models import get_default_user_profile_data, USERPROFILE_TYPE  # Do not remove
+from c2corg_api.models.userprofile import UserProfile as NewUserProfile, USERPROFILE_TYPE  # Do not remove
 from c2corg_api.legacy.models.document import Document as LegacyDocument
 from c2corg_api.search import DocumentSearch
 
@@ -14,7 +14,7 @@ class UserProfile(LegacyDocument):
 
         if categories and document is None:
             self.create_new_model(
-                data=get_default_user_profile_data(
+                data=NewUserProfile.get_default_data(
                     self.default_author, categories=categories, locale_langs=locale_langs or []
                 )
             )

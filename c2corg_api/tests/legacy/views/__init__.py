@@ -7,7 +7,7 @@ from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
-from c2corg_api.models import create_user_profile, USERPROFILE_TYPE
+from c2corg_api.models.userprofile import UserProfile, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.user import User as LegacyUser
@@ -58,7 +58,7 @@ class BaseTestRest(BaseTestClass):
         user.set_email(f"{name}@camptocamp.org")
         self.api.database.session.flush()
 
-        create_user_profile(user, locale_langs=locale_langs, session=self.session)
+        UserProfile.create(user, locale_langs=locale_langs, session=self.session)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 
