@@ -297,6 +297,14 @@ skipped_methods_by_file = {
     "views/test_langs.py": {
         "test_feed": "feed will probably be replaced by recent outings",
     },
+    "views/test_document_revert.py": {
+        "test_revert_unauthorized": "Not replicated. See design choices",
+        "test_revert_invalid_document_id": "Not replicated. See design choices",
+        "test_revert_invalid_version_id": "Not replicated. See design choices",
+        "test_revert_latest_version_id": "Not replicated. See design choices",
+        "test_revert_waypoint": "Not replicated. See design choices",
+        "test_revert_route": "Not replicated. See design choices",
+    },
 }
 
 skipped_classes = {
@@ -373,7 +381,7 @@ convert_test_file("views/test_cooker.py")  #############  606
 # convert_test_file("views/test_document_delete.py")  ##  38K
 # convert_test_file("views/test_document_merge.py")  ###  13K
 convert_test_file("views/test_document_protect.py")  ### 4.7K
-# convert_test_file("views/test_document_revert.py")  ##  12K
+convert_test_file("views/test_document_revert.py")  ####  12K
 # convert_test_file("views/test_document_schema.py")  ## 2.1K
 # convert_test_file("views/test_document_tag.py")  ##### 4.9K
 # convert_test_file("views/test_feed.py")  #############  21K

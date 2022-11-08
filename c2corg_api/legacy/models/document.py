@@ -315,3 +315,7 @@ class ArchiveDocumentLocale:
 
 class DocumentArchive:
     ...
+
+
+class UpdateType:
+    ...

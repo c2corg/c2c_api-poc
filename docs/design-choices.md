@@ -45,3 +45,9 @@ Oall of this can be resumed by :
 | name           | No        | Yes       | topoguide label   | ui_prefences["full_name"] | Just to pass the legacy test, to be dropped                             
 | forum_username | Yes       | Yes       | forum label       | name                      | login, topo label, forum label 
 | email          | Yes       | No        | send email        | email                     | login, send email
+
+## Document revert does not exists in v7 ?
+
+*API is security, UI is ergonomy*. 
+
+Any logged user CAN do a revert by hand with regular POST request. It's not that easy, but doable. And with a bot, it's easy. So there is no purpose to expose such a servie in the API **as it does not prevent revert form non-moderators**. UI can expose a revert-in-one-click only for moderator, but it will only be ergonomy, not security.
