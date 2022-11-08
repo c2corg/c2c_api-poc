@@ -13,6 +13,10 @@ class MapsView(DocumentCollectionView):
     def get(self):
         return super().get()
 
+    @allow("moderator")
+    def post(self):
+        return super().post()
+
 
 class MapView(DocumentView):
     rule = "/maps/<int:document_id>"

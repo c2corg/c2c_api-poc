@@ -7,7 +7,8 @@ from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
 from c2corg_api.hooks import on_user_validation
-from c2corg_api.models.userprofile import UserProfile, USERPROFILE_TYPE
+from c2corg_api.models.userprofile import UserProfile
+from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.user import User as LegacyUser
@@ -177,6 +178,10 @@ class BaseTestRest(BaseTestClass):
             doc = self.session.query(Document).get(parameter_value)
             return LegacyXreport(version=doc.last_version)
 
+        if klass is LegacyTopoMap:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyTopoMap(version=doc.last_version)
+
         raise NotImplementedError(f"TODO...: {klass}")
 
     def extract_nonce(self, _send_mail, key):
@@ -307,7 +312,9 @@ class BaseDocumentTestRest(BaseTestRest):
         assert body.get("document_id") == reference.document_id
 
         assert body.get("version") is not None
-        assert body.get("associations") is not None
+
+        if body["type"] != MAP_TYPE:
+            assert body.get("associations") is not None
 
         locales = body.get("locales")
         if ignore_checks is False:
@@ -465,7 +472,7 @@ class BaseDocumentTestRest(BaseTestRest):
         return errors
 
     def post_missing_content_type(self, request_body):
-        self.add_authorization_header(username="contributor")
+        self.add_authorization_header(username="moderator")
         response = self.post(self._prefix, data=json.dumps(request_body), status=415)
 
         body = response.json

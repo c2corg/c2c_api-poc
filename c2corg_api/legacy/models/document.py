@@ -32,6 +32,10 @@ class Geometry:
     def version(self):
         return _AlwaysTrue()
 
+    @property
+    def geom_detail(self):
+        return self._json.get("geom_detail")
+
 
 class Document:
     def __init__(self, version=None):
@@ -98,7 +102,11 @@ class Document:
         # convert geometry
         geometry = legacy_document.pop("geometry", None)
         if geometry is not None:
-            result["data"]["geometry"] = {"geom": json.loads(geometry["geom"])}
+            result["data"]["geometry"] = {}
+            if "geom" in geometry:
+                result["data"]["geometry"]["geom"] = json.loads(geometry["geom"])
+            if "geom_detail" in geometry:
+                result["data"]["geometry"]["geom_detail"] = json.loads(geometry["geom_detail"])
 
         return result
 
