@@ -5,6 +5,7 @@ from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
+from c2corg_api.legacy.views.documents import protect as protect_view, unprotect as unprotect_view
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
@@ -29,6 +30,9 @@ def add_legacy_modules(app, api):
 
     # define v6 interface
     api.add_views(app, health_view, cooker_view, search_view, url_prefix="")
+
+    api.add_views(app, protect_view, unprotect_view, url_prefix="")
+
     api.add_views(
         app,
         register_view,

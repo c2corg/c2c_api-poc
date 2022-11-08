@@ -132,7 +132,7 @@ class BaseTestClass(ClientInterface):
             expected_status = [expected_status]
 
         def pretty_message():
-            message = f"Status error: {response.status_code} i/o {expected_status} for {response.request.url}"
+            message = f"Status error: {response.status_code} i/o {expected_status} for {response.request.method} {response.request.url}"
             try:
                 return message + "\n" + json.dumps(response.json, indent=2)
             except:  # pylint: disable=bare-except

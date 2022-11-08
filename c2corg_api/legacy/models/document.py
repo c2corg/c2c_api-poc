@@ -50,13 +50,14 @@ class Document:
     def _document(self, value):
         self._version = value.last_version
 
-    def create_new_model(self, data):
+    def create_new_model(self, data, protected=False):
         from flask_camp.models import Document
 
         # print(json.dumps(data, indent=4))
         schema_validator.validate(data, f"{data['type']}.json")
 
-        self._document = Document.create(comment="Creation", data=data, author=self.default_author)
+        self._version = Document.create(comment="Creation", data=data, author=self.default_author).last_version
+        self._document.protected = protected
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):
@@ -140,6 +141,10 @@ class Document:
             result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
 
         return result
+
+    @property
+    def protected(self):
+        return self._document.protected
 
     @property
     def history_metadata(self):

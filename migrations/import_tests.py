@@ -361,18 +361,40 @@ def convert_test_folder(folder):
                 subprocess.run(["cp", filename, dest], check=True)
 
 
-# convert_test_folder("markdown")
-convert_test_file("views/test_health.py")
-convert_test_file("views/test_cooker.py")
-convert_test_file("views/test_user.py")
-convert_test_file("views/test_user_account.py")
-convert_test_file("views/test_user_preferences.py")
-convert_test_file("views/test_user_block.py")
-convert_test_file("views/test_user_follow.py")
-convert_test_file("views/test_user_mailinglists.py")
-convert_test_file("views/test_user_profile.py")
-convert_test_file("views/test_article.py")
-convert_test_file("views/test_book.py")
-convert_test_file("views/test_xreport.py")
-convert_test_file("views/test_topo_map.py")
-convert_test_file("views/test_langs.py")
+# convert_test_folder("markdown")   # ok
+
+
+# convert_test_file("views/test_area.py")  #############  20K
+convert_test_file("views/test_article.py")  ############  25K
+# convert_test_file("views/test_association.py")  ######  29K
+convert_test_file("views/test_book.py")  ###############  21K
+convert_test_file("views/test_cooker.py")  #############  606
+# convert_test_file("views/test_document_changes.py")  # 6.2K
+# convert_test_file("views/test_document_delete.py")  ##  38K
+# convert_test_file("views/test_document_merge.py")  ###  13K
+convert_test_file("views/test_document_protect.py")  ### 4.7K
+# convert_test_file("views/test_document_revert.py")  ##  12K
+# convert_test_file("views/test_document_schema.py")  ## 2.1K
+# convert_test_file("views/test_document_tag.py")  ##### 4.9K
+# convert_test_file("views/test_feed.py")  #############  21K
+# convert_test_file("views/test_forum.py")  ############ 6.6K
+convert_test_file("views/test_health.py")  #############  345
+# convert_test_file("views/test_image.py")  ############  40K
+convert_test_file("views/test_langs.py")  ############## 4.8K
+# convert_test_file("views/test_outing.py")  ###########  54K
+# convert_test_file("views/test_route.py")  ############  50K
+# convert_test_file("views/test_search.py")  ########### 7.0K
+# convert_test_file("views/test_sitemap.py")  ########## 3.1K
+# convert_test_file("views/test_sitemap_xml.py")  ###### 3.6K
+# convert_test_file("views/test_sso.py")  ##############  15K
+convert_test_file("views/test_topo_map.py")  ###########  16K
+convert_test_file("views/test_user.py")  ###############  24K
+convert_test_file("views/test_user_account.py")  ####### 6.7K
+convert_test_file("views/test_user_block.py")  ######### 8.4K
+convert_test_file("views/test_user_follow.py")  ######## 6.7K
+convert_test_file("views/test_user_mailinglists.py")  ## 3.0K
+convert_test_file("views/test_user_preferences.py")  ### 4.7K
+convert_test_file("views/test_user_profile.py")  #######  15K
+# convert_test_file("views/test_validation.py")  ####### 6.1K
+# convert_test_file("views/test_waypoint.py")  #########  63K
+convert_test_file("views/test_xreport.py")  ############  34K

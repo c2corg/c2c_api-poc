@@ -14,6 +14,7 @@ from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyD
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.book import Book as LegacyBook
+from c2corg_api.legacy.models.document import Document as LegacyDocument
 from c2corg_api.legacy.models.feed import DocumentChange as LegacyDocumentChange
 from c2corg_api.legacy.models.image import Image as LegacyImage
 from c2corg_api.legacy.models.outing import Outing as LegacyOuting
@@ -185,6 +186,10 @@ class BaseTestRest(BaseTestClass):
             doc = self.session.query(Document).get(parameter_value)
             return LegacyTopoMap(version=doc.last_version)
 
+        if klass is LegacyDocument:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyDocument(version=doc.last_version)
+
         raise NotImplementedError(f"TODO...: {klass}")
 
     def extract_nonce(self, _send_mail, key):
@@ -204,9 +209,11 @@ class BaseTestRest(BaseTestClass):
 
     def session_refresh(self, item):
         if isinstance(item, LegacyUser):
-            self.session.expunge(item._user)
+            self.session.refresh(item._user)
+        elif isinstance(item, LegacyDocument):
+            self.session.refresh(item._document)
         elif isinstance(item, LegacyDocumentLocale):
-            self.session.expunge_all()
+            pass
         else:
             raise NotImplementedError(f"Can't refresh {item}")
 

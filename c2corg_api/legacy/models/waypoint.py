@@ -3,7 +3,16 @@ from c2corg_api.models import WAYPOINT_TYPE
 
 
 class Waypoint(Document):
-    def __init__(self, waypoint_type=None, elevation=None, rock_types=None, geometry=None, locales=None, version=None):
+    def __init__(
+        self,
+        waypoint_type=None,
+        elevation=None,
+        rock_types=None,
+        geometry=None,
+        locales=None,
+        protected=False,
+        version=None,
+    ):
         super().__init__(version=version)
 
         if version is None:
@@ -19,7 +28,8 @@ class Waypoint(Document):
                     "rock_types": rock_types,
                     "geometry": geometry._json,
                     "associations": [],
-                }
+                },
+                protected=protected,
             )
 
 
