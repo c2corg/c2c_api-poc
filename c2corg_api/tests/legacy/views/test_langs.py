@@ -78,7 +78,7 @@ class TestLangs(BaseTestRest):
 
     def test_get_collection(self):
         for lang in default_langs:
-            body = self.get(f"/outings?l={lang}", status=200).json  # TODO import regex
+            body = self.get(f"/outings?l={lang}", status=200).json
             assert body["total"] != 0
 
     @pytest.mark.xfail(reason="TODO")
@@ -107,7 +107,6 @@ class TestLangs(BaseTestRest):
             document = self.get(f"/articles/{document['document_id']}")
             assert lang == document.json["locales"][0]["lang"]
 
-    @pytest.mark.xfail(reason="TODO")
     def test_user_preferences(self):
         user_id = self.global_userids["contributor"]
 
@@ -118,7 +117,7 @@ class TestLangs(BaseTestRest):
 
             json = self.get_with_auth("/users/preferences").json
 
-            self.assertEqual([lang], json["langs"])
+            assert [lang] == json["langs"]
 
             user = self.query_get(User, user_id=user_id)
             user.ratelimit_times = 0

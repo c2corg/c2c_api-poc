@@ -19,8 +19,9 @@ def _get_python_value():
     simple_value = r"[^,\n\]\[]+"
     string_list = r'\["\w+"(?:, "\w+")*\]'
     function_call = r"[^\n(]+\([^\n)]*\)"
+    litteral_list = r"\[\w+\]"
 
-    return f"({dict_member}|{simple_value}|{string_list}|{function_call})"
+    return f"({dict_member}|{simple_value}|{string_list}|{function_call}|{litteral_list})"
 
 
 def _assert_replacements(old_foo, operator):
@@ -76,8 +77,6 @@ replacements = (
         # not very pythonic
         (r"self\.assertTrue\((initial_encoded_password) != (modified_encoded_password)\)", r"assert \1 != \2"),
         (r'self\.assertTrue\(("\w+") in (\w+)\)', r"assert \1 in \2"),
-        # rename some properties
-        (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
         # clean unit tests code
         (r"def setUp\(self\):.*\n", r"def setup_method(self):\n"),
         (r"def tearDown\(self\):.*\n", r"def teardown_method(self):\n"),
@@ -100,7 +99,7 @@ replacements = (
         # replace test API
         (r"self\.session\.refresh\(", r"self.session_refresh("),
         (r"self\.get\((.*)\)\n", r"self.get_custom(\1)\n"),
-        (r"self\.app\.get\((.*)\)\n", r"self.get(\1)\n"),
+        (r"self\.app\.get\((.*)\)(\.json|)\n", r"self.get(\1)\2\n"),
         (r"self\.app\.post_json\((.*)\)\n", r"self.post_json(\1)\n"),
         (r"(\w+) = self\.session\.query\((\w+)\)\.get\((\w+)\)", r"\1 = self.query_get(\2, \3=\3)"),
         (
@@ -179,8 +178,8 @@ replacements = (
         (r" *assert .*\.ratelimit_times.*\n", ""),
         (r"(class BaseBlockTest(?:.|\n)*self\.session\.)flush", r"\1commit"),
         (
-            r'(assert json\["description"\] == )"Invalid email address"',
-            "\\1\"'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']\"",
+            r'assert json\["errors"\]\[0\]\["description"\] == "Invalid email address"',
+            "assert json[\"description\"] == \"'some_useratcamptocamp.org' is not a 'email' on instance ['user']['email']\"",
         ),
         (
             r"self.([\w\d]+)_version = \(\n *self.session.query\(DocumentVersion\)\n *.filter\(DocumentVersion.document_id == self.([\w\d]+).document_id\)\n *.filter\(DocumentVersion.lang == \"en\"\)\n *.first\(\)\n *\)",
@@ -224,6 +223,7 @@ replacements = (
         (r' *assert len\(body\["errors"\]\) == \d\n', ""),  # error model is different
         (r" *assert len\(errors\) == 1\n", ""),  # error model is different
         (r'assert body\["errors"\]\[0\]\["name"\]', 'assert body["name"]'),
+        (r'json\["errors"\]\[0\]\["description"\]', 'json["description"]'),
     ]
 )
 
@@ -293,6 +293,9 @@ skipped_methods_by_file = {
         "test_post_error": "useless test: empty payload...",
         "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
         "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
+    },
+    "views/test_langs.py": {
+        "test_feed": "feed will probably be replaced by recent outings",
     },
 }
 

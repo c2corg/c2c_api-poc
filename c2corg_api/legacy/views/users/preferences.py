@@ -29,13 +29,17 @@ def get():
 def post():
     # convert v6 request to flask_camp request
     data = current_user.data
-    data["feed"] = request.get_json()
+    feed = request.get_json()
 
     try:
-        data["feed"]["areas"] = [area["document_id"] for area in data["feed"]["areas"]]
+        feed["areas"] = [area["document_id"] for area in feed["areas"]]
     except KeyError as e:
         raise BadRequest() from e
 
+    if "follow" not in feed:
+        feed["follow"] = data["feed"]["follow"]
+
+    data["feed"] = feed
     body = {"user": {"data": data}}
 
     request._cached_json = (body, body)
