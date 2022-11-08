@@ -8,3 +8,7 @@ def reset_search_index(session):
         update_document_search_table(document, session=session)
 
     session.commit()
+
+
+def force_search_index():
+    ...

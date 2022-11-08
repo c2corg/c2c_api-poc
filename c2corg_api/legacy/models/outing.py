@@ -1,4 +1,4 @@
-from c2corg_api.legacy.models.document import Document as LegacyDocument
+from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale as LegacyDocumentLocale
 from c2corg_api.models import OUTING_TYPE
 
 
@@ -6,8 +6,12 @@ class ArchiveOuting:
     ...
 
 
+class OutingLocale(LegacyDocumentLocale):
+    ...
+
+
 class Outing(LegacyDocument):
-    def __init__(self, activities=None, date_start=None, date_end=None, version=None):
+    def __init__(self, activities=None, date_start=None, date_end=None, geometry=None, version=None):
         super().__init__(version=version)
 
         if version is None:
@@ -20,6 +24,9 @@ class Outing(LegacyDocument):
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": [],
             }
+
+            if geometry is not None:
+                data["geometry"] = geometry._json
 
             self.create_new_model(data=data)
 

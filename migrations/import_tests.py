@@ -122,6 +122,7 @@ replacements = (
             "from flask_camp.models import User as NewUser\nfrom c2corg_api.legacy.models.user ",
         ),
         (r"from c2corg_api.scripts.es.sync ", "from c2corg_api.legacy.scripts.es.sync "),
+        (r"from c2corg_api.scripts.es.fill_index ", "from c2corg_api.legacy.scripts.es.fill_index "),
         (r"from c2corg_api.search ", "from c2corg_api.legacy.search "),
     ]
     + _legacy_model_replacements()
@@ -147,8 +148,8 @@ replacements = (
         (r"(from c2corg_api.models.common.attributes import mailinglists\n)", r"# \1"),
         (r"(from dogpile.cache.api import NO_VALUE\n)", r"# \1"),
         (
-            r"from c2corg_api.tests.search import reset_search_index\n",
-            r"from c2corg_api.tests.legacy.search import reset_search_index\n",
+            r"from c2corg_api.tests.search import ",
+            r"from c2corg_api.tests.legacy.search import ",
         ),
         # targeted replace
         ("username with spaces", "username_with_spaces"),
@@ -371,4 +372,4 @@ convert_test_file("views/test_article.py")
 convert_test_file("views/test_book.py")
 convert_test_file("views/test_xreport.py")
 convert_test_file("views/test_topo_map.py")
-# convert_test_file("views/test_sitemap.py")
+convert_test_file("views/test_langs.py")
