@@ -81,7 +81,6 @@ class TestLangs(BaseTestRest):
             body = self.get(f"/outings?l={lang}", status=200).json
             assert body["total"] != 0
 
-    @pytest.mark.xfail(reason="TODO")
     def test_search(self):
         for lang in default_langs:
             response = self.get(f"/search?q=Title&pl={lang}", status=200)

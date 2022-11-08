@@ -1,12 +1,13 @@
-from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
+from c2corg_api.views import search as search_view
+from c2corg_api.views import health as health_view
+from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
-from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportVersionView
 from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import block as block_view
 from c2corg_api.legacy.views.users import unblock as unblock_view
@@ -21,13 +22,13 @@ from c2corg_api.legacy.views.users import update_preferred_language as update_pr
 from c2corg_api.legacy.views.users import validate_change_email as validate_change_email_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
-from c2corg_api.views.sitemap import Sitemaps as SitemapsView
+from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportVersionView
 
 
 def add_legacy_modules(app, api):
 
     # define v6 interface
-    api.add_views(app, health_view, cooker_view, url_prefix="")
+    api.add_views(app, health_view, cooker_view, search_view, url_prefix="")
     api.add_views(
         app,
         register_view,
