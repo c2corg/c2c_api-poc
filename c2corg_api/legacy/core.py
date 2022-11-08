@@ -4,6 +4,7 @@ from c2corg_api.views import cooker as cooker_view
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
+from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
 from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportVersionView
 from c2corg_api.legacy.views.users import account as account_view
@@ -57,6 +58,7 @@ def add_legacy_modules(app, api):
     api.add_views(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
     api.add_views(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
     api.add_views(app, MapsView(), MapView(), MapVersionView(), url_prefix="")
+    api.add_views(app, OutingsView(), OutingView(), OutingVersionView(), url_prefix="")
     api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
     api.add_views(app, SitemapsView(), url_prefix="")

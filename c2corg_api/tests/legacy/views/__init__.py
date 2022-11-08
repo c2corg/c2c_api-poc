@@ -11,15 +11,16 @@ from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
-from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
 from c2corg_api.legacy.models.book import Book as LegacyBook
+from c2corg_api.legacy.models.feed import DocumentChange as LegacyDocumentChange
 from c2corg_api.legacy.models.image import Image as LegacyImage
 from c2corg_api.legacy.models.outing import Outing as LegacyOuting
 from c2corg_api.legacy.models.route import Route as LegacyRoute
 from c2corg_api.legacy.models.topo_map import TopoMap as LegacyTopoMap
 from c2corg_api.legacy.models.topo_map_association import TopoMapAssociation
+from c2corg_api.legacy.models.user import User as LegacyUser
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
 from c2corg_api.legacy.models.xreport import Xreport as LegacyXreport
@@ -142,6 +143,8 @@ class BaseTestRest(BaseTestClass):
             update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
             self.session.flush()
         elif isinstance(instance, TopoMapAssociation):
+            instance.propagate_in_documents()
+        elif isinstance(instance, LegacyDocumentChange):
             instance.propagate_in_documents()
         else:
             raise NotImplementedError(f"Don't know how to add {instance}")

@@ -1,2 +1,2 @@
-def fill_index():
+def fill_index(session):
     ...

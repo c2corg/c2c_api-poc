@@ -68,20 +68,17 @@ class TestLangs(BaseTestRest):
 
         self.session.flush()
 
-    @pytest.mark.xfail(reason="TODO")
     def get_with_auth(self, prefix):
         headers = self.add_authorization_header(username="contributor")
         return self.get(prefix, headers=headers, status=200)
 
-    @pytest.mark.xfail(reason="TODO")
     def post_with_auth(self, prefix, body):
         headers = self.add_authorization_header(username="contributor")
         return self.app_post_json(prefix, body, headers=headers, status=200)
 
-    @pytest.mark.xfail(reason="TODO")
     def test_get_collection(self):
         for lang in default_langs:
-            body = self.app.get(f"/outings?l={lang}", status=200).json
+            body = self.get(f"/outings?l={lang}", status=200).json # TODO import regex
             assert body["total"] != 0
 
     @pytest.mark.xfail(reason="TODO")
@@ -98,7 +95,6 @@ class TestLangs(BaseTestRest):
             body = response.json
             assert len(body["feed"]) != 0
 
-    @pytest.mark.xfail(reason="TODO")
     def test_create(self):
         for lang in default_langs:
             body = {

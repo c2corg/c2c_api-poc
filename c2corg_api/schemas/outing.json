@@ -4,6 +4,7 @@
     "associations": { "$ref": "entities/association_array.json" },
     "date_end": { "$ref": "entities/date.json"},
     "date_start": { "$ref": "entities/date.json"},
+    "geometry": { "$ref": "geometries/outing_geometry.json"},
     "locales": { "$ref": "locales/outing_locales.json" },
     "quality": { "$ref": "attributes/quality_types.json" },
     "type": { "const": "outing" }
