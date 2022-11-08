@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "geom": {
+      "properties": {
+        "type": { "enum": ["Point"] },
+        "coordinates": {
+            "$comment": "Can be an array of float (if point), or an array of array of float (if linestring)."
+        }
+      },
+      "required": ["type", "coordinates"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["geom"],
+  "additionalProperties": false
+}

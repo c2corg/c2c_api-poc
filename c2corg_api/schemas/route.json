@@ -5,7 +5,7 @@
     "elevation_max": { "type": "integer" },
     "elevation_min": { "type": "integer" },
     "durations": { "type": "string" },
-    "geometry": { "$ref": "entities/geometry.json" },
+    "geometry": { "$ref": "geometries/route_geometry.json" },
     "height_diff_down": { "type": "integer" },
     "height_diff_up": { "type": "integer" },
     "locales": { "$ref": "locales/route_locales.json" },

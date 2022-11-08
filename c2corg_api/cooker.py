@@ -12,5 +12,5 @@ def cooker(document, get_document):
     # import json
 
     # print(json.dumps(document["data"], indent=4))
-    for document_id in document["data"]["associations"]:
+    for document_id in document["data"].get("associations", []):
         document["cooked_data"]["associations"][document_id] = get_document(document_id)  # TODO : cook it

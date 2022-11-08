@@ -11,7 +11,7 @@
     "event_activity": { "$ref": "attributes/event_activities.json" },
     "event_type": { "$ref": "attributes/event_types.json" },
     "gender": { "$ref": "attributes/genders.json" },
-    "geometry": { "$ref": "entities/geometry.json" },
+    "geometry": { "$ref": "geometries/basic_geometry.json" },
     "locales": { "$ref": "locales/xreport_locales.json" },
     "nb_impacted": { "type": "integer" },
     "nb_participants": { "type": "integer" },

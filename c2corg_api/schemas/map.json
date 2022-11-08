@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "code": { "type": "string" },
+    "editor": { "type": "string" },
+    "geometry": { "$ref": "geometries/map_geometry.json" },
+    "locales": { "$ref": "locales/article_locales.json" },
+    "scale": { "type": "string" },
+    "type": { "const": "map" }
+  },
+  "required": ["code", "editor", "geometry", "locales", "scale", "type"],
+  "additionalProperties": false
+}

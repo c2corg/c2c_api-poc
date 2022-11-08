@@ -1,4 +1,4 @@
-from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale
+from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale, DocumentGeometry
 from c2corg_api.models import ROUTE_TYPE
 
 
@@ -19,19 +19,27 @@ class Route(LegacyDocument):
         height_diff_down=None,
         durations=None,
         locales=None,
+        geometry: DocumentGeometry = None,
         version=None,
     ):
         super().__init__(version=version)
 
         if version is None:
+
             data = {
                 "type": ROUTE_TYPE,
                 "activities": activities,
                 "locales": {} if locales is None else {locale.lang: locale._json for locale in locales},
                 "associations": [],
                 "quality": "draft",
-                "geometry": {"geom": '{"type": "Point", "coordinates": [635956, 5723604]}'},
             }
+
+            if geometry is not None:
+                data["geometry"] = geometry._json
+                if "geom" not in data["geometry"]:
+                    data["geometry"]["geom"] = DocumentGeometry(geom="SRID=3857;POINT(0 0)")._json["geom"]
+            else:
+                data["geometry"] = DocumentGeometry(geom="SRID=3857;POINT(0 0)")._json
 
             if elevation_max is not None:
                 data["elevation_max"] = elevation_max

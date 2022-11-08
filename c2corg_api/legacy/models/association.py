@@ -30,11 +30,12 @@ class Association:
         return cls(parent_document=parent_document, child_document=child_document)
 
     def propagate_in_documents(self):
-        self._add_association(self.parent_document, self.child_document.id)
-        self._add_association(self.child_document, self.parent_document.id)
+        self._add_association(self.parent_document, self.child_document)
+        self._add_association(self.child_document, self.parent_document)
 
     @staticmethod
-    def _add_association(document, document_id):
+    def _add_association(document, associated_document):
+        document_id = associated_document.id
         new_model = document.last_version
 
         if "associations" not in new_model.data:

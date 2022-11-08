@@ -17,6 +17,8 @@ from c2corg_api.legacy.models.book import Book as LegacyBook
 from c2corg_api.legacy.models.image import Image as LegacyImage
 from c2corg_api.legacy.models.outing import Outing as LegacyOuting
 from c2corg_api.legacy.models.route import Route as LegacyRoute
+from c2corg_api.legacy.models.topo_map import TopoMap as LegacyTopoMap
+from c2corg_api.legacy.models.topo_map_association import TopoMapAssociation
 from c2corg_api.legacy.models.user_profile import UserProfile as LegacyUserProfile
 from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
 from c2corg_api.legacy.models.xreport import Xreport as LegacyXreport
@@ -114,6 +116,7 @@ class BaseTestRest(BaseTestClass):
             LegacyBook,
             LegacyImage,
             LegacyRoute,
+            LegacyTopoMap,
             LegacyOuting,
             LegacyUserProfile,
             LegacyWaypoint,
@@ -137,6 +140,8 @@ class BaseTestRest(BaseTestClass):
             instance.profile._version._data = json.dumps(data)
             update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
             self.session.flush()
+        elif isinstance(instance, TopoMapAssociation):
+            instance.propagate_in_documents()
         else:
             raise NotImplementedError(f"Don't know how to add {instance}")
 
@@ -631,7 +636,7 @@ class BaseDocumentTestRest(BaseTestRest):
         body = response.json
         if skip_validation:
             document_id = body.get("document_id")
-            response = self.app.get(self._prefix + "/" + str(document_id), status=200)
+            response = self.get(self._prefix + "/" + str(document_id), status=200)
             doc = self.query_get(self._model, id=document_id)
             return response.json, doc
         else:

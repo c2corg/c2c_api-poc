@@ -5,14 +5,15 @@ from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from c2corg_api.models.types import (
-    USERPROFILE_TYPE,
     AREA_TYPE,
+    BOOK_TYPE,
     ARTICLE_TYPE,
     WAYPOINT_TYPE,
-    BOOK_TYPE,
     IMAGE_TYPE,
     OUTING_TYPE,
     ROUTE_TYPE,
+    MAP_TYPE,
+    USERPROFILE_TYPE,
     XREPORT_TYPE,
 )
 
@@ -51,7 +52,7 @@ class DocumentSearch(BaseModel):
             pass
         elif self.document_type == AREA_TYPE:
             pass
-        elif self.document_type == AREA_TYPE:
+        elif self.document_type == MAP_TYPE:
             pass
         elif self.document_type == BOOK_TYPE:
             self.activities = new_version.data["activities"]

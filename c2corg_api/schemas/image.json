@@ -3,7 +3,7 @@
     "activities": { "$ref": "entities/activity_array.json" },
     "associations": { "$ref": "entities/association_array.json" },
     "filename": { "type": "string" },
-    "geometry": { "$ref": "entities/geometry.json" },
+    "geometry": { "$ref": "geometries/basic_geometry.json" },
     "height": { "type": ["integer", "null"] },
     "image_type": { "$ref": "attributes/image_types.json" },
     "locales": { "$ref": "locales/book_locales.json" },

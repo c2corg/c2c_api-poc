@@ -202,16 +202,26 @@ class Document:
 
 
 class DocumentGeometry:
-    def __init__(self, geom=None, json=None):
+    def __init__(self, geom=None, geom_detail=None, json=None):
         if json is None:
             import shapely.wkt
             from shapely.geometry import mapping
 
-            srid, shape_as_string = geom.split(";")
-            assert srid == "SRID=3857"
-            shape = shapely.wkt.loads(shape_as_string)
+            json = {}
 
-            json = {"geom": mapping(shape)}
+            if geom is not None:
+                srid, shape_as_string = geom.split(";")
+                assert srid == "SRID=3857"
+                shape = shapely.wkt.loads(shape_as_string)
+
+                json["geom"] = mapping(shape)
+
+            if geom_detail is not None:
+                srid, shape_as_string = geom_detail.split(";")
+                assert srid == "SRID=3857"
+                shape = shapely.wkt.loads(shape_as_string)
+
+                json["geom_detail"] = mapping(shape)
 
         self._json = json
 

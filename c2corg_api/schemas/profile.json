@@ -6,7 +6,7 @@
       "type": "array",
       "items": { "$ref": "attributes/user_categories.json" }
     },
-    "geometry": { "$ref": "entities/geometry.json" },
+    "geometry": { "$ref": "geometries/basic_geometry.json" },
     "name": { "type": "string" },
     "locales": { "$ref": "locales/profile_locales.json" },
     "type": { "const": "profile" },

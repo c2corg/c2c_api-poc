@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "geom_detail": {
+      "properties": {
+        "type": { "enum": ["Polygon"] },
+        "coordinates": {
+          "$comment": "Can be an array of float (if point), or an array of array of float (if linestring)."
+        }
+      },
+      "required": ["type", "coordinates"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["geom_detail"],
+  "additionalProperties": false
+}
