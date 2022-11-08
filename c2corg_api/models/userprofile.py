@@ -6,9 +6,10 @@ from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.search import DocumentSearch
 from c2corg_api.models.types import USERPROFILE_TYPE
+from c2corg_api.models._core import BaseModelHooks
 
 
-class UserProfile:
+class UserProfile(BaseModelHooks):
     @staticmethod
     def create(user, locale_langs, session=None):
         # TODO on legacy removal, removes session parameter
@@ -39,19 +40,16 @@ class UserProfile:
             "associations": [],
         }
 
-    @classmethod
-    def on_creation(cls, version):
+    def on_creation(self, version):
         raise BadRequest("Profile page can't be created without an user")
 
-    @classmethod
-    def on_new_version(cls, old_version, new_version):
-        user_id = UserProfile.get_user_id_from_profile_id(old_version.document_id)
+    def on_new_version(self, old_version, new_version):
+        user_id = self.get_user_id_from_profile_id(old_version.document_id)
         if user_id != current_user.id:
             if not current_user.is_moderator:
                 raise Forbidden()
 
-    @staticmethod
-    def get_user_id_from_profile_id(profile_id):
+    def get_user_id_from_profile_id(self, profile_id):
         query = select(DocumentSearch.user_id).where(DocumentSearch.id == profile_id)
         result = current_api.database.session.execute(query)
         user_id = list(result)[0][0]

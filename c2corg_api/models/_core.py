@@ -1,0 +1,6 @@
+class BaseModelHooks:
+    def on_creation(self, version):
+        ...
+
+    def on_new_version(self, old_version, new_version):
+        ...

@@ -10,14 +10,14 @@ from .types import (
     IMAGE_TYPE,
     OUTING_TYPE,
     ROUTE_TYPE,
+    USERPROFILE_TYPE,
     WAYPOINT_TYPE,
     XREPORT_TYPE,
-    USERPROFILE_TYPE,
 )
 
 models = {
-    ARTICLE_TYPE: Article,
-    BOOK_TYPE: Book,
-    USERPROFILE_TYPE: UserProfile,
-    XREPORT_TYPE: Xreport,
+    ARTICLE_TYPE: Article(),
+    BOOK_TYPE: Book(),
+    USERPROFILE_TYPE: UserProfile(),
+    XREPORT_TYPE: Xreport(),
 }

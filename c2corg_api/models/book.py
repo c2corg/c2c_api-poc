@@ -1,8 +1,5 @@
-class Book:
-    @classmethod
-    def on_creation(cls, version):
-        ...
+from c2corg_api.models._core import BaseModelHooks
 
-    @classmethod
-    def on_new_version(cls, old_version, new_version):
-        ...
+
+class Book(BaseModelHooks):
+    ...

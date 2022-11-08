@@ -1,16 +1,16 @@
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest, Forbidden
 
+from c2corg_api.models._core import BaseModelHooks
 
-class Article:
+
+class Article(BaseModelHooks):
     fixed_attributes = ["anonymous"]
 
-    @classmethod
-    def on_creation(cls, version):
+    def on_creation(self, version):
         version.data |= {"author": {"user_id": current_user.id}}
 
-    @classmethod
-    def on_new_version(cls, old_version, new_version):
+    def on_new_version(self, old_version, new_version):
         # only moderator can change author
         if old_version.data["author"]["user_id"] != new_version.data["author"]["user_id"]:
             if not current_user.is_moderator:

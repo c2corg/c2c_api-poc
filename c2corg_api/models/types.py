@@ -1,3 +1,5 @@
+# TODO move this in _core ?
+
 AREA_TYPE = "area"
 ARTICLE_TYPE = "article"
 BOOK_TYPE = "book"
