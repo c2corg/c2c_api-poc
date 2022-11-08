@@ -285,6 +285,11 @@ skipped_methods_by_file = {
         "test_post_success": "Rewritted without the part on associations, as it does not exists in the mew model",
         "test_put_success_all": "Rewritted without the part on associations, as it does not exists in the mew model",
     },
+    "views/test_topo_map.py": {
+        "test_get_caching": "caching is handled and tested in flask-camp",
+        "test_get_info": "test_get_info is not used in UI",
+        "test_put_wrong_locale_version": "Locales are not versionned in the new model",
+    }
 }
 
 skipped_classes = {

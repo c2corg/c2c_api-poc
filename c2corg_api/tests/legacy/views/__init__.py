@@ -100,7 +100,7 @@ class BaseTestRest(BaseTestClass):
     def post_json_with_token(self, url, token, **kwargs):
         return self.app_send_json("post", url, {}, **kwargs)
 
-    def app_post_json(self, url, json, **kwargs):
+    def app_post_json(self, url, json, expect_errors=None, **kwargs):
         return self.app_send_json("post", url, json, **kwargs)
 
     def app_put_json(self, url, json, **kwargs):

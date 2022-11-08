@@ -70,9 +70,11 @@ class TestTopoMapRest(BaseDocumentTestRest):
     def test_get_404(self):
         self.get_404()
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.map1)
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.map1, "en")
         assert locale.get("lang") == "en"
@@ -190,6 +192,7 @@ class TestTopoMapRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.map1.document_id, user="moderator")
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
