@@ -64,6 +64,7 @@ def _legacy_model_replacements():
         (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
         (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
         (r"from c2corg_api.models.xreport ", "from c2corg_api.legacy.models.xreport "),
+        (r"from c2corg_api.views.document_schemas ", "from c2corg_api.legacy.views.document_schemas "),
     ]
 
 
@@ -305,6 +306,14 @@ skipped_methods_by_file = {
         "test_revert_waypoint": "Not replicated. See design choices",
         "test_revert_route": "Not replicated. See design choices",
     },
+    "views/test_document_schema.py": {
+        "test_get_load_only_fields_routes": "Not a test view. It test fields for collection get, which is not used",
+        "test_get_load_only_fields_locales_routes": "Not a test view. It test fields for collection get, which is not used",
+        "test_get_load_only_fields_geometry_routes": "Not a test view. It test fields for collection get, which is not used",
+        "test_get_load_only_fields_topo_map": "Not a test view. It test fields for collection get, which is not used",
+        "test_get_load_only_fields_locales_topo_map": "Not a test view. It test fields for collection get, which is not used",
+        "test_get_load_only_fields_geometry_topo_map": "Not a test view. It test fields for collection get, which is not used",
+    },
 }
 
 skipped_classes = {
@@ -382,7 +391,7 @@ convert_test_file("views/test_cooker.py")  #############  606
 # convert_test_file("views/test_document_merge.py")  ###  13K
 convert_test_file("views/test_document_protect.py")  ### 4.7K
 convert_test_file("views/test_document_revert.py")  ####  12K
-# convert_test_file("views/test_document_schema.py")  ## 2.1K
+convert_test_file("views/test_document_schema.py")  #### 2.1K
 # convert_test_file("views/test_document_tag.py")  ##### 4.9K
 # convert_test_file("views/test_feed.py")  #############  21K
 # convert_test_file("views/test_forum.py")  ############ 6.6K
