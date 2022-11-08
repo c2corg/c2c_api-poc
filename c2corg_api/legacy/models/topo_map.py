@@ -1,3 +1,4 @@
+import json
 from c2corg_api.legacy.models.document import Document as LegacyDocument
 from c2corg_api.models import MAP_TYPE
 
@@ -21,3 +22,21 @@ class TopoMap(LegacyDocument):
                     "locales": {},
                 }
             )
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        result = LegacyDocument.convert_to_legacy_doc(document)
+        data = document["data"]
+
+        result |= {
+            "editor": data["editor"],
+            "scale": data["scale"],
+            "code": data["code"],
+        }
+
+        if "geometry" in data:
+            result["geometry"] = {"geom_detail": json.dumps(data["geometry"]["geom_detail"]), "version": 0}
+        else:
+            result["geometry"] = None
+
+        return result
