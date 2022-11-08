@@ -15,7 +15,9 @@ def update_search_query(query):
 
     if document_type is not None:
         criterions.append(DocumentSearch.document_type == document_type)
-        # TODO : for user profile, exclude not validated users
+
+        if document_type == USERPROFILE_TYPE:
+            criterions.append(DocumentSearch.user_is_validated == True)
 
     if locale_lang is not None:
         criterions.append(DocumentSearch.available_langs.contains([locale_lang]))
