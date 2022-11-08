@@ -8,6 +8,7 @@ from .types import (
     ARTICLE_TYPE,
     BOOK_TYPE,
     IMAGE_TYPE,
+    MAP_TYPE,
     OUTING_TYPE,
     ROUTE_TYPE,
     USERPROFILE_TYPE,

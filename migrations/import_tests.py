@@ -58,6 +58,8 @@ def _legacy_model_replacements():
         (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
         (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
         (r"from c2corg_api.models.outing ", "from c2corg_api.legacy.models.outing "),
+        (r"from c2corg_api.models.topo_map ", "from c2corg_api.legacy.models.topo_map "),
+        (r"from c2corg_api.models.topo_map_association ", "from c2corg_api.legacy.models.topo_map_association "),
         (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
         (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
         (r"from c2corg_api.models.xreport ", "from c2corg_api.legacy.models.xreport "),
@@ -241,7 +243,7 @@ skipped_methods_by_file = {
         "test_post_preferences": "Too painful to automatically import, recoded it",
     },
     "views/test_user_profile.py": {
-        "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
+        "test_get_collection_paginated": "TODO should be working",
         "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
         "test_get_caching": "caching is handled and tested in flask-camp",
         "test_get_info": "test_get_info is not used in UI",
@@ -360,4 +362,5 @@ convert_test_file("views/test_user_profile.py")
 convert_test_file("views/test_article.py")
 convert_test_file("views/test_book.py")
 convert_test_file("views/test_xreport.py")
-convert_test_file("views/test_sitemap.py")
+convert_test_file("views/test_topo_map.py")
+# convert_test_file("views/test_sitemap.py")
