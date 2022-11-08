@@ -1,5 +1,6 @@
 from flask import current_app
 from flask_camp.models import DocumentVersion
+from flask_camp._utils import JsonResponse
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest, Forbidden
 
@@ -7,6 +8,15 @@ from c2corg_api.models._core import BaseModelHooks
 
 
 class Xreport(BaseModelHooks):
+    def after_get_document(self, response: JsonResponse):
+        document_data = response.data["document"]["data"]
+
+        response.headers["Cache-Control"] = "private"
+
+        if document_data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
+            for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
+                document_data.pop(field, None)
+
     def on_creation(self, version: DocumentVersion):
         if version.data["anonymous"]:
             anonymous_user_id = current_app.config["ANONYMOUS_USER_ID"]

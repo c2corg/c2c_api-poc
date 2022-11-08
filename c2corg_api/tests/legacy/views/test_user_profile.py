@@ -109,7 +109,6 @@ class TestUserProfileRest(BaseDocumentTestRest):
         assert "name" in body
         assert "forum_username" in body
 
-    @pytest.mark.skip(reason="unecessary complexity of profile with no validated email, recoded it")
     def test_get_unconfirmed_user(self):
         headers = self.add_authorization_header(username="contributor")
         self.get(self._prefix + "/" + str(self.profile3.document_id), headers=headers, status=404)

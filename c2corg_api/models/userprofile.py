@@ -1,8 +1,9 @@
 from flask_camp import current_api
 from flask_camp.models import Document
+from flask_camp._utils import JsonResponse
 from flask_login import current_user
 from sqlalchemy import select
-from werkzeug.exceptions import BadRequest, Forbidden
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from c2corg_api.search import DocumentSearch
 from c2corg_api.models.types import USERPROFILE_TYPE
@@ -39,6 +40,14 @@ class UserProfile(BaseModelHooks):
             "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json,
             "associations": [],
         }
+
+    def after_get_document(self, response: JsonResponse):
+        query = select(DocumentSearch.user_is_validated).where(DocumentSearch.id == response.data["document"]["id"])
+        result = current_api.database.session.execute(query)
+        user_is_validated = list(result)[0][0]
+
+        if not user_is_validated:
+            raise NotFound()
 
     def on_creation(self, version):
         raise BadRequest("Profile page can't be created without an user")

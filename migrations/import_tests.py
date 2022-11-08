@@ -242,7 +242,6 @@ skipped_methods_by_file = {
     },
     "views/test_user_profile.py": {
         "test_get_collection_paginated": "unecessary complexity of profile with no validated email, recoded it",
-        "test_get_unconfirmed_user": "unecessary complexity of profile with no validated email, recoded it",
         "test_get_unauthenticated_private_profile": "useless feature: anybody can create a profile to see profile",
         "test_get_caching": "caching is handled and tested in flask-camp",
         "test_get_info": "test_get_info is not used in UI",

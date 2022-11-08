@@ -1,4 +1,10 @@
+from flask_camp._utils import JsonResponse
+
+
 class BaseModelHooks:
+    def after_get_document(self, response: JsonResponse):
+        ...
+
     def on_creation(self, version):
         ...
 
