@@ -11,7 +11,10 @@ from c2corg_api.app import create_app
 
 
 tested_app, tested_api = create_app(
-    TESTING=True, SECRET_KEY="not secret", C2C_DISCOURSE_SSO_SECRET="d836444a9e4084d5b224a60c208dce14"
+    TESTING=True,
+    SECRET_KEY="not secret",
+    C2C_DISCOURSE_SSO_SECRET="d836444a9e4084d5b224a60c208dce14",
+    C2C_DISCOURSE_URL="http://localhost:6000",
 )
 
 

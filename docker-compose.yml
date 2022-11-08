@@ -15,7 +15,7 @@ services:
       retries: 5
 
   pg:
-    image: postgres
+    image: postgres:14
     user: postgres
     environment:
       - POSTGRES_PASSWORD=password
@@ -30,3 +30,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  discourse_mock:
+    build:
+      context: .
+      dockerfile: docker/discourse_mock.Dockerfile
+    working_dir: /app
+    volumes:
+      - ./c2corg_api/tests/discourse_mock:/app:ro
+    ports:
+      - 6000:6000
+    command: flask --debug run -h 0.0.0.0 -p 6000

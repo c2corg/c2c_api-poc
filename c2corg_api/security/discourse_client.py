@@ -19,9 +19,9 @@ class APIDiscourseClient(object):
     def __init__(self, settings):
         self.settings = settings
         self.timeout = int(settings["url.timeout"])
-        self.discourse_base_url = settings["discourse.url"]
-        self.discourse_public_url = settings["discourse.public_url"]
-        self.api_key = settings["discourse.api_key"]
+        self.discourse_base_url = settings["C2C_DISCOURSE_URL"]
+        self.discourse_public_url = settings["C2C_DISCOURSE_PUBLIC_URL"]
+        self.api_key = settings["C2C_DISCOURSE_API_KEY"]
         self.sso_key = str(settings["C2C_DISCOURSE_SSO_SECRET"])  # no unicode
 
         self.discourse_userid_cache = {}

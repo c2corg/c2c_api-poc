@@ -78,7 +78,7 @@ class TestLangs(BaseTestRest):
 
     def test_get_collection(self):
         for lang in default_langs:
-            body = self.get(f"/outings?l={lang}", status=200).json # TODO import regex
+            body = self.get(f"/outings?l={lang}", status=200).json  # TODO import regex
             assert body["total"] != 0
 
     @pytest.mark.xfail(reason="TODO")
@@ -88,7 +88,7 @@ class TestLangs(BaseTestRest):
             body = response.json
             assert body["articles"]["total"] != 0
 
-    @pytest.mark.xfail(reason="TODO")
+    @pytest.mark.skip(reason="feed will probably be replaced by recent outings")
     def test_feed(self):
         for lang in default_langs:
             response = self.get(f"/feed?pl={lang}", status=200)
@@ -123,7 +123,6 @@ class TestLangs(BaseTestRest):
             user = self.query_get(User, user_id=user_id)
             user.ratelimit_times = 0
 
-    @pytest.mark.xfail(reason="TODO")
     def test_preferred_lang(self):
         for lang in default_langs:
 
