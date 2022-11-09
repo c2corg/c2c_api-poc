@@ -6,6 +6,7 @@ from c2corg_api.legacy.models.topo_map import TopoMap
 from c2corg_api.legacy.models.outing import Outing
 from c2corg_api.legacy.models.route import Route
 from c2corg_api.legacy.models.user_profile import UserProfile
+from c2corg_api.legacy.models.waypoint import Waypoint
 from c2corg_api.legacy.models.xreport import Xreport
 
 from c2corg_api.models import (
@@ -16,6 +17,7 @@ from c2corg_api.models import (
     OUTING_TYPE,
     ROUTE_TYPE,
     USERPROFILE_TYPE,
+    WAYPOINT_TYPE,
     XREPORT_TYPE,
 )
 
@@ -27,6 +29,7 @@ _legacy_models = {
     OUTING_TYPE: Outing,
     ROUTE_TYPE: Route,
     USERPROFILE_TYPE: UserProfile,
+    WAYPOINT_TYPE: Waypoint,
     XREPORT_TYPE: Xreport,
 }
 

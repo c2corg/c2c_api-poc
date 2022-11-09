@@ -2,6 +2,7 @@ from .article import Article
 from .book import Book
 from .topo_map import TopoMap
 from .userprofile import UserProfile
+from .waypoint import Waypoint
 from .xreport import Xreport
 
 from .types import (
@@ -22,5 +23,6 @@ models = {
     BOOK_TYPE: Book(),
     MAP_TYPE: TopoMap(),
     USERPROFILE_TYPE: UserProfile(),
+    WAYPOINT_TYPE: Waypoint(),
     XREPORT_TYPE: Xreport(),
 }

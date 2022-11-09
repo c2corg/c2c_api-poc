@@ -299,9 +299,9 @@ skipped_methods_by_file = {
         "test_feed": "feed will probably be replaced by recent outings",
     },
     "views/test_document_revert.py": {
-        # "test_revert_latest_version_id": "probably a pita to rewrite",
-        # "test_revert_waypoint": "probably a pita to rewrite",
-        # "test_revert_route": "probably a pita to rewrite",
+        "test_revert_latest_version_id": "PITA, rewritted",
+        "test_revert_waypoint": "PITA, rewritted",
+        "test_revert_route": "PITA, rewritted",
     },
     "views/test_document_schema.py": {
         "test_get_load_only_fields_routes": "Not a test view. It test fields for collection get, which is not used",

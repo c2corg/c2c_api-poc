@@ -1,7 +1,7 @@
 import pytest
 from c2corg_api.legacy.models.association import Association
 from c2corg_api.legacy.models.document import DocumentGeometry, UpdateType
-from c2corg_api.legacy.models.document_history import DocumentVersion
+from flask_camp.models import DocumentVersion
 from c2corg_api.legacy.models.feed import update_feed_document_create
 from c2corg_api.legacy.models.route import Route, RouteLocale
 from c2corg_api.legacy.models.waypoint import Waypoint, WaypointLocale
@@ -17,31 +17,6 @@ class TestDocumentRevertRest(BaseTestRest):
         self._add_test_data()
         self.session.commit()
 
-    def test_revert_unauthorized(self):
-        self.app_post_json(self._prefix, {}, status=403)
-
-        headers = self.add_authorization_header(username="contributor")
-        self.app_post_json(self._prefix, {}, headers=headers, status=403)
-
-    def test_revert_invalid_document_id(self):
-        request_body = {"document_id": -1, "lang": "en", "version_id": 123456}
-
-        headers = self.add_authorization_header(username="moderator")
-        self.app_post_json(self._prefix, request_body, status=400, headers=headers)
-
-    def test_revert_invalid_version_id(self):
-        document_id = self.waypoint2.document_id
-        lang = "en"
-        version_id = 123456
-        request_body = {"document_id": document_id, "lang": lang, "version_id": version_id}
-
-        headers = self.add_authorization_header(username="moderator")
-        response = self.app_post_json(self._prefix, request_body, status=400, headers=headers)
-        self.assertErrorsContain(
-            response.json, "Bad Request", "Unknown version {}/{}/{}".format(document_id, lang, version_id)
-        )
-
-    @pytest.mark.skip(reason="PITA, rewritted")
     def test_revert_latest_version_id(self):
         document_id = self.waypoint2.document_id
         lang = "en"
@@ -49,7 +24,6 @@ class TestDocumentRevertRest(BaseTestRest):
         (version_id,) = (
             self.session.query(DocumentVersion.id)
             .filter(DocumentVersion.document_id == document_id)
-            .filter(DocumentVersion.lang == lang)
             .order_by(DocumentVersion.id.desc())
             .first()
         )
@@ -63,7 +37,6 @@ class TestDocumentRevertRest(BaseTestRest):
             "Version {}/{}/{} is already the latest one".format(document_id, lang, version_id),
         )
 
-    @pytest.mark.skip(reason="PITA, rewritted")
     def test_revert_waypoint(self):
         document_id = self.waypoint2.document_id
         lang = "en"
@@ -71,17 +44,11 @@ class TestDocumentRevertRest(BaseTestRest):
         (version_id,) = (
             self.session.query(DocumentVersion.id)
             .filter(DocumentVersion.document_id == document_id)
-            .filter(DocumentVersion.lang == lang)
             .order_by(DocumentVersion.id.asc())
             .first()
         )
 
-        initial_count = (
-            self.session.query(DocumentVersion)
-            .filter(DocumentVersion.document_id == document_id)
-            .filter(DocumentVersion.lang == lang)
-            .count()
-        )
+        initial_count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
 
         request_body = {"document_id": document_id, "lang": lang, "version_id": version_id}
 
@@ -99,15 +66,10 @@ class TestDocumentRevertRest(BaseTestRest):
                 assert locale["summary"] == "The highest point in Europe"
 
         # check a new version has been created
-        count = (
-            self.session.query(DocumentVersion)
-            .filter(DocumentVersion.document_id == document_id)
-            .filter(DocumentVersion.lang == lang)
-            .count()
-        )
+        count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
         assert count == initial_count + 1
 
-    @pytest.mark.skip(reason="PITA, rewritted")
+    @pytest.mark.xfail(reason="TODO")
     def test_revert_route(self):
         route_id = self.route1.document_id
         route_lang = "fr"
@@ -115,7 +77,6 @@ class TestDocumentRevertRest(BaseTestRest):
         (route_version_id,) = (
             self.session.query(DocumentVersion.id)
             .filter(DocumentVersion.document_id == route_id)
-            .filter(DocumentVersion.lang == route_lang)
             .order_by(DocumentVersion.id.asc())
             .first()
         )
@@ -142,7 +103,6 @@ class TestDocumentRevertRest(BaseTestRest):
         (waypoint_version_id,) = (
             self.session.query(DocumentVersion.id)
             .filter(DocumentVersion.document_id == waypoint_id)
-            .filter(DocumentVersion.lang == waypoint_lang)
             .order_by(DocumentVersion.id.asc())
             .first()
         )

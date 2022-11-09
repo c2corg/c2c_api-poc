@@ -32,6 +32,14 @@ class Waypoint(Document):
                 protected=protected,
             )
 
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        data = document["data"]
+        result = Document.convert_to_legacy_doc(document)
+        result["elevation"] = data["elevation"]
+
+        return result
+
 
 class WaypointLocale(DocumentLocale):
     def __init__(self, lang=None, title="", description="", summary="", json=None):

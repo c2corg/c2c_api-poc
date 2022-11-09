@@ -5,7 +5,11 @@ from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
-from c2corg_api.legacy.views.documents import protect as protect_view, unprotect as unprotect_view
+from c2corg_api.legacy.views.documents import (
+    protect as protect_view,
+    unprotect as unprotect_view,
+    revert as revert_view,
+)
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
@@ -23,6 +27,7 @@ from c2corg_api.legacy.views.users import update_preferred_language as update_pr
 from c2corg_api.legacy.views.users import validate_change_email as validate_change_email_view
 from c2corg_api.legacy.views.users import validate_new_password as validate_new_password_view
 from c2corg_api.legacy.views.users import validate_register_email as validate_register_email_view
+from c2corg_api.legacy.views.waypoints import WaypointsView, WaypointView, WaypointVersionView
 from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportVersionView
 
 
@@ -31,7 +36,7 @@ def add_legacy_modules(app, api):
     # define v6 interface
     api.add_views(app, health_view, cooker_view, search_view, url_prefix="")
 
-    api.add_views(app, protect_view, unprotect_view, url_prefix="")
+    api.add_views(app, protect_view, unprotect_view, revert_view, url_prefix="")
 
     api.add_views(
         app,
@@ -65,5 +70,7 @@ def add_legacy_modules(app, api):
     api.add_views(app, MapsView(), MapView(), MapVersionView(), url_prefix="")
     api.add_views(app, OutingsView(), OutingView(), OutingVersionView(), url_prefix="")
     api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")
+    api.add_views(app, WaypointsView(), WaypointView(), WaypointVersionView(), url_prefix="")
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
+
     api.add_views(app, SitemapsView(), url_prefix="")

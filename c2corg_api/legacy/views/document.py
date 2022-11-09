@@ -13,3 +13,20 @@ class DocumentRest:
             pass
 
         last_version._data = json.dumps(data)
+
+    @staticmethod
+    def update_version(document, user_id, comment, update_types, changed_langs):
+        from flask_camp.models import Document, DocumentVersion, User
+        from flask_camp import current_api
+
+        document = document._document
+
+        version = DocumentVersion(
+            document=document,
+            user=User.get(id=user_id),
+            comment=comment,
+            data=document.last_version.data,
+        )
+
+        current_api.database.session.add(version)
+        document.last_version = version

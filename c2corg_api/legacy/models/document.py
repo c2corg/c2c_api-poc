@@ -140,6 +140,15 @@ class Document:
         for _, associated_document in document["cooked_data"]["associations"].items():
             result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
 
+        if "geometry" in data:
+            result["geometry"] = {"version": 0}
+
+            if "geom" in data["geometry"]:
+                result["geometry"]["geom"] = json.dumps(data["geometry"]["geom"])
+
+            if "geom_detail" in data["geometry"]:
+                result["geometry"]["geom_detail"] = json.dumps(data["geometry"]["geom_detail"])
+
         return result
 
     @property
