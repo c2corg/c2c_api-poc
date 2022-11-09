@@ -22,7 +22,6 @@
     "geometry": { "$ref": "geometries/route_geometry.json" },
     "glacier_gear": { "$ref": "attributes/glacier_gear_types.json" },
     "global_rating" : {"$ref":"attributes/global_ratings.json"},
-
     "hiking_rating": { "$ref": "attributes/hiking_ratings.json" },
     "height_diff_access": { "type": "integer" },
     "height_diff_difficulties": { "type": "integer" },
@@ -30,6 +29,8 @@
     "height_diff_up": { "type": "integer" },
     "hiking_mtb_exposition": { "$ref": "attributes/exposition_ratings.json" },
     "ice_rating": { "$ref" : "attributes/ice_ratings.json"},
+    "labande_global_rating" : { "$ref": "attributes/global_ratings.json"},
+    "labande_ski_rating" : { "$ref": "attributes/labande_ski_ratings.json"},
     "lift_access": { "type": "boolean" },
     "locales": { "$ref": "locales/route_locales.json" },
     "main_waypoint_id": { "type": "integer" },
@@ -44,13 +45,12 @@
       "type": "array",
       "items": { "$ref": "attributes/route_types.json" }
     },
-
-
     "risk_rating" : {"$ref":"attributes/risk_ratings.json"},
     "rock_free_rating" : {"$ref":"attributes/climbing_ratings.json"},
     "rock_required_rating" : {"$ref":"attributes/climbing_ratings.json"},
-    
     "rock_types" : {"type": "array", "items":{"$ref":"attributes/rock_types.json"}},
+    "ski_exposition" : { "$ref": "attributes/exposition_ratings.json"},
+    "ski_rating" : { "$ref": "attributes/ski_ratings.json"},
 
     "type": { "const": "route" }
   },

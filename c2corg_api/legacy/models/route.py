@@ -79,6 +79,8 @@ class Route(LegacyDocument):
             "aid_rating",
             "ice_rating",
             "mixed_rating",
+            "equipment_rating",
+            "rock_types",
         ]:
             if attribute in result["data"] and result["data"][attribute] is None:
                 del result["data"][attribute]
