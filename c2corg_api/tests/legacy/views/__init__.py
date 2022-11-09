@@ -48,15 +48,17 @@ class BaseTestRest(BaseTestClass):
         self._add_global_test_data()
 
     def _add_global_test_data(self):
+        geom = {"type": "Point", "coordinates": [0, 0]}
+
         self._add_user("moderator", "super pass", locale_langs=["en"], roles=["moderator"])
-        self._add_user("contributor", "super pass", locale_langs=["en", "fr"])
+        self._add_user("contributor", "super pass", locale_langs=["en", "fr"], geom=geom)
         self._add_user("contributor2", "super pass", locale_langs=["en"])
         self._add_user("contributor3", "poor pass", locale_langs=["en"])
         self._add_user("robot", "bombproof pass", locale_langs=["en"])
 
         self.api.database.session.commit()
 
-    def _add_user(self, name, password, locale_langs, roles=None):
+    def _add_user(self, name, password, locale_langs, roles=None, geom=None):
         user = User(name=name, data=get_default_data(name), roles=[] if roles is None else roles)
         self.api.database.session.add(user)
 
@@ -64,7 +66,7 @@ class BaseTestRest(BaseTestClass):
         user.set_email(f"{name}@camptocamp.org")
         self.api.database.session.flush()
 
-        UserProfile.create(user, locale_langs=locale_langs, session=self.session)
+        UserProfile.create(user, locale_langs=locale_langs, geom=geom, session=self.session)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 

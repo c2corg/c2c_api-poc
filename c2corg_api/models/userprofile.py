@@ -12,12 +12,12 @@ from c2corg_api.models._core import BaseModelHooks
 
 class UserProfile(BaseModelHooks):
     @staticmethod
-    def create(user, locale_langs, session=None):
+    def create(user, locale_langs, geom=None, session=None):
         # TODO on legacy removal, removes session parameter
         session = current_api.database.session if session is None else session
         assert user.id is not None, "Dev check..."
 
-        data = UserProfile.get_default_data(user, categories=[], locale_langs=locale_langs)
+        data = UserProfile.get_default_data(user, categories=[], locale_langs=locale_langs, geom=geom)
         user_page = Document.create(comment="Creation of user page", data=data, author=user)
 
         session.flush()
@@ -27,19 +27,23 @@ class UserProfile(BaseModelHooks):
         search_item.update(user_page.last_version, user=user)
 
     @staticmethod
-    def get_default_data(user, categories, locale_langs):
-        locales = {lang: {"description": None, "summary": None, "lang": lang} for lang in locale_langs}
+    def get_default_data(user, categories, locale_langs, geom=None):
+        locales = {lang: {"lang": lang} for lang in locale_langs}
 
-        return {
+        result = {
             "type": USERPROFILE_TYPE,
             "user_id": user.id,
             "locales": locales,
             "categories": categories,
             "areas": [],  # TODO: remove this
             "name": user.data["full_name"],
-            "geometry": {"geom": '{"type":"point", "coordinates":null}'},  # TODO : not json,
             "associations": [],
         }
+
+        if geom is not None:
+            result["geometry"] = {"geom": geom}
+
+        return result
 
     def after_get_document(self, response: JsonResponse):
         query = select(DocumentSearch.user_is_validated).where(DocumentSearch.id == response.data["document"]["id"])

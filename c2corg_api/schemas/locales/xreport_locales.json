@@ -4,12 +4,12 @@
     ".*": {
       "type": "object",
       "properties": {
-        "description": { "type": ["string", "null"] },
+        "description": { "type": "string" },
         "lang": { "$ref": "/attributes/default_langs.json" },
         "place": { "type": "string" },
         "summary": { "type": "string" },
         "title": { "type": "string" },
-        "topic_id": { "type": ["integer", "null"] }
+        "topic_id": { "type": "integer" }
       },
       "required": ["lang", "title"],
       "additionalProperties": false

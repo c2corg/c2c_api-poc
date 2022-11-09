@@ -163,7 +163,9 @@ class Document:
             "version": document["version_id"],
             "protected": document["protected"],
             "type": v7_types[data["type"]],
-            "locales": [locale | {"version": 0} for locale in data["locales"].values()],
+            "locales": [
+                locale | {"version": 0, "topic_id": locale.get("topic_id")} for locale in data["locales"].values()
+            ],
             "available_langs": list(data["locales"].keys()),
             "associations": {
                 "articles": [],
@@ -326,8 +328,8 @@ class DocumentLocale:
         if json is not None:
             self._json = json
         else:
-            self._json = {"lang": lang, "title": title, "description": description, "topic_id": None}
-            if document_topic is not None:
+            self._json = {"lang": lang, "title": title, "description": description}
+            if document_topic is not None and document_topic.topic_id is not None:
                 self._json["topic_id"] = document_topic.topic_id
             if summary is not None:
                 self._json["summary"] = summary

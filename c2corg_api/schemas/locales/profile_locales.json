@@ -4,9 +4,9 @@
     ".*": {
       "type": "object",
       "properties": {
-        "description": { "type": ["string", "null"] },
+        "description": { "type": "string" },
         "lang": { "$ref": "/attributes/default_langs.json" },
-        "summary": { "type": ["string", "null"] }
+        "summary": { "type": "string" }
       },
       "additionalProperties": false
     }

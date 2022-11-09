@@ -4,7 +4,7 @@
     ".*": {
       "type": "object",
       "properties": {
-        "description": { "type": ["string", "null"] },
+        "description": { "type": "string" },
         "external_resources": { "type": "string" },
         "gear": { "type": "string" },
         "lang": { "$ref": "/attributes/default_langs.json" },
@@ -13,7 +13,7 @@
         "summary": { "type": "string" },
         "title": { "type": "string" },
         "slope": { "type": "string" },
-        "topic_id": { "type": ["integer", "null"] }
+        "topic_id": { "type": "integer" }
       },
       "required": ["lang", "title"],
       "additionalProperties": false
