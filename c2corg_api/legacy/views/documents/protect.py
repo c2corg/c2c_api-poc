@@ -11,7 +11,7 @@ def post():
     data = request.get_json()
 
     if data["document_id"] <= 0:
-        raise BadRequest(f"user_id can't be negative")
+        raise BadRequest(f"document_id can't be negative")
 
     body = {"document": {"protected": True}, "comment": "v6 does not comment protections"}
     request._cached_json = (body, body)

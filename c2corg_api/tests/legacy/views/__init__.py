@@ -9,6 +9,7 @@ from sqlalchemy import select
 from c2corg_api.hooks import on_user_validation
 from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE
+from c2corg_api.legacy.models.association import Association as LegacyAssociation
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.area import Area as LegacyArea
@@ -147,6 +148,10 @@ class BaseTestRest(BaseTestClass):
             instance.propagate_in_documents()
         elif isinstance(instance, LegacyDocumentChange):
             instance.propagate_in_documents()
+        elif isinstance(instance, LegacyAssociation):
+            instance.propagate_in_documents()
+        elif instance is None:
+            pass
         else:
             raise NotImplementedError(f"Don't know how to add {instance}")
 
@@ -223,8 +228,8 @@ class BaseTestRest(BaseTestClass):
 
         raise NotImplementedError(f"Can't query {klass}")
 
-    def assertErrorsContain(self, body, error_name):
-        assert body["status"] != "ok"
+    def assertErrorsContain(self, body, error_name, comment=None):
+        assert body["status"] != "ok", comment
 
     def search_document(self, document_type, id=None, user_id=None, index=None, ignore=None):
 

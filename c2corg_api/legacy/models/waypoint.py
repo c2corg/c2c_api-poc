@@ -34,5 +34,5 @@ class Waypoint(Document):
 
 
 class WaypointLocale(DocumentLocale):
-    def __init__(self, lang=None, title="", description="", json=None):
-        super().__init__(lang=lang, title=title, description=description, json=json)
+    def __init__(self, lang=None, title="", description="", summary="", json=None):
+        super().__init__(lang=lang, title=title, summary=summary, description=description, json=json)

@@ -45,3 +45,6 @@ class Association:
             new_model.data["associations"].append(document_id)
 
         new_model.data = new_model.data  # propagagte json modification
+
+    def get_log(self, _):
+        return None

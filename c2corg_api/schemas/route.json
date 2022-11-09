@@ -9,6 +9,7 @@
     "height_diff_down": { "type": "integer" },
     "height_diff_up": { "type": "integer" },
     "locales": { "$ref": "locales/route_locales.json" },
+    "main_waypoint_id": { "type": "integer" },
     "quality": { "$ref": "attributes/quality_types.json" },
     "type": { "const": "route" }
   },

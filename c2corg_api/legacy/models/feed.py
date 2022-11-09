@@ -1,4 +1,4 @@
-def update_feed_document_create():
+def update_feed_document_create(document, contributor_id):
     ...
 
 

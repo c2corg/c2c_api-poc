@@ -271,13 +271,15 @@ class LocaleDictProxy:
 
 
 class DocumentLocale:
-    def __init__(self, lang=None, title=None, description="", document_topic=None, json=None):
+    def __init__(self, lang=None, title=None, summary=None, description="", document_topic=None, json=None):
         if json is not None:
             self._json = json
         else:
             self._json = {"lang": lang, "title": title, "description": description, "topic_id": None}
             if document_topic is not None:
                 self._json["topic_id"] = document_topic.topic_id
+            if summary is not None:
+                self._json["summary"] = summary
 
     def set_document_type(self, document_type):
         if document_type == USERPROFILE_TYPE:
@@ -304,6 +306,10 @@ class DocumentLocale:
     def title(self):
         return self._json.get("title", "")
 
+    @title.setter
+    def title(self, value):
+        self._json["title"] = value
+
     @property
     def place(self):
         return self._json.get("place", "")
@@ -317,5 +323,7 @@ class DocumentArchive:
     ...
 
 
-class UpdateType:
-    ...
+class UpdateType:  # it'san enum in v6
+    FIGURES = "figures"
+    GEOM = "geom"
+    LANG = "lang"
