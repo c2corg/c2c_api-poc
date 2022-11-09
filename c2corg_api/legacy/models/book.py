@@ -34,6 +34,10 @@ class Book(LegacyDocument):
         # other props
         result["data"] |= legacy_document
 
+        for attribute in ["editor", "url"]:
+            if attribute in result["data"] and result["data"][attribute] is None:
+                del result["data"][attribute]
+
         # clean
         result["data"].pop("geometry", None)
 

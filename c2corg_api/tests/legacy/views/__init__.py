@@ -328,7 +328,7 @@ class BaseDocumentTestRest(BaseTestRest):
 
         assert body.get("version") is not None
 
-        if body["type"] != MAP_TYPE:
+        if body["type"] != "m":  # maps
             assert body.get("associations") is not None
 
         locales = body.get("locales")

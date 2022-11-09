@@ -6,6 +6,7 @@
     "book_types": { "$ref": "entities/book_type_array.json" },
     "editor": { "type": "string" },
     "isbn": { "type": "string" },
+    "langs": { "type": "array", "items": { "$ref": "/attributes/default_langs.json" } },
     "locales": { "$ref": "locales/book_locales.json" },
     "nb_pages": { "type": "integer" },
     "publication_date": { "type": "string" },

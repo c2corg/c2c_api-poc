@@ -8,14 +8,16 @@ from c2corg_api.legacy.models.document_history import HistoryMetaData
 from c2corg_api.schemas import schema_validator
 
 from c2corg_api.models import (
-    USERPROFILE_TYPE,
     ARTICLE_TYPE,
-    BOOK_TYPE,
-    ROUTE_TYPE,
-    WAYPOINT_TYPE,
     AREA_TYPE,
+    BOOK_TYPE,
     IMAGE_TYPE,
+    MAP_TYPE,
+    OUTING_TYPE,
+    ROUTE_TYPE,
+    USERPROFILE_TYPE,
     XREPORT_TYPE,
+    WAYPOINT_TYPE,
 )
 
 
@@ -62,15 +64,32 @@ class Document:
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):
 
-        result = {
-            "protected": legacy_document.pop("protected", False),
-            "data": {
-                "type": legacy_document.pop("type", document_type),
-            },
+        legacy_document.pop("available_langs", None)
+
+        legacy_types = {
+            "a": AREA_TYPE,
+            "c": ARTICLE_TYPE,
+            "b": BOOK_TYPE,
+            "i": IMAGE_TYPE,
+            "m": MAP_TYPE,
+            "o": OUTING_TYPE,
+            "r": ROUTE_TYPE,
+            "u": USERPROFILE_TYPE,
+            "w": WAYPOINT_TYPE,
+            "x": XREPORT_TYPE,
         }
 
-        if result["data"]["type"] == "":
+        result = {
+            "protected": legacy_document.pop("protected", False),
+            "data": {},
+        }
+
+        legacy_type = legacy_document.pop("type", "")
+
+        if legacy_type == "":
             result["data"]["type"] = document_type
+        else:
+            result["data"]["type"] = legacy_types[legacy_type]
 
         if "version" in legacy_document:  # new doc do not have any version id
             result["version_id"] = legacy_document.pop("version")
@@ -84,6 +103,13 @@ class Document:
         locales = legacy_document.pop("locales", [])
         for locale in locales:
             locale.pop("version", None)
+
+            if "topic_id" in locale and locale["topic_id"] is None:
+                del locale["topic_id"]
+
+            for prop in locale:
+                if locale[prop] is None:
+                    locale[prop] = ""
 
         result["data"]["locales"] = previous_data.get("locales", {}) | {locale["lang"]: locale for locale in locales}
 
@@ -116,11 +142,24 @@ class Document:
         """Convert document (as dict) of the new model to the legacy v6 dict"""
         data = document["data"]
 
+        v7_types = {
+            AREA_TYPE: "a",
+            ARTICLE_TYPE: "c",
+            BOOK_TYPE: "b",
+            IMAGE_TYPE: "i",
+            MAP_TYPE: "m",
+            OUTING_TYPE: "o",
+            ROUTE_TYPE: "r",
+            USERPROFILE_TYPE: "u",
+            WAYPOINT_TYPE: "w",
+            XREPORT_TYPE: "x",
+        }
+
         result = {
             "document_id": document["id"],
             "version": document["version_id"],
             "protected": document["protected"],
-            "type": data["type"],
+            "type": v7_types[data["type"]],
             "locales": [locale | {"version": 0} for locale in data["locales"].values()],
             "available_langs": list(data["locales"].keys()),
             "associations": {
