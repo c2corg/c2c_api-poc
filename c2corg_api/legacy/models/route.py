@@ -63,11 +63,22 @@ class Route(LegacyDocument):
         result["data"] |= legacy_document
 
         for attribute in [
+            "configuration",
+            "elevation_min",
+            "exposition_rock_rating",
             "route_length",
             "height_diff_difficulties",
             "height_diff_access",
             "lift_access",
             "hiking_mtb_exposition",
+            "difficulties_height",
+            "height_diff_down",
+            "height_diff_up",
+            "risk_rating",
+            "route_types",
+            "aid_rating",
+            "ice_rating",
+            "mixed_rating",
         ]:
             if attribute in result["data"] and result["data"][attribute] is None:
                 del result["data"][attribute]

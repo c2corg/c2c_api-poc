@@ -1,15 +1,27 @@
 {
   "properties": {
+    
     "activities": { "$ref": "entities/activity_array.json" },
+    "aid_rating" : {"$ref":"attributes/aid_ratings.json"},
     "associations": { "$ref": "entities/association_array.json" },
+    "climbing_outdoor_type" : {"$ref":"attributes/climbing_outdoor_types.json"},
+    "configuration": {
+      "type": "array",
+      "items": { "$ref": "attributes/route_configuration_types.json" }
+    },
     "elevation_max": { "type": "integer" },
     "elevation_min": { "type": "integer" },
+    "engagement_rating" : {"$ref":"attributes/engagement_ratings.json"},
+    "equipment_rating" : {"$ref":"attributes/equipment_ratings.json"},
+    "exposition_rock_rating" : {"$ref":"attributes/exposition_rock_ratings.json"},
+    "difficulties_height" : {"type":"integer"},
     "durations": {
       "type": "array",
       "items": { "$ref": "attributes/route_duration_types.json" }
     },
     "geometry": { "$ref": "geometries/route_geometry.json" },
     "glacier_gear": { "$ref": "attributes/glacier_gear_types.json" },
+    "global_rating" : {"$ref":"attributes/global_ratings.json"},
 
     "hiking_rating": { "$ref": "attributes/hiking_ratings.json" },
     "height_diff_access": { "type": "integer" },
@@ -17,9 +29,11 @@
     "height_diff_down": { "type": "integer" },
     "height_diff_up": { "type": "integer" },
     "hiking_mtb_exposition": { "$ref": "attributes/exposition_ratings.json" },
+    "ice_rating": { "$ref" : "attributes/ice_ratings.json"},
     "lift_access": { "type": "boolean" },
     "locales": { "$ref": "locales/route_locales.json" },
     "main_waypoint_id": { "type": "integer" },
+    "mixed_rating": { "$ref" : "attributes/mixed_ratings.json"},
     "orientations": {
       "type": "array",
       "items": { "$ref": "attributes/orientation_types.json" }
@@ -30,6 +44,14 @@
       "type": "array",
       "items": { "$ref": "attributes/route_types.json" }
     },
+
+
+    "risk_rating" : {"$ref":"attributes/risk_ratings.json"},
+    "rock_free_rating" : {"$ref":"attributes/climbing_ratings.json"},
+    "rock_required_rating" : {"$ref":"attributes/climbing_ratings.json"},
+    
+    "rock_types" : {"type": "array", "items":{"$ref":"attributes/rock_types.json"}},
+
     "type": { "const": "route" }
   },
   "required": [
