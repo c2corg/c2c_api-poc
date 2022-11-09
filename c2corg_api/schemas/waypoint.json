@@ -1,1 +1,13 @@
-{}
+{
+  "properties": {
+    "associations": { "$ref": "entities/association_array.json" },
+    "elevation": { "type": ["integer", "null"] },
+    "geometry": { "$ref": "geometries/basic_geometry.json" },
+    "locales": { "$ref": "locales/waypoint_locales.json"},
+    "rock_types": { "$ref": "entities/rock_type_array.json"},
+    "type": { "const": "waypoint" },
+    "waypoint_type": { "$ref": "attributes/waypoint_types.json"}
+  },
+  "required": ["type", "waypoint_type", "geometry", "locales"],
+  "additionalProperties": false
+}

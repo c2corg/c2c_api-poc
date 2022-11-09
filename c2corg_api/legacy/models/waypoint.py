@@ -17,20 +17,25 @@ class Waypoint(Document):
 
         if version is None:
             if geometry is None:
-                geometry = DocumentGeometry(json={"geom": {}})
+                geometry = DocumentGeometry(json={"geom": {"type": "Point", "coordinates": [0, 0]}})
 
-            self.create_new_model(
-                {
-                    "type": WAYPOINT_TYPE,
-                    "waypoint_type": waypoint_type,
-                    "elevation": elevation,
-                    "locales": {} if locales is None else {locale.lang: locale._json for locale in locales},
-                    "rock_types": rock_types,
-                    "geometry": geometry._json,
-                    "associations": [],
-                },
-                protected=protected,
-            )
+            data = {
+                "type": WAYPOINT_TYPE,
+                "waypoint_type": waypoint_type,
+                "elevation": elevation,
+                "geometry": geometry._json,
+                "associations": [],
+            }
+
+            if locales is None:
+                data["locales"] = {"fr": {"lang": "fr", "title": "default title"}}
+            else:
+                data["locales"] = {locale.lang: locale._json for locale in locales}
+
+            if rock_types is not None:
+                data["rock_types"] = rock_types
+
+            self.create_new_model(data, protected=protected)
 
     @staticmethod
     def convert_to_legacy_doc(document):
