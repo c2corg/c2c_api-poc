@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pytest
 from c2corg_api.legacy.models.association import Association
 from c2corg_api.legacy.models.document import DocumentGeometry, UpdateType
@@ -7,6 +8,7 @@ from c2corg_api.legacy.models.route import Route, RouteLocale
 from c2corg_api.legacy.models.waypoint import Waypoint, WaypointLocale
 from c2corg_api.legacy.views.document import DocumentRest
 from c2corg_api.tests.legacy.views import BaseTestRest
+from c2corg_api.models import ROUTE_TYPE, WAYPOINT_TYPE
 from json import loads
 
 
@@ -18,41 +20,23 @@ class TestDocumentRevertRest(BaseTestRest):
         self.session.commit()
 
     def test_revert_latest_version_id(self):
-        document_id = self.waypoint2.document_id
-        lang = "en"
-        # Get version id of the latest version of the document:
-        (version_id,) = (
-            self.session.query(DocumentVersion.id)
-            .filter(DocumentVersion.document_id == document_id)
-            .order_by(DocumentVersion.id.desc())
-            .first()
-        )
-        request_body = {"document_id": document_id, "lang": lang, "version_id": version_id}
-
         headers = self.add_authorization_header(username="moderator")
+
+        document_id = self.waypoint2["id"]
+        version_id = self.waypoint2_v2["version_id"]
+        request_body = {"document_id": document_id, "lang": "en", "version_id": version_id}
+
         response = self.app_post_json(self._prefix, request_body, status=400, headers=headers)
-        self.assertErrorsContain(
-            response.json,
-            "Bad Request",
-            "Version {}/{}/{} is already the latest one".format(document_id, lang, version_id),
-        )
+        self.assertErrorsContain(response.json, "Bad Request")
 
     def test_revert_waypoint(self):
-        document_id = self.waypoint2.document_id
-        lang = "en"
-        # Get version id of the first version of the document:
-        (version_id,) = (
-            self.session.query(DocumentVersion.id)
-            .filter(DocumentVersion.document_id == document_id)
-            .order_by(DocumentVersion.id.asc())
-            .first()
-        )
-
-        initial_count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
-
-        request_body = {"document_id": document_id, "lang": lang, "version_id": version_id}
-
         headers = self.add_authorization_header(username="moderator")
+
+        document_id = self.waypoint2["id"]
+        lang = "en"
+        version_id = self.waypoint2["version_id"]
+        initial_count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
+        request_body = {"document_id": document_id, "lang": lang, "version_id": version_id}
         self.app_post_json(self._prefix, request_body, status=200, headers=headers)
 
         response = self.get("/waypoints/" + str(document_id), status=200)
@@ -63,27 +47,19 @@ class TestDocumentRevertRest(BaseTestRest):
         assert geom["coordinates"][1] == 5723605
         for locale in body["locales"]:
             if locale["lang"] == lang:
-                assert locale["summary"] == "The highest point in Europe"
+                assert locale["title"] == "Mont Blanc"
 
         # check a new version has been created
         count = self.session.query(DocumentVersion).filter(DocumentVersion.document_id == document_id).count()
         assert count == initial_count + 1
 
-    @pytest.mark.xfail(reason="TODO")
     def test_revert_route(self):
-        route_id = self.route1.document_id
-        route_lang = "fr"
-        # Get version id of the first version of the document:
-        (route_version_id,) = (
-            self.session.query(DocumentVersion.id)
-            .filter(DocumentVersion.document_id == route_id)
-            .order_by(DocumentVersion.id.asc())
-            .first()
-        )
-
-        request_body = {"document_id": route_id, "lang": route_lang, "version_id": route_version_id}
-
         headers = self.add_authorization_header(username="moderator")
+
+        route_id = self.route1["id"]
+        route_version_id = self.route1["version_id"]
+        route_lang = "fr"
+        request_body = {"document_id": route_id, "lang": route_lang, "version_id": route_version_id}
         self.app_post_json(self._prefix, request_body, status=200, headers=headers)
 
         response = self.get("/routes/" + str(route_id), status=200)
@@ -97,19 +73,10 @@ class TestDocumentRevertRest(BaseTestRest):
 
         # Now revert the main waypoint as well and check the title prefix
         # of the route has been updated:
-        waypoint_id = self.waypoint2.document_id
+        waypoint_id = self.waypoint2["id"]
         waypoint_lang = "en"
-        # Get version id of the first version of the document:
-        (waypoint_version_id,) = (
-            self.session.query(DocumentVersion.id)
-            .filter(DocumentVersion.document_id == waypoint_id)
-            .order_by(DocumentVersion.id.asc())
-            .first()
-        )
-
+        waypoint_version_id = self.waypoint2["version_id"]
         request_body = {"document_id": waypoint_id, "lang": waypoint_lang, "version_id": waypoint_version_id}
-
-        headers = self.add_authorization_header(username="moderator")
         self.app_post_json(self._prefix, request_body, status=200, headers=headers)
 
         response = self.get("/routes/" + str(route_id), status=200)
@@ -119,98 +86,79 @@ class TestDocumentRevertRest(BaseTestRest):
                 assert locale["title"] == "Mont Blanc du ciel"
                 assert locale["title_prefix"] == "Mont Blanc"
 
+    def create_document(self, data, **kwargs):
+        return self.post(
+            "/v7/documents",
+            json={"comment": "creation", "document": {"data": data}} | kwargs.pop("json", {}),
+            **kwargs,
+        )
+
+    def modify_document(self, document, data, **kwargs):
+        document_id = self._get_document_id(document)
+        new_version = deepcopy(document)
+        new_version["data"] = data
+
+        return self.post(
+            f"/v7/document/{document_id}",
+            json={"comment": "modify", "document": new_version} | kwargs.pop("json", {}),
+            **kwargs,
+        )
+
+    def _add_waypoint(self, locales):
+        return self.create_document(
+            data={
+                "type": WAYPOINT_TYPE,
+                "waypoint_type": "summit",
+                "elevation": 4810,
+                "locales": locales,
+                "geometry": {"geom": {"type": "POINT", "coordinates": [635957, 5723605]}},
+                "associations": [],
+            }
+        )
+
+    def _add_route(self, locales, main_waypoint_id, geometry):
+        return self.create_document(
+            data={
+                "type": ROUTE_TYPE,
+                "quality": "draft",
+                "activities": ["skitouring"],
+                "elevation_max": 1500,
+                "elevation_min": 700,
+                "main_waypoint_id": main_waypoint_id,
+                "locales": locales,
+                "geometry": geometry,
+                "associations": [],
+            }
+        )
+
     def _add_test_data(self):
-        contributor_id = self.global_userids["contributor"]
 
-        self.waypoint1 = Waypoint(
-            waypoint_type="summit",
-            elevation=2000,
-            geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
-            locales=[
-                WaypointLocale(lang="fr", title="Dent de Crolles", description="...", summary="La Dent de Crolles")
-            ],
-        )
-        self.session_add(self.waypoint1)
-        self.waypoint2 = Waypoint(
-            waypoint_type="summit",
-            elevation=4810,
-            geometry=DocumentGeometry(geom="SRID=3857;POINT(635957 5723605)"),
-            locales=[
-                WaypointLocale(lang="en", title="Mont Blanc", description="...", summary="The highest point in Europe")
-            ],
-        )
-        self.session_add(self.waypoint2)
-        self.waypoint3 = Waypoint(
-            waypoint_type="summit",
-            elevation=2432,
-            geometry=DocumentGeometry(geom="SRID=3857;POINT(635958 5723606)"),
-            locales=[WaypointLocale(lang="en", title="Mont de Grange", description="...", summary="Some nice peak")],
-        )
-        self.session_add(self.waypoint3)
-        self.session.flush()
+        self.optimized_login("contributor")
+        self.waypoint1 = self._add_waypoint(locales={"fr": {"lang": "fr", "title": "Dent de Crolles"}}).json["document"]
+        self.waypoint2 = self._add_waypoint(locales={"en": {"lang": "en", "title": "Mont Blanc"}}).json["document"]
+        self.waypoint3 = self._add_waypoint(locales={"en": {"lang": "en", "title": "Mont de Grange"}}).json["document"]
 
-        self.initial_route1_geometry = DocumentGeometry(
-            geom_detail="SRID=3857;LINESTRING(635956 5723604, 635966 5723644)", geom="SRID=3857;POINT(635961 5723624)"
-        )
+        data = deepcopy(self.waypoint2["data"])
+        data["elevation"] = 8848
+        data["locales"]["en"] = {"lang": "en", "title": "Mount Everest"}
+        data["geometry"]["geom"]["coordinates"] = [0, 0]
+        self.waypoint2_v2 = self.modify_document(self.waypoint2, data).json["document"]
 
-        self.route1 = Route(
-            activities=["skitouring"],
-            elevation_max=1500,
-            elevation_min=700,
-            main_waypoint_id=self.waypoint2.document_id,
+        self.initial_route1_geometry = {
+            "geom": {"type": "Point", "coordinates": [635961, 5723624]},
+            "geom_detail": {"type": "LineString", "coordinates": [[635956, 5723604], [635966, 5723644]]},
+        }
+
+        self.route1 = self._add_route(
+            main_waypoint_id=self.waypoint2["id"],
             geometry=self.initial_route1_geometry,
-            locales=[RouteLocale(lang="fr", title="Mont Blanc du ciel", description="...", summary="Ski")],
-        )
-        self.session_add(self.route1)
-        self.session.flush()
+            locales={"fr": {"lang": "fr", "title": "Mont Blanc du ciel"}},
+        ).json["document"]
 
-        DocumentRest.create_new_version(self.waypoint1, contributor_id)
-        DocumentRest.create_new_version(self.waypoint2, contributor_id)
-        DocumentRest.create_new_version(self.route1, contributor_id)
-        update_feed_document_create(self.waypoint1, contributor_id)
-        update_feed_document_create(self.waypoint2, contributor_id)
-        update_feed_document_create(self.route1, contributor_id)
-        self.session.flush()
-
-        association = Association.create(parent_document=self.waypoint1, child_document=self.route1)
-        self.session_add(association)
-        self.session_add(association.get_log(contributor_id))
-        association = Association.create(parent_document=self.waypoint2, child_document=self.route1)
-        self.session_add(association)
-        self.session_add(association.get_log(contributor_id))
-        self.session.flush()
-
-        self.waypoint2.elevation = 8848
-        for locale in self.waypoint2.locales:
-            if locale.lang == "en":
-                locale.title = "Mount Everest"
-                locale.summary = "The highest point in the world"
-        self.waypoint2.geometry.geom = "SRID=3857;POINT(0 0)"
-
-        self.route1.activities = ["skitouring", "hiking"]
-        self.route1.elevation_max = 4500
-        self.route1.main_waypoint_id = self.waypoint3.document_id
-        for locale in self.route1.locales:
-            if locale.lang == "fr":
-                locale.title = "Some new route name"
-        self.route1.geometry.geom = "SRID=3857;POINT(0 0)"
-        self.session.flush()
-
-        DocumentRest.update_version(
-            self.waypoint2,
-            contributor_id,
-            "new version",
-            [UpdateType.FIGURES, UpdateType.GEOM, UpdateType.LANG],
-            ["en"],
-        )
-        DocumentRest.update_version(
-            self.route1, contributor_id, "new version", [UpdateType.FIGURES, UpdateType.GEOM, UpdateType.LANG], ["fr"]
-        )
-        self.session.flush()
-
-        association = Association.create(parent_document=self.waypoint3, child_document=self.route1)
-        self.session_add(association)
-        self.session_add(association.get_log(contributor_id))
-        self.session.flush()
-
-        # TODO what if former main waypoint is deassociated?
+        data = deepcopy(self.route1["data"])
+        data["activities"] = ["skitouring", "hiking"]
+        data["elevation_max"] = 4500
+        data["main_waypoint_id"] = self.waypoint3["id"]
+        data["locales"]["fr"] = {"lang": "fr", "title": "Some new route name"}
+        data["geometry"]["geom"]["coordinates"] = [0, 0]
+        self.route1_v2 = self.modify_document(self.route1, data).json["document"]

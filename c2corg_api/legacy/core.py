@@ -13,6 +13,7 @@ from c2corg_api.legacy.views.documents import (
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
+from c2corg_api.legacy.views.routes import RoutesView, RouteView, RouteVersionView
 from c2corg_api.legacy.views.users import account as account_view
 from c2corg_api.legacy.views.users import block as block_view
 from c2corg_api.legacy.views.users import unblock as unblock_view
@@ -70,6 +71,7 @@ def add_legacy_modules(app, api):
     api.add_views(app, MapsView(), MapView(), MapVersionView(), url_prefix="")
     api.add_views(app, OutingsView(), OutingView(), OutingVersionView(), url_prefix="")
     api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")
+    api.add_views(app, RoutesView(), RouteView(), RouteVersionView(), url_prefix="")
     api.add_views(app, WaypointsView(), WaypointView(), WaypointVersionView(), url_prefix="")
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
 

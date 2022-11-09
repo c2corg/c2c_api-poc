@@ -6,7 +6,6 @@ class RouteLocale(DocumentLocale):
     def __init__(self, lang=None, title="", summary=None, description="", gear="", title_prefix="", json=None):
         super().__init__(lang=lang, title=title, summary=summary, description=description, json=json)
         self._json["gear"] = gear
-        self._json["title_prefix"] = title_prefix
 
 
 class Route(LegacyDocument):
@@ -56,3 +55,24 @@ class Route(LegacyDocument):
                 data["durations"] = durations
 
             self.create_new_model(data)
+
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        data = document["data"]
+        cooked_data = document["cooked_data"]
+
+        for lang, locale in data["locales"].items():
+            locale["title_prefix"] = cooked_data["locales"][lang].get("title_prefix")
+
+        result = LegacyDocument.convert_to_legacy_doc(document)
+        result |= {
+            "activities": data["activities"],
+            "main_waypoint_id": data.get("main_waypoint_id"),
+            "elevation_max": data.get("elevation_max"),
+            "elevation_min": data.get("elevation_min"),
+            "height_diff_up": data.get("height_diff_up"),
+            "height_diff_down": data.get("height_diff_down"),
+            "durations": data.get("durations"),
+        }
+
+        return result

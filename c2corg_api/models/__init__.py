@@ -1,5 +1,6 @@
 from .article import Article
 from .book import Book
+from .route import Route
 from .topo_map import TopoMap
 from .userprofile import UserProfile
 from .waypoint import Waypoint
@@ -22,7 +23,22 @@ models = {
     ARTICLE_TYPE: Article(),
     BOOK_TYPE: Book(),
     MAP_TYPE: TopoMap(),
+    ROUTE_TYPE: Route(),
     USERPROFILE_TYPE: UserProfile(),
     WAYPOINT_TYPE: Waypoint(),
     XREPORT_TYPE: Xreport(),
 }
+
+
+def get_preferred_locale(preferred_lang, locales):
+
+    if preferred_lang in locales:
+        return locales[preferred_lang]
+
+    langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
+
+    for lang in langs_priority:
+        if lang in locales:
+            return locales[lang]
+
+    return None

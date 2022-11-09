@@ -8,7 +8,6 @@
         "lang": { "$ref": "/attributes/default_langs.json" },
         "summary": { "type": "string" },
         "title": { "type": "string" },
-        "title_prefix":  { "type": "string", "$comment": "TODO: remove this" },
         "topic_id": { "type": ["integer", "null"] }
       },
       "required": ["lang", "title"],

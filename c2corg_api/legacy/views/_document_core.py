@@ -7,7 +7,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest, UnsupportedMediaType, NotFound
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
-from c2corg_api.models import USERPROFILE_TYPE, MAP_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, MAP_TYPE, get_preferred_locale
 
 
 class LegacyView:
@@ -15,16 +15,8 @@ class LegacyView:
 
     @staticmethod
     def _get_preferred_locale(preferred_lang, locales):
-        if preferred_lang in locales:
-            return [locales[preferred_lang]]
-
-        langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
-
-        for lang in langs_priority:
-            if lang in locales:
-                return [locales[lang]]
-
-        return []
+        result = get_preferred_locale(preferred_lang, locales)
+        return [] if result is None else [result]
 
     @classmethod
     def _get_legacy_doc(cls, document, collection_view=False, preferred_lang=None, lang=None, cook_lang=None):
