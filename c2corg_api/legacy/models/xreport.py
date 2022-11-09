@@ -39,11 +39,14 @@ class Xreport(LegacyDocument):
                 "date": str(date) if date is not None else None,
                 "quality": "draft",
                 "event_activity": event_activity,
-                "event_type": event_type,
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": [],
                 "author": {"user_id": 666},
+                "disable_comments": False,
             }
+
+            if event_type is not None:
+                data["event_type"] = event_type
 
             if nb_participants is not None:
                 data["nb_participants"] = nb_participants
@@ -64,12 +67,30 @@ class Xreport(LegacyDocument):
             "quality": legacy_document.pop("quality", "draft"),
             "author": legacy_document.pop("author", previous_data.get("author", "MISSING_AUTHOR")),
             "anonymous": legacy_document.pop("anonymous", previous_data.get("anonymous", False)),
+            "disable_comments": legacy_document.pop("disable_comments", previous_data.get("disable_comments", False)),
         }
+
+        if result["data"]["disable_comments"] is None:
+            result["data"]["disable_comments"] = False
+
+        if result["data"]["anonymous"] is None:
+            result["data"]["anonymous"] = False
 
         if "geometry" in legacy_document:
             result["data"]["geometry"] = {"geom": json.loads(legacy_document["geometry"]["geom"])}
 
-        optionnal_properties = ["date", "supervision", "rescue"]
+        optionnal_properties = [
+            "date",
+            "supervision",
+            "rescue",
+            "avalanche_slope",
+            "avalanche_level",
+            "elevation",
+            "severity",
+            "nb_impacted",
+            "nb_participants",
+            "event_type",
+        ]
         for prop in optionnal_properties:
             if prop in legacy_document and legacy_document[prop] is None:
                 legacy_document.pop(prop)
@@ -93,10 +114,11 @@ class Xreport(LegacyDocument):
         result |= {
             "author": data["author"],
             "event_activity": data["event_activity"],
-            "event_type": data["event_type"],
+            "event_type": data.get("event_type"),
             "nb_participants": data.get("nb_participants"),
             "nb_impacted": data.get("nb_impacted"),
             "rescue": data.get("rescue"),
+            "disable_comments": data["disable_comments"],
         }
 
         if "geometry" in data:

@@ -32,8 +32,8 @@
     "anonymous",
     "author",
     "associations",
+    "disable_comments",
     "event_activity",
-    "event_type",
     "locales",
     "quality",
     "type"

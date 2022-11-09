@@ -138,6 +138,9 @@ class Document:
             if "geom_detail" in geometry and geometry["geom_detail"] is not None:
                 result["data"]["geometry"]["geom_detail"] = json.loads(geometry["geom_detail"])
 
+            if result["data"]["geometry"] == {}:
+                del result["data"]["geometry"]
+
         return result
 
     @staticmethod
