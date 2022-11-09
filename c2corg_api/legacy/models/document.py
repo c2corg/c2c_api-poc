@@ -107,6 +107,9 @@ class Document:
             if "topic_id" in locale and locale["topic_id"] is None:
                 del locale["topic_id"]
 
+            if "title_prefix" in locale:
+                del locale["title_prefix"]
+
             for prop in locale:
                 if locale[prop] is None:
                     locale[prop] = ""

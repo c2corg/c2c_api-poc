@@ -52,9 +52,33 @@ class Route(LegacyDocument):
             if height_diff_down is not None:
                 data["height_diff_down"] = height_diff_down
             if durations is not None:
-                data["durations"] = durations
+                data["durations"] = durations if isinstance(durations, list) else [durations]
 
             self.create_new_model(data)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        result["data"] |= legacy_document
+
+        for attribute in [
+            "route_length",
+            "height_diff_difficulties",
+            "height_diff_access",
+            "lift_access",
+            "hiking_mtb_exposition",
+        ]:
+            if attribute in result["data"] and result["data"][attribute] is None:
+                del result["data"][attribute]
+
+        if "areas" in result["data"]:
+            del result["data"]["areas"]  # TODO
+
+        if "maps" in result["data"]:
+            del result["data"]["maps"]
+
+        return result
 
     @staticmethod
     def convert_to_legacy_doc(document):

@@ -4,13 +4,32 @@
     "associations": { "$ref": "entities/association_array.json" },
     "elevation_max": { "type": "integer" },
     "elevation_min": { "type": "integer" },
-    "durations": { "type": "string" },
+    "durations": {
+      "type": "array",
+      "items": { "$ref": "attributes/route_duration_types.json" }
+    },
     "geometry": { "$ref": "geometries/route_geometry.json" },
+    "glacier_gear": { "$ref": "attributes/glacier_gear_types.json" },
+
+    "hiking_rating": { "$ref": "attributes/hiking_ratings.json" },
+    "height_diff_access": { "type": "integer" },
+    "height_diff_difficulties": { "type": "integer" },
     "height_diff_down": { "type": "integer" },
     "height_diff_up": { "type": "integer" },
+    "hiking_mtb_exposition": { "$ref": "attributes/exposition_ratings.json" },
+    "lift_access": { "type": "boolean" },
     "locales": { "$ref": "locales/route_locales.json" },
     "main_waypoint_id": { "type": "integer" },
+    "orientations": {
+      "type": "array",
+      "items": { "$ref": "attributes/orientation_types.json" }
+    },
     "quality": { "$ref": "attributes/quality_types.json" },
+    "route_length": { "type": "integer" },
+    "route_types": {
+      "type": "array",
+      "items": { "$ref": "attributes/route_types.json" }
+    },
     "type": { "const": "route" }
   },
   "required": [
