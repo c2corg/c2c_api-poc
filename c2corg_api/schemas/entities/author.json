@@ -1,6 +1,9 @@
 {
   "type": "object",
-  "properties": { "user_id": { "type": "integer" } },
+  "properties": {
+    "user_id": { "type": "integer" },
+    "name": { "type": "string" }
+  },
   "required": ["user_id"],
   "additionalProperties": false
 }

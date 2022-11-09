@@ -20,3 +20,18 @@ class Image(LegacyDocument):
                     "image_type": image_type,
                 }
             )
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        result["data"] |= legacy_document
+
+        for attribute in ["elevation", "author"]:
+            if attribute in result["data"] and result["data"][attribute] is None:
+                del result["data"][attribute]
+
+        if "areas" in result["data"]:
+            del result["data"]["areas"]  # TODO
+
+        return result

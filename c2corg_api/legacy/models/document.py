@@ -130,9 +130,9 @@ class Document:
         geometry = legacy_document.pop("geometry", None)
         if geometry is not None:
             result["data"]["geometry"] = {}
-            if "geom" in geometry:
+            if "geom" in geometry and geometry["geom"] is not None:
                 result["data"]["geometry"]["geom"] = json.loads(geometry["geom"])
-            if "geom_detail" in geometry:
+            if "geom_detail" in geometry and geometry["geom_detail"] is not None:
                 result["data"]["geometry"]["geom_detail"] = json.loads(geometry["geom_detail"])
 
         return result

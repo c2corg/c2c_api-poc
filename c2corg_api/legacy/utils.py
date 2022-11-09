@@ -2,6 +2,7 @@ from c2corg_api.legacy.models.area import Area
 from c2corg_api.legacy.models.article import Article
 from c2corg_api.legacy.models.book import Book
 from c2corg_api.legacy.models.document import Document
+from c2corg_api.legacy.models.image import Image
 from c2corg_api.legacy.models.topo_map import TopoMap
 from c2corg_api.legacy.models.outing import Outing
 from c2corg_api.legacy.models.route import Route
@@ -13,6 +14,7 @@ from c2corg_api.models import (
     AREA_TYPE,
     ARTICLE_TYPE,
     BOOK_TYPE,
+    IMAGE_TYPE,
     MAP_TYPE,
     OUTING_TYPE,
     ROUTE_TYPE,
@@ -25,6 +27,7 @@ _legacy_models = {
     AREA_TYPE: Area,
     ARTICLE_TYPE: Article,
     BOOK_TYPE: Book,
+    IMAGE_TYPE: Image,
     MAP_TYPE: TopoMap,
     OUTING_TYPE: Outing,
     ROUTE_TYPE: Route,
