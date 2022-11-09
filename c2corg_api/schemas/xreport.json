@@ -7,7 +7,11 @@
     "author": { "$ref": "entities/author.json" },
     "author_status": { "$ref": "attributes/author_statuses.json" },
     "autonomy": { "$ref": "attributes/autonomies.json" },
+    "avalanche_level": { "$ref": "attributes/avalanche_levels.json" },
+    "avalanche_slope": { "$ref": "attributes/avalanche_slopes.json" },
     "date": { "oneOf": [{ "$ref": "entities/date.json" }, { "type": "null" }] },
+    "disable_comments": { "type": "boolean" },
+    "elevation": { "type": "integer" },
     "event_activity": { "$ref": "attributes/event_activities.json" },
     "event_type": { "$ref": "attributes/event_types.json" },
     "gender": { "$ref": "attributes/genders.json" },
@@ -19,6 +23,8 @@
     "quality": { "$ref": "attributes/quality_types.json" },
     "qualification": { "$ref": "attributes/qualification.json" },
     "rescue": { "type": "boolean" },
+    "severity": { "$ref": "attributes/severities.json" },
+
     "supervision": { "$ref": "attributes/supervision.json" },
     "type": { "const": "xreport" }
   },

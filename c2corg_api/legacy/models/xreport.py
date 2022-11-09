@@ -81,6 +81,7 @@ class Xreport(LegacyDocument):
         result["data"] |= legacy_document
 
         result["data"].pop("nb_outings", None)
+        result["data"].pop("areas", None)
 
         return result
 
