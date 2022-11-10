@@ -10,3 +10,6 @@ class BaseModelHooks:
 
     def on_new_version(self, old_version, new_version):
         ...
+
+    def cook(self, document: dict, get_document):
+        ...

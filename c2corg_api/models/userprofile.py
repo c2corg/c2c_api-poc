@@ -35,9 +35,8 @@ class UserProfile(BaseModelHooks):
             "user_id": user.id,
             "locales": locales,
             "categories": categories,
-            "areas": [],  # TODO: remove this
+            "associations": {"area": []},
             "name": user.data["full_name"],
-            "associations": [],
         }
 
         if geom is not None:

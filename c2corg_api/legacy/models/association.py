@@ -1,4 +1,5 @@
 from flask_camp.models import Document
+from c2corg_api.models import USERPROFILE_TYPE, IMAGE_TYPE, MAP_TYPE
 
 
 class AssociationLog:
@@ -35,14 +36,28 @@ class Association:
 
     @staticmethod
     def _add_association(document, associated_document):
-        document_id = associated_document.id
         new_model = document.last_version
+        document_type = new_model.data["type"]
+        associated_document_type = associated_document.last_version.data["type"]
+
+        if document_type == MAP_TYPE:
+            return
 
         if "associations" not in new_model.data:
-            new_model.data["associations"] = []
+            raise Exception()
 
-        if document_id not in new_model.data["associations"]:
-            new_model.data["associations"].append(document_id)
+        associations = new_model.data["associations"]
+
+        if isinstance(associations, dict):
+            if document_type == USERPROFILE_TYPE:
+                if associated_document_type == IMAGE_TYPE:
+                    associations[IMAGE_TYPE].append(associated_document.id)
+            else:
+                raise Exception(f"Please set association map for {document_type}")
+
+        if isinstance(associations, list):
+            if associated_document.id not in associations:
+                associations.append(associated_document.id)
 
         new_model.data = new_model.data  # propagagte json modification
 

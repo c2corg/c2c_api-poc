@@ -1,7 +1,6 @@
 {
   "properties": {
-    "areas": {},
-    "associations": { "$ref": "entities/association_array.json" },
+    "associations": { "$ref": "associations/profile_associations.json" },
     "categories": {
       "type": "array",
       "items": { "$ref": "attributes/user_categories.json" }
@@ -12,6 +11,11 @@
     "type": { "const": "profile" },
     "user_id": { "type": "integer" }
   },
-  "required": ["locales", "type", "areas", "name", "associations"],
+  "required": [
+    "associations",
+    "locales",
+    "name",
+    "type"
+  ],
   "additionalProperties": false
 }

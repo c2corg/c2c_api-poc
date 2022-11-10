@@ -1,0 +1,5 @@
+{
+  "properties": { "area": { "$ref": "/entities/id_array.json" } },
+  "required": ["area"],
+  "additionalProperties": false
+}

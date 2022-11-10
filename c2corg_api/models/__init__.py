@@ -1,3 +1,4 @@
+from ._core import BaseModelHooks
 from .article import Article
 from .book import Book
 from .route import Route
@@ -20,9 +21,12 @@ from .types import (
 )
 
 models = {
+    AREA_TYPE: BaseModelHooks(),
     ARTICLE_TYPE: Article(),
     BOOK_TYPE: Book(),
+    IMAGE_TYPE: BaseModelHooks(),
     MAP_TYPE: TopoMap(),
+    OUTING_TYPE: BaseModelHooks(),
     ROUTE_TYPE: Route(),
     USERPROFILE_TYPE: UserProfile(),
     WAYPOINT_TYPE: Waypoint(),

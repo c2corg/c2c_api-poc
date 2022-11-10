@@ -118,16 +118,29 @@ class Document:
 
         # convert associations
         legacy_associations = legacy_document.pop("associations", {})
-        associations = set()
-
         legacy_associations.pop("all_routes", None)
         legacy_associations.pop("recent_outings", None)
 
-        for array in legacy_associations.values():
-            for document in array:
-                associations.add(document["document_id"])
+        if document_type in (USERPROFILE_TYPE,):
+            associations = {}
 
-        result["data"]["associations"] = list(associations)
+            for v6_type, array in legacy_associations.items():
+                tye_associations = set()
+                for document in array:
+                    tye_associations.add(document["document_id"])
+
+                associations[v6_type] = list(tye_associations)
+
+            result["data"]["associations"] = associations
+
+        else:
+            associations = set()
+
+            for array in legacy_associations.values():
+                for document in array:
+                    associations.add(document["document_id"])
+
+            result["data"]["associations"] = list(associations)
 
         # convert geometry
         geometry = legacy_document.pop("geometry", None)
@@ -184,8 +197,17 @@ class Document:
         }
 
         # print(json.dumps(document, indent=4))
-        for _, associated_document in document["cooked_data"]["associations"].items():
-            result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
+        v7_associations = document["data"].get("associations")
+        if isinstance(v7_associations, dict):
+            for name, value in v7_associations.items():
+                if isinstance(value, list):
+                    for document_id in value:
+                        result["associations"][name + "s"].append({"document_id": document_id})
+
+        elif isinstance(v7_associations, list):  # TODO : must be removed
+            associations = document["cooked_data"].get("associations")
+            for _, associated_document in associations.items():
+                result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
 
         if "geometry" in data:
             result["geometry"] = {"version": 0}

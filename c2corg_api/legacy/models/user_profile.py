@@ -42,8 +42,10 @@ class UserProfile(LegacyDocument):
             locale.pop("title", None)
             locale.pop("topic_id", None)
 
+        associations = {"area": [a["document_id"] for a in legacy_document.pop("areas", [])]}
+
         result["data"] |= {
-            "areas": legacy_document.pop("areas", {}),
+            "associations": result["data"]["associations"] | associations,
             "name": legacy_document.pop("name", previous_data["name"]),
         }
 
@@ -64,7 +66,7 @@ class UserProfile(LegacyDocument):
         result |= {
             "name": data["name"],
             "forum_username": data["name"],
-            "areas": data["areas"],
+            "areas": [{"document_id": i for i in data["associations"]["area"]}],
         }
         for locale in result["locales"]:
             locale["topic_id"] = None
