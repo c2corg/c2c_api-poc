@@ -3,7 +3,9 @@ from c2corg_api.models import IMAGE_TYPE
 
 
 class Image(LegacyDocument):
-    def __init__(self, filename=None, activities=None, height=1500, image_type="collaborative", version=None):
+    def __init__(
+        self, filename=None, activities=None, height=1500, image_type="collaborative", locales=None, version=None
+    ):
         super().__init__(version=version)
 
         if version is None:
@@ -15,7 +17,7 @@ class Image(LegacyDocument):
                     "height": height,
                     "width": None,
                     "filename": filename,
-                    "locales": {},
+                    "locales": {} if locales is None else {l.lang: l._json for l in locales},
                     "associations": [],
                     "image_type": image_type,
                 }
