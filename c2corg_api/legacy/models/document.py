@@ -121,15 +121,16 @@ class Document:
         legacy_associations.pop("all_routes", None)
         legacy_associations.pop("recent_outings", None)
 
-        if document_type in (USERPROFILE_TYPE,):
+        if document_type in (USERPROFILE_TYPE, ARTICLE_TYPE, BOOK_TYPE):
             associations = {}
 
             for v6_type, array in legacy_associations.items():
                 tye_associations = set()
-                for document in array:
-                    tye_associations.add(document["document_id"])
+                if len(array) != 0:
+                    for document in array:
+                        tye_associations.add(document["document_id"])
 
-                associations[v6_type] = list(tye_associations)
+                    associations[v6_type[:-1]] = list(tye_associations)
 
             result["data"]["associations"] = associations
 

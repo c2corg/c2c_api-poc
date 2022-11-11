@@ -1,5 +1,16 @@
 from flask_camp.models import Document
-from c2corg_api.models import USERPROFILE_TYPE, IMAGE_TYPE, MAP_TYPE
+from c2corg_api.models import (
+    USERPROFILE_TYPE,
+    BOOK_TYPE,
+    IMAGE_TYPE,
+    MAP_TYPE,
+    ARTICLE_TYPE,
+    AREA_TYPE,
+    IMAGE_TYPE,
+    WAYPOINT_TYPE,
+    ROUTE_TYPE,
+    OUTING_TYPE,
+)
 
 
 class AssociationLog:
@@ -48,10 +59,24 @@ class Association:
 
         associations = new_model.data["associations"]
 
+        def add_association(key, document_id):
+            if key not in associations:
+                associations[key] = []
+
+            associations[key].append(document_id)
+
         if isinstance(associations, dict):
             if document_type == USERPROFILE_TYPE:
-                if associated_document_type == IMAGE_TYPE:
-                    associations[IMAGE_TYPE].append(associated_document.id)
+                if associated_document_type == AREA_TYPE:
+                    add_association("area", associated_document.id)
+
+            elif document_type == ARTICLE_TYPE:
+                if associated_document_type in (ARTICLE_TYPE, IMAGE_TYPE, WAYPOINT_TYPE, OUTING_TYPE, ROUTE_TYPE):
+                    add_association(associated_document_type, associated_document.id)
+
+            elif document_type == BOOK_TYPE:
+                if associated_document_type in (ARTICLE_TYPE, IMAGE_TYPE, WAYPOINT_TYPE, ROUTE_TYPE):
+                    add_association(associated_document_type, associated_document.id)
             else:
                 raise Exception(f"Please set association map for {document_type}")
 

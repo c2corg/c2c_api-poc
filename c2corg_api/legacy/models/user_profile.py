@@ -66,7 +66,7 @@ class UserProfile(LegacyDocument):
         result |= {
             "name": data["name"],
             "forum_username": data["name"],
-            "areas": [{"document_id": i for i in data["associations"]["area"]}],
+            "areas": [{"document_id": i for i in data["associations"].get("area", [])}],
         }
         for locale in result["locales"]:
             locale["topic_id"] = None

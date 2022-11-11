@@ -18,7 +18,7 @@ class Book(LegacyDocument):
                     "activities": activities,
                     "book_types": book_types,
                     "locales": {"fr": {"lang": "fr", "title": "..."}},
-                    "associations": [],
+                    "associations": {},
                 }
             )
 

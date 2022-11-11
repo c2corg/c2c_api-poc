@@ -23,9 +23,9 @@ def cooker(document, get_document):
             if isinstance(value, int):
                 associations[name] = get_document(value)
             else:
-                associations[name] = {}
+                cooked_associations[name] = {}
                 for document_id in value:
-                    associations[name][document_id] = get_document(document_id)
+                    cooked_associations[name][document_id] = get_document(document_id)
 
         document["cooked_data"]["associations"] = cooked_associations
 

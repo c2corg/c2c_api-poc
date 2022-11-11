@@ -35,7 +35,7 @@ class UserProfile(BaseModelHooks):
             "user_id": user.id,
             "locales": locales,
             "categories": categories,
-            "associations": {"area": []},
+            "associations": {},
             "name": user.data["full_name"],
         }
 

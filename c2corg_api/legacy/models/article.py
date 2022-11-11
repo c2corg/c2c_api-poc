@@ -19,7 +19,7 @@ class Article(LegacyDocument):
                     "activities": activities,
                     "article_type": article_type,
                     "locales": {"fr": {"lang": "fr", "title": "..."}},
-                    "associations": [],
+                    "associations": {},
                     "author": {"user_id": 666},
                 }
             )
