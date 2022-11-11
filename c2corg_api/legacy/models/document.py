@@ -121,7 +121,15 @@ class Document:
         legacy_associations.pop("all_routes", None)
         legacy_associations.pop("recent_outings", None)
 
-        if document_type in (USERPROFILE_TYPE, ARTICLE_TYPE, BOOK_TYPE, IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE):
+        if document_type in (
+            USERPROFILE_TYPE,
+            ARTICLE_TYPE,
+            BOOK_TYPE,
+            IMAGE_TYPE,
+            OUTING_TYPE,
+            XREPORT_TYPE,
+            ROUTE_TYPE,
+        ):
             associations = {}
 
             for v6_key, array in legacy_associations.items():

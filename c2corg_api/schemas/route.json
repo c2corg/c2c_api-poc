@@ -3,7 +3,7 @@
     
     "activities": { "$ref": "entities/activity_array.json" },
     "aid_rating" : {"$ref":"attributes/aid_ratings.json"},
-    "associations": { "$ref": "entities/association_array.json" },
+    "associations": { "$ref": "associations/route_associations.json" },
     "climbing_outdoor_type" : {"$ref":"attributes/climbing_outdoor_types.json"},
     "configuration": {
       "type": "array",

@@ -30,7 +30,7 @@ class Route(LegacyDocument):
                 "type": ROUTE_TYPE,
                 "activities": activities,
                 "locales": {} if locales is None else {locale.lang: locale._json for locale in locales},
-                "associations": [],
+                "associations": {},
                 "quality": "draft",
             }
 

@@ -79,7 +79,7 @@ class Association:
                 if associated_document_type in (ARTICLE_TYPE, IMAGE_TYPE, WAYPOINT_TYPE, ROUTE_TYPE):
                     add_association(associated_document_type, associated_document.id)
 
-            elif document_type in (IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE):
+            elif document_type in (IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE, ROUTE_TYPE):
                 add_association(associated_document_type, associated_document.id)
 
             else:
