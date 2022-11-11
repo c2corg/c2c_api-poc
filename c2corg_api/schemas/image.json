@@ -1,7 +1,7 @@
 {
   "properties": {
     "activities": { "$ref": "entities/activity_array.json" },
-    "associations": { "$ref": "entities/association_array.json" },
+    "associations": { "$ref": "associations/image_associations.json" },
     "author": { "$ref": "entities/author.json" },
     "camera_name": { "type": "string" },
     "categories": { "$ref": "entities/image_category_array.json" },

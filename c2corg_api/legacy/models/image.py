@@ -18,7 +18,7 @@ class Image(LegacyDocument):
                     "width": None,
                     "filename": filename,
                     "locales": {} if locales is None else {l.lang: l._json for l in locales},
-                    "associations": [],
+                    "associations": {},
                     "image_type": image_type,
                 }
             )

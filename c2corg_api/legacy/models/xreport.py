@@ -40,7 +40,7 @@ class Xreport(LegacyDocument):
                 "quality": "draft",
                 "event_activity": event_activity,
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
-                "associations": [],
+                "associations": {},
                 "author": {"user_id": 666},
                 "disable_comments": False,
             }

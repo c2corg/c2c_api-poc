@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "article": { "$ref": "/entities/id_array.json" },
+    "image": { "$ref": "/entities/id_array.json" },
+    "profile": { "$ref": "/entities/id_array.json" },
+    "route": { "$ref": "/entities/id_array.json" },
+    "xreport": { "$ref": "/entities/id_array.json" }
+  },
+  "additionalProperties": false
+}

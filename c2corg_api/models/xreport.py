@@ -34,7 +34,7 @@ class Xreport(BaseModelHooks):
         if (
             old_version.data["author"]["user_id"] != current_user.id
             and not current_user.is_moderator
-            and current_user.id not in old_version.data["associations"]
+            and current_user.id not in old_version.data["associations"].get("profile", [])
         ):
             raise Forbidden("You are not allowed to edit this document")
 

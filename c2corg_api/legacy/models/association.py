@@ -10,6 +10,7 @@ from c2corg_api.models import (
     WAYPOINT_TYPE,
     ROUTE_TYPE,
     OUTING_TYPE,
+    XREPORT_TYPE,
 )
 
 
@@ -77,6 +78,10 @@ class Association:
             elif document_type == BOOK_TYPE:
                 if associated_document_type in (ARTICLE_TYPE, IMAGE_TYPE, WAYPOINT_TYPE, ROUTE_TYPE):
                     add_association(associated_document_type, associated_document.id)
+
+            elif document_type in (IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE):
+                add_association(associated_document_type, associated_document.id)
+
             else:
                 raise Exception(f"Please set association map for {document_type}")
 

@@ -3,7 +3,7 @@
     "activity_rate": { "$ref": "attributes/activity_rates.json" },
     "anonymous": { "type": "boolean" },
     "age": { "type": "integer" },
-    "associations": { "$ref": "entities/association_array.json" },
+    "associations": { "$ref": "associations/xreport_associations.json" },
     "author": { "$ref": "entities/author.json" },
     "author_status": { "$ref": "attributes/author_statuses.json" },
     "autonomy": { "$ref": "attributes/autonomies.json" },
