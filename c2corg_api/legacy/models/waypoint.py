@@ -24,7 +24,7 @@ class Waypoint(Document):
                 "waypoint_type": waypoint_type,
                 "elevation": elevation,
                 "geometry": geometry._json,
-                "associations": [],
+                "associations": {},
             }
 
             if locales is None:
@@ -36,6 +36,37 @@ class Waypoint(Document):
                 data["rock_types"] = rock_types
 
             self.create_new_model(data, protected=protected)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = Document.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        # other props
+        result["data"] |= legacy_document
+
+        optional_attributes = [
+            "climbing_rating_max",
+            "climbing_rating_median",
+            "climbing_rating_min",
+            "climbing_styles",
+            "height_max",
+            "height_median",
+            "height_min",
+            "maps_info",
+            "phone",
+            "routes_quantity",
+            "url",
+        ]
+
+        for attribute in optional_attributes:
+            if attribute in result["data"] and result["data"][attribute] is None:
+                del result["data"][attribute]
+
+        # TODO
+        result["data"].pop("maps", None)
+        result["data"].pop("areas", None)
+
+        return result
 
     @staticmethod
     def convert_to_legacy_doc(document):

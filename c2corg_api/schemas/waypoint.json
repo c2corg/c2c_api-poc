@@ -1,12 +1,26 @@
 {
   "properties": {
-    "associations": { "$ref": "entities/association_array.json" },
+    "associations": { "$ref": "associations/waypoint_associations.json" },
+    "climbing_indoor_types" : {"type": "array", "items":{"$ref": "/attributes/climbing_indoor_types.json"}},
+    "climbing_rating_max": {"$ref": "/attributes/climbing_ratings.json"},
+    "climbing_rating_median": {"$ref": "/attributes/climbing_ratings.json"},
+    "climbing_rating_min": {"$ref": "/attributes/climbing_ratings.json"},
+    "climbing_styles": {"type": "array", "items":{"$ref": "/attributes/climbing_styles.json"}},
     "elevation": { "type": ["integer", "null"] },
     "geometry": { "$ref": "geometries/basic_geometry.json" },
+    "height_max": {"type": "integer"},
+    "height_median": {"type": "integer"},
+    "height_min": {"type": "integer"},
     "locales": { "$ref": "locales/waypoint_locales.json"},
+    "maps_info": {"type": "string"},
+    "phone": {"type": "string"},
+    "quality": {"$ref": "/attributes/quality_types.json"},
     "rock_types": { "$ref": "entities/rock_type_array.json"},
+    "routes_quantity": {"type": "integer"},
     "type": { "const": "waypoint" },
+    "url": {"type": "string"},
     "waypoint_type": { "$ref": "attributes/waypoint_types.json"}
+
   },
   "required": ["type", "waypoint_type", "geometry", "locales"],
   "additionalProperties": false

@@ -112,7 +112,7 @@ class TestDocumentRevertRest(BaseTestRest):
                 "elevation": 4810,
                 "locales": locales,
                 "geometry": {"geom": {"type": "Point", "coordinates": [635957, 5723605]}},
-                "associations": [],
+                "associations": {},
             }
         )
 

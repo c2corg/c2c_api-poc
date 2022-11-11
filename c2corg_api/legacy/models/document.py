@@ -120,40 +120,23 @@ class Document:
         legacy_associations = legacy_document.pop("associations", {})
         legacy_associations.pop("all_routes", None)
         legacy_associations.pop("recent_outings", None)
+        associations = {}
 
-        if document_type in (
-            USERPROFILE_TYPE,
-            ARTICLE_TYPE,
-            BOOK_TYPE,
-            IMAGE_TYPE,
-            OUTING_TYPE,
-            XREPORT_TYPE,
-            ROUTE_TYPE,
-        ):
-            associations = {}
-
-            for v6_key, array in legacy_associations.items():
-                type_associations = set()
-                if len(array) != 0:
-                    for document in array:
-                        type_associations.add(document["document_id"])
-
-                    if v6_key == "users":
-                        v7_key = "profile"
-                    else:
-                        v7_key = v6_key[:-1]
-                    associations[v7_key] = list(type_associations)
-
-            result["data"]["associations"] = associations
-
-        else:
-            associations = set()
-
-            for array in legacy_associations.values():
+        for v6_key, array in legacy_associations.items():
+            type_associations = set()
+            if len(array) != 0:
                 for document in array:
-                    associations.add(document["document_id"])
+                    type_associations.add(document["document_id"])
 
-            result["data"]["associations"] = list(associations)
+                if v6_key == "users":
+                    v7_key = "profile"
+                elif v6_key == "waypoint_children":
+                    v7_key = "waypoint_children"
+                else:
+                    v7_key = v6_key[:-1]
+                associations[v7_key] = list(type_associations)
+
+        result["data"]["associations"] = associations
 
         # convert geometry
         geometry = legacy_document.pop("geometry", None)

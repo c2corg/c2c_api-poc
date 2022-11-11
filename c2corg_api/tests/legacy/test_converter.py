@@ -8,6 +8,21 @@ from c2corg_api.schemas import schema_validator
 
 
 docs = [
+    ("area", 14478),
+    ("article", 1481720),
+    ("book", 1481547),
+    ("image", 1482727),
+    ("map", 250182),
+    ("outing", 1482990),
+    ("route", 213355),
+    ("route", 58034),
+    ("route", 53884),
+    ("route", 53896),
+    ("route", 670775),
+    ("route", 50892),
+    ("route", 50892),
+    ("waypoint", 112210),
+    ("xreport", 1468590),
     ("xreport", 808075),
     ("xreport", 1082547),
     ("xreport", 1090284),
@@ -15,17 +30,6 @@ docs = [
     ("xreport", 1465817),
     ("xreport", 1477302),
     ("xreport", 1449556),
-    ("area", 14478),
-    ("article", 1481720),
-    ("book", 1481547),
-    ("image", 1482727),
-    ("route", 213355),
-    ("route", 58034),
-    ("route", 53884),
-    ("route", 53896),
-    ("route", 670775),
-    ("route", 50892),
-    ("xreport", 1468590),
 ]
 
 

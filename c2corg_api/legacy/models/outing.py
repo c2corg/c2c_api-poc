@@ -23,12 +23,58 @@ class Outing(LegacyDocument):
                 "date_end": str(date_end),
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": {},
+                "disable_comments": False
             }
 
             if geometry is not None:
                 data["geometry"] = geometry._json
 
             self.create_new_model(data=data)
+
+    @staticmethod
+    def convert_from_legacy_doc(legacy_document, document_type, previous_data):
+        result = LegacyDocument.convert_from_legacy_doc(legacy_document, document_type, previous_data)
+
+        result["data"] |= {"disable_comments": legacy_document.pop("disable_comments", False)}
+
+        # other props
+        result["data"] |= legacy_document
+
+        optional_attributes = [
+            "access_condition",
+            "avalanche_signs",
+            "condition_rating",
+            "elevation_access",
+            "elevation_down_snow",
+            "elevation_max",
+            "elevation_min",
+            "elevation_up_snow",
+            "engagement_rating",
+            "frequentation",
+            "glacier_rating",
+            "global_rating",
+            "height_diff_difficulties",
+            "height_diff_down",
+            "height_diff_up",
+            "hut_status",
+            "length_total",
+            "lift_status",
+            "partial_trip",
+            "participant_count",
+            "public_transport",
+            "snow_quality",
+            "snow_quantity",
+            "snowshoe_rating",
+        ]
+
+        for attribute in optional_attributes:
+            if result["data"].get(attribute, None) is None:
+                result["data"].pop(attribute, None)
+
+        # TODO
+        result["data"].pop("areas", None)
+
+        return result
 
     @property
     def activities(self):
