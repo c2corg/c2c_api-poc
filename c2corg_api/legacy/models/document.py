@@ -43,6 +43,7 @@ class Document:
     def __init__(self, version=None):
         self._version = version
         self._expected_legacy_lang = None
+        self._redirect_to = None
 
     @property
     def _document(self):
@@ -52,14 +53,18 @@ class Document:
     def _document(self, value):
         self._version = value.last_version
 
-    def create_new_model(self, data, protected=False):
-        from flask_camp.models import Document
+    def create_new_model(self, data, protected=False, redirects_to=None):
+        from flask_camp.models import Document, DocumentVersion
 
-        # print(json.dumps(data, indent=4))
-        schema_validator.validate(data, f"{data['type']}.json")
+        if redirects_to:
+            self._version = DocumentVersion(data={})
+            self._version.document = Document(redirect_to=redirects_to)
+        else:
+            # print(json.dumps(data, indent=4))
+            schema_validator.validate(data, f"{data['type']}.json")
 
-        self._version = Document.create(comment="Creation", data=data, author=self.default_author).last_version
-        self._document.protected = protected
+            self._version = Document.create(comment="Creation", data=data, author=self.default_author).last_version
+            self._document.protected = protected
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):

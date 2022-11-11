@@ -11,6 +11,7 @@ class Waypoint(Document):
         geometry=None,
         locales=None,
         protected=False,
+        redirects_to=None,
         version=None,
     ):
         super().__init__(version=version)
@@ -35,7 +36,7 @@ class Waypoint(Document):
             if rock_types is not None:
                 data["rock_types"] = rock_types
 
-            self.create_new_model(data, protected=protected)
+            self.create_new_model(data, protected=protected, redirects_to=redirects_to)
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):

@@ -23,7 +23,7 @@ class UserProfile(BaseModelHooks):
         search_item = DocumentSearch(id=user_page.id)
         session.add(search_item)
 
-        search_item.update(user_page.last_version, user=user)
+        search_item.update(user_page, user=user)
 
     @staticmethod
     def get_default_data(user, categories, locale_langs, geom=None):

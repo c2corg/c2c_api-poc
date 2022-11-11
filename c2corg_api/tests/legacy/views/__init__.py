@@ -11,6 +11,10 @@ from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE
 from c2corg_api.legacy.models.association import Association as LegacyAssociation
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
+from c2corg_api.legacy.models.document_tag import (
+    DocumentTag as LegacyDocumentTag,
+    DocumentTagLog as LegacyDocumentTagLog,
+)
 from c2corg_api.legacy.models.document_history import DocumentVersion as LegacyDocumentVersion
 from c2corg_api.legacy.models.area import Area as LegacyArea
 from c2corg_api.legacy.models.article import Article as LegacyArticle
@@ -130,11 +134,13 @@ class BaseTestRest(BaseTestClass):
         )
 
         if isinstance(instance, legacy_document):
-            assert json.dumps(instance._version.data) == instance._version._data
-            data = instance._version.data
-            schema_validator.validate(data, f"{data['type']}.json")
+            if instance._document.redirect_to is None:
+                assert json.dumps(instance._version.data) == instance._version._data
+                data = instance._version.data
+                schema_validator.validate(data, f"{data['type']}.json")
 
             self.session.add(instance._document)
+            self.session.flush()
 
             update_document_search_table(instance._document, session=self.session)
 
@@ -146,12 +152,18 @@ class BaseTestRest(BaseTestClass):
             instance.profile._version._data = json.dumps(data)
             update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
             self.session.flush()
+
+        elif isinstance(instance, LegacyDocumentTag):
+            self.session.add(instance._tag)
+            self.session.flush()
         elif isinstance(instance, TopoMapAssociation):
             instance.propagate_in_documents()
         elif isinstance(instance, LegacyDocumentChange):
             instance.propagate_in_documents()
         elif isinstance(instance, LegacyAssociation):
             instance.propagate_in_documents()
+        elif isinstance(instance, LegacyDocumentTagLog):
+            pass
         elif instance is None:
             pass
         else:

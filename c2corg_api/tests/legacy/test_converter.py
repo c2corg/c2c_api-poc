@@ -8,46 +8,29 @@ from c2corg_api.schemas import schema_validator
 
 
 docs = [
-    ("area", 14478),
-    ("article", 1481720),
-    ("article", 1446629),
-    ("article", 1440443),
-    ("article", 816616),
-    ("article", 793856),
-    ("article", 747564),
-    ("book", 1481547),
-    ("image", 1482727),
-    ("map", 250182),
-    ("outing", 1482990),
-    ("route", 213355),
-    ("route", 58034),
-    ("route", 53884),
-    ("route", 53896),
-    ("route", 670775),
-    ("route", 50892),
-    ("route", 50892),
-    ("waypoint", 112210),
-    ("xreport", 1468590),
-    ("xreport", 808075),
-    ("xreport", 1082547),
-    ("xreport", 1090284),
-    ("xreport", 1413480),
-    ("xreport", 1465817),
-    ("xreport", 1477302),
-    ("xreport", 1449556),
+    ("area", (14478,)),
+    ("article", (1481720, 1446629, 1440443, 816616, 793856, 747564)),
+    ("book", (1481547,)),
+    ("image", (1482727,)),
+    ("map", (250182,)),
+    ("outing", (1482990,)),
+    ("route", (213355, 58034, 53884, 53896, 670775, 50892, 50892)),
+    ("waypoint", (112210,)),
+    ("xreport", (1468590, 808075, 1082547, 1090284, 1413480, 1465817, 1477302, 1449556)),
 ]
 
 
-@pytest.mark.parametrize("document_type, document_id", docs)
-def test_converter(document_id, document_type):
-    legacy_doc = requests.get(f"https://api.camptocamp.org/{document_type}s/{document_id}", timeout=10).json()
+@pytest.mark.parametrize("document_type, document_ids", docs)
+def test_converter(document_type, document_ids):
+    for document_id in document_ids:
+        legacy_doc = requests.get(f"https://api.camptocamp.org/{document_type}s/{document_id}", timeout=10).json()
 
-    v7_doc = convert_from_legacy_doc(legacy_doc, document_type, {})
+        v7_doc = convert_from_legacy_doc(legacy_doc, document_type, {})
 
-    try:
-        schema_validator.validate(v7_doc["data"], f"{document_type}.json")
-    except:
-        print(json.dumps(v7_doc["data"], indent=2))
-        raise
+        try:
+            schema_validator.validate(v7_doc["data"], f"{document_type}.json")
+        except:
+            print(json.dumps(v7_doc["data"], indent=2))
+            raise
 
-    v6_doc = convert_to_legacy_doc(v7_doc)
+        convert_to_legacy_doc(v7_doc)

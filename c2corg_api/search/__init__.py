@@ -36,7 +36,18 @@ class DocumentSearch(BaseModel):
     activities = Column(ARRAY(String()), index=True, default=[])
     event_activity = Column(String, index=True, nullable=True)  # for xreports
 
-    def update(self, new_version, user: User = None):
+    def update(self, document, user: User = None):
+        if document.is_redirection:
+            self.activities = []
+            self.event_activity = None
+            self.available_langs = []
+            self.user_is_validated = None
+            self.user_id = None
+            self.document_type = None
+
+            return
+
+        new_version = document.last_version
         self.available_langs = [lang for lang in new_version.data["locales"]]
 
         self.document_type = new_version.data["type"]
@@ -80,7 +91,7 @@ def update_document_search_table(document, user=None, session=None):
         search_item = DocumentSearch(id=document.id)
         session.add(search_item)
 
-    search_item.update(document.last_version, user=user)
+    search_item.update(document, user=user)
 
 
 def search(document_type=None, id=None, user_id=None):
