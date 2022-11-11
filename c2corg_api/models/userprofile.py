@@ -6,8 +6,7 @@ from sqlalchemy import select
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from c2corg_api.search import DocumentSearch
-from c2corg_api.models.types import USERPROFILE_TYPE
-from c2corg_api.models._core import BaseModelHooks
+from c2corg_api.models._core import BaseModelHooks, USERPROFILE_TYPE
 
 
 class UserProfile(BaseModelHooks):

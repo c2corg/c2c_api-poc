@@ -1,4 +1,3 @@
-from ._core import BaseModelHooks
 from .article import Article
 from .book import Book
 from .route import Route
@@ -7,7 +6,8 @@ from .userprofile import UserProfile
 from .waypoint import Waypoint
 from .xreport import Xreport
 
-from .types import (
+from ._core import (
+    BaseModelHooks,
     AREA_TYPE,
     ARTICLE_TYPE,
     BOOK_TYPE,

@@ -4,7 +4,7 @@ from sqlalchemy import Column, ForeignKey, String, select, Boolean
 from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from c2corg_api.models.types import (
+from c2corg_api.models._core import (
     AREA_TYPE,
     BOOK_TYPE,
     ARTICLE_TYPE,

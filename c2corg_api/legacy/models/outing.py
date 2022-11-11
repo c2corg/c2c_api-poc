@@ -23,7 +23,7 @@ class Outing(LegacyDocument):
                 "date_end": str(date_end),
                 "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": {},
-                "disable_comments": False
+                "disable_comments": False,
             }
 
             if geometry is not None:
