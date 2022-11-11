@@ -119,29 +119,21 @@ class Xreport(LegacyDocument):
             "nb_impacted": data.get("nb_impacted"),
             "rescue": data.get("rescue"),
             "disable_comments": data["disable_comments"],
+            "author_status": data.get("author_status"),
+            "activity_rate": data.get("activity_rate"),
+            "age": data.get("age"),
+            "gender": data.get("gender"),
+            "previous_injuries": data.get("previous_injuries"),
+            "autonomy": data.get("autonomy"),
+            "supervision": data.get("supervision"),
+            "date": data.get("date"),
         }
 
         if "geometry" in data:
             result["geometry"] = {"geom": json.dumps(data["geometry"]["geom"])}
+            result["geometry"] |= {"version": 0}
         else:
             result["geometry"] = None
-
-        if "date" in data:
-            result["date"] = data["date"]
-
-        if "supervision" in data:
-            result["supervision"] = data["supervision"]
-
-        # private field
-        for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
-            if field in data:
-                result[field] = data[field]
-            elif current_user.is_moderator or current_user.id == data["author"]["user_id"]:
-                # in old model, empty values are reported as none
-                result[field] = None
-
-        if result["geometry"] is not None:
-            result["geometry"] |= {"version": 0}
 
         return result
 

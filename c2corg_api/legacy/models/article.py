@@ -41,6 +41,7 @@ class Article(LegacyDocument):
 
         # clean
         result["data"].pop("geometry", None)
+        result["data"]["associations"].pop("profile", None)
 
         return result
 

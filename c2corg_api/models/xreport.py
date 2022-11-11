@@ -8,14 +8,17 @@ from c2corg_api.models._core import BaseModelHooks
 
 
 class Xreport(BaseModelHooks):
+
+    private_fields = ("author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy")
+
     def after_get_document(self, response: JsonResponse):
         document_data = response.data["document"]["data"]
 
         response.headers["Cache-Control"] = "private"
 
         if document_data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
-            for field in ["author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy"]:
-                document_data.pop(field, None)
+            for field in self.private_fields:
+                document_data[field] = None  # overwrite it with None
 
     def on_creation(self, version: DocumentVersion):
         if version.data["anonymous"]:

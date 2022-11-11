@@ -3,13 +3,18 @@ import requests
 
 import pytest
 
-from c2corg_api.legacy.converter import convert_from_legacy_doc  # , convert_to_legacy_doc
+from c2corg_api.legacy.converter import convert_from_legacy_doc, convert_to_legacy_doc
 from c2corg_api.schemas import schema_validator
 
 
 docs = [
     ("area", 14478),
     ("article", 1481720),
+    ("article", 1446629),
+    ("article", 1440443),
+    ("article", 816616),
+    ("article", 793856),
+    ("article", 747564),
     ("book", 1481547),
     ("image", 1482727),
     ("map", 250182),
@@ -45,4 +50,4 @@ def test_converter(document_id, document_type):
         print(json.dumps(v7_doc["data"], indent=2))
         raise
 
-    # v6_doc = convert_to_legacy_doc(v7_doc)
+    v6_doc = convert_to_legacy_doc(v7_doc)

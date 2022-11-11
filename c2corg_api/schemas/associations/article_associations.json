@@ -2,6 +2,7 @@
   "type": "object",
   "properties": {
     "article": { "$ref": "/entities/id_array.json" },
+    "book": { "$ref": "/entities/id_array.json" },
     "image": { "$ref": "/entities/id_array.json" },
     "outing": { "$ref": "/entities/id_array.json" },
     "route": { "$ref": "/entities/id_array.json" },

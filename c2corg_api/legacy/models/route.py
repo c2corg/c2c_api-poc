@@ -96,10 +96,11 @@ class Route(LegacyDocument):
     @staticmethod
     def convert_to_legacy_doc(document):
         data = document["data"]
-        cooked_data = document["cooked_data"]
 
-        for lang, locale in data["locales"].items():
-            locale["title_prefix"] = cooked_data["locales"][lang].get("title_prefix")
+        if "cooked_data" in document:
+            cooked_data = document["cooked_data"]
+            for lang, locale in data["locales"].items():
+                locale["title_prefix"] = cooked_data["locales"][lang].get("title_prefix")
 
         result = LegacyDocument.convert_to_legacy_doc(document)
         result |= {
