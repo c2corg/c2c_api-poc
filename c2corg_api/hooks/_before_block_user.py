@@ -4,7 +4,7 @@ from werkzeug.exceptions import InternalServerError
 from c2corg_api.security.discourse_client import get_discourse_client
 
 
-def on_user_block(user):
+def before_block_user(user):
 
     client = get_discourse_client(current_app.config)
 

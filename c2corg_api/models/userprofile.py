@@ -1,17 +1,17 @@
 from flask_camp import current_api
-from flask_camp.models import Document
+from flask_camp.models import Document, DocumentVersion
 from flask_camp._utils import JsonResponse
 from flask_login import current_user
 from sqlalchemy import select
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from c2corg_api.search import DocumentSearch
-from c2corg_api.models._core import BaseModelHooks, USERPROFILE_TYPE
+from c2corg_api.models._core import USERPROFILE_TYPE
+from c2corg_api.models._document import BaseModelHooks
 
 
 class UserProfile(BaseModelHooks):
-    @staticmethod
-    def create(user, locale_langs, geom=None, session=None):
+    def create(self, user, locale_langs, geom=None, session=None):
         # TODO on legacy removal, removes session parameter
         session = current_api.database.session if session is None else session
         assert user.id is not None, "Dev check..."
@@ -20,10 +20,8 @@ class UserProfile(BaseModelHooks):
         user_page = Document.create(comment="Creation of user page", data=data, author=user)
 
         session.flush()
-        search_item = DocumentSearch(id=user_page.id)
-        session.add(search_item)
 
-        search_item.update(user_page, user=user)
+        self.update_document_search_table(user_page, user_page.last_version)
 
     @staticmethod
     def get_default_data(user, categories, locale_langs, geom=None):
@@ -44,6 +42,7 @@ class UserProfile(BaseModelHooks):
         return result
 
     def after_get_document(self, response: JsonResponse):
+        super().before_create_document(response)
         query = select(DocumentSearch.user_is_validated).where(DocumentSearch.id == response.data["document"]["id"])
         result = current_api.database.session.execute(query)
         user_is_validated = list(result)[0][0]
@@ -51,10 +50,11 @@ class UserProfile(BaseModelHooks):
         if not user_is_validated:
             raise NotFound()
 
-    def on_creation(self, version):
+    def before_create_document(self, version):
         raise BadRequest("Profile page can't be created without an user")
 
-    def on_new_version(self, old_version, new_version):
+    def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
+        super().before_update_document(document, old_version, new_version)
         user_id = self.get_user_id_from_profile_id(old_version.document_id)
         if user_id != current_user.id:
             if not current_user.is_moderator:

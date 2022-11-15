@@ -1,5 +1,5 @@
 import os
-from flask_camp import SchemaValidator
+from flask_camp.utils import SchemaValidator
 
 # expose a decorator for schema validation
 schema_validator = SchemaValidator(os.path.dirname(__file__))

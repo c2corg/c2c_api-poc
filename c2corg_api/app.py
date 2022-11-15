@@ -39,15 +39,18 @@ def create_app(**config):
         cooker=cooker,
         schemas_directory="c2corg_api/schemas",
         user_schema="user.json",
-        after_get_document=hooks.after_get_document,
-        on_user_creation=hooks.on_user_creation,
-        on_user_validation=hooks.on_user_validation,
-        on_user_update=hooks.on_user_update,
-        on_user_block=hooks.on_user_block,
-        on_document_save=hooks.on_document_save,
         update_search_query=hooks.update_search_query,
         url_prefix="/v7",
     )
+
+    api.after_get_document(hooks.after_get_document)
+    api.before_create_user(hooks.before_create_user)
+    api.before_validate_user(hooks.before_validate_user)
+    api.before_update_user(hooks.before_update_user)
+    api.before_block_user(hooks.before_block_user)
+    api.before_update_document(hooks.before_update_document)
+    api.before_create_document(hooks.before_create_document)
+    api.before_merge_documents(hooks.before_merge_documents)
 
     api.add_views(app, health_view, cooker_view)
     api.add_views(app, discourse_login_url_view)

@@ -43,7 +43,7 @@ class Document:
     def __init__(self, version=None):
         self._version = version
         self._expected_legacy_lang = None
-        self._redirect_to = None
+        self._redirects_to = None
 
     @property
     def _document(self):
@@ -58,7 +58,7 @@ class Document:
 
         if redirects_to:
             self._version = DocumentVersion(data={})
-            self._version.document = Document(redirect_to=redirects_to)
+            self._version.document = Document(redirects_to=redirects_to)
         else:
             # print(json.dumps(data, indent=4))
             schema_validator.validate(data, f"{data['type']}.json")

@@ -4,19 +4,6 @@ from sqlalchemy import Column, ForeignKey, String, select, Boolean
 from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from c2corg_api.models._core import (
-    AREA_TYPE,
-    BOOK_TYPE,
-    ARTICLE_TYPE,
-    WAYPOINT_TYPE,
-    IMAGE_TYPE,
-    OUTING_TYPE,
-    ROUTE_TYPE,
-    MAP_TYPE,
-    USERPROFILE_TYPE,
-    XREPORT_TYPE,
-)
-
 
 class DocumentSearch(BaseModel):
     # Define a one-to-one relationship with document table
@@ -36,63 +23,6 @@ class DocumentSearch(BaseModel):
     activities = Column(ARRAY(String()), index=True, default=[])
     event_activity = Column(String, index=True, nullable=True)  # for xreports
 
-    def update(self, document, user: User = None):
-        if document.is_redirection:
-            self.activities = []
-            self.event_activity = None
-            self.available_langs = []
-            self.user_is_validated = None
-            self.user_id = None
-            self.document_type = None
-
-            return
-
-        new_version = document.last_version
-        self.available_langs = [lang for lang in new_version.data["locales"]]
-
-        self.document_type = new_version.data["type"]
-
-        if self.document_type == USERPROFILE_TYPE:
-            self.user_id = new_version.data.get("user_id")
-            if user is not None:
-                self.user_is_validated = user.email_is_validated
-
-        elif self.document_type == ARTICLE_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == WAYPOINT_TYPE:
-            pass
-        elif self.document_type == AREA_TYPE:
-            pass
-        elif self.document_type == MAP_TYPE:
-            pass
-        elif self.document_type == BOOK_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == BOOK_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == IMAGE_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == OUTING_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == ROUTE_TYPE:
-            self.activities = new_version.data["activities"]
-        elif self.document_type == XREPORT_TYPE:
-            self.event_activity = new_version.data["event_activity"]
-        else:
-            raise NotImplementedError(f"Please set how to search {self.document_type}")
-
-
-def update_document_search_table(document, user=None, session=None):
-    # TODO: on remove legacy, removes session parameters
-    session = current_api.database.session if session is None else session
-
-    search_item: DocumentSearch = session.query(DocumentSearch).get(document.id)
-
-    if search_item is None:  # means the document is not yet created
-        search_item = DocumentSearch(id=document.id)
-        session.add(search_item)
-
-    search_item.update(document, user=user)
-
 
 def search(document_type=None, id=None, user_id=None):
     criterions = []
@@ -100,7 +30,7 @@ def search(document_type=None, id=None, user_id=None):
     if document_type is not None:
         criterions.append(DocumentSearch.document_type == document_type)
 
-        if document_type == USERPROFILE_TYPE:
+        if document_type == "profile":  # TODO
             criterions.append(DocumentSearch.user_is_validated == True)
 
     if id is not None:

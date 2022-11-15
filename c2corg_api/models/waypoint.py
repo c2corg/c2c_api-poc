@@ -1,4 +1,4 @@
-from c2corg_api.models._core import BaseModelHooks
+from c2corg_api.models._document import BaseModelHooks
 
 
 class Waypoint(BaseModelHooks):

@@ -1,13 +1,15 @@
 from .article import Article
 from .book import Book
 from .route import Route
+from .image import Image
+from .outing import Outing
 from .topo_map import TopoMap
 from .userprofile import UserProfile
 from .waypoint import Waypoint
 from .xreport import Xreport
+from ._document import BaseModelHooks
 
 from ._core import (
-    BaseModelHooks,
     AREA_TYPE,
     ARTICLE_TYPE,
     BOOK_TYPE,
@@ -24,9 +26,9 @@ models = {
     AREA_TYPE: BaseModelHooks(),
     ARTICLE_TYPE: Article(),
     BOOK_TYPE: Book(),
-    IMAGE_TYPE: BaseModelHooks(),
+    IMAGE_TYPE: Image(),
     MAP_TYPE: TopoMap(),
-    OUTING_TYPE: BaseModelHooks(),
+    OUTING_TYPE: Outing(),
     ROUTE_TYPE: Route(),
     USERPROFILE_TYPE: UserProfile(),
     WAYPOINT_TYPE: Waypoint(),

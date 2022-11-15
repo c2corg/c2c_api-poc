@@ -7,7 +7,7 @@ from c2corg_api.hooks._tools import check_user_name
 from c2corg_api.security.discourse_client import get_discourse_client
 
 
-def on_user_update(user: User, sync_sso=True):
+def before_update_user(user: User, sync_sso=True):
 
     data = request.get_json()
 

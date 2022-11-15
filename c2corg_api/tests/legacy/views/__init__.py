@@ -6,9 +6,9 @@ from os import sync
 from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
-from c2corg_api.hooks import on_user_validation
+from c2corg_api.hooks import before_validate_user
 from c2corg_api.models.userprofile import UserProfile
-from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE
+from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE, models
 from c2corg_api.legacy.models.association import Association as LegacyAssociation
 from c2corg_api.legacy.models.document import DocumentLocale as LegacyDocumentLocale
 from c2corg_api.legacy.models.document_tag import (
@@ -32,7 +32,7 @@ from c2corg_api.legacy.models.waypoint import Waypoint as LegacyWaypoint
 from c2corg_api.legacy.models.xreport import Xreport as LegacyXreport
 from c2corg_api.legacy.search import search_documents
 from c2corg_api.schemas import schema_validator
-from c2corg_api.search import search, update_document_search_table
+from c2corg_api.search import search
 from c2corg_api.tests.conftest import BaseTestClass, get_default_data
 
 
@@ -70,11 +70,11 @@ class BaseTestRest(BaseTestClass):
         user.set_email(f"{name}@camptocamp.org")
         self.api.database.session.flush()
 
-        UserProfile.create(user, locale_langs=locale_langs, geom=geom, session=self.session)
+        UserProfile().create(user, locale_langs=locale_langs, geom=geom, session=self.session)
         user.validate_email(user._email_token)
         self.api.database.session.flush()
 
-        on_user_validation(user, sync_sso=False)
+        before_validate_user(user, sync_sso=False)
 
         self.global_userids[user.name] = user.id
         self.global_passwords[user.name] = password
@@ -134,15 +134,18 @@ class BaseTestRest(BaseTestClass):
         )
 
         if isinstance(instance, legacy_document):
-            if instance._document.redirect_to is None:
-                assert json.dumps(instance._version.data) == instance._version._data
-                data = instance._version.data
-                schema_validator.validate(data, f"{data['type']}.json")
 
             self.session.add(instance._document)
             self.session.flush()
 
-            update_document_search_table(instance._document, session=self.session)
+            if instance._document.redirects_to is None:
+                assert json.dumps(instance._version.data) == instance._version._data
+                data = instance._version.data
+                document_type = data["type"]
+                schema_validator.validate(data, f"{document_type}.json")
+                models[document_type].update_document_search_table(
+                    instance._document, instance._document.last_version, session=self.session
+                )
 
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
@@ -150,7 +153,11 @@ class BaseTestRest(BaseTestClass):
             data = deepcopy(instance.profile._version.data)
             data["user_id"] = instance.id
             instance.profile._version._data = json.dumps(data)
-            update_document_search_table(instance.profile._document, user=instance._user, session=self.session)
+
+            models["profile"].update_document_search_table(
+                instance.profile._document, instance.profile._document.last_version, session=self.session
+            )
+
             self.session.flush()
 
         elif isinstance(instance, LegacyDocumentTag):
