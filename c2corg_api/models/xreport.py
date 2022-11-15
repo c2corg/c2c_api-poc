@@ -12,7 +12,7 @@ class Xreport(BaseModelHooks):
     private_fields = ("author_status", "activity_rate", "age", "gender", "previous_injuries", "autonomy")
 
     def after_get_document(self, response: JsonResponse):
-        super().before_create_document(response)
+        super().after_get_document(response)
         document_data = response.data["document"]["data"]
 
         response.headers["Cache-Control"] = "private"
@@ -22,7 +22,6 @@ class Xreport(BaseModelHooks):
                 document_data[field] = None  # overwrite it with None
 
     def before_create_document(self, version: DocumentVersion):
-        super().before_create_document(version)
 
         if version.data["anonymous"]:
             anonymous_user_id = current_app.config["ANONYMOUS_USER_ID"]
@@ -30,6 +29,8 @@ class Xreport(BaseModelHooks):
             version.user_id = anonymous_user_id
         else:
             version.data |= {"author": {"user_id": current_user.id}}
+
+        super().before_create_document(version)
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
         super().before_update_document(document, old_version, new_version)
@@ -49,6 +50,6 @@ class Xreport(BaseModelHooks):
             if old_version.data[attribute] != new_version.data[attribute]:
                 raise BadRequest(f"You cannot modify {attribute}")
 
-    def update_document_search_table(self, document: Document, version: DocumentVersion, user=None, session=None):
-        search_item = super().update_document_search_table(document, user, session)
+    def update_document_search_table(self, document: Document, version: DocumentVersion, session=None):
+        search_item = super().update_document_search_table(document, version, session=session)
         search_item.event_activity = version.data["event_activity"]

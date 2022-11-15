@@ -1,5 +1,5 @@
 from flask_camp import current_api
-from flask_camp.models import Document, DocumentVersion
+from flask_camp.models import Document, DocumentVersion, User
 from flask_camp._utils import JsonResponse
 from flask_login import current_user
 from sqlalchemy import select
@@ -21,7 +21,9 @@ class UserProfile(BaseModelHooks):
 
         session.flush()
 
-        self.update_document_search_table(user_page, user_page.last_version)
+        search_item = self.update_document_search_table(user_page, user_page.last_version)
+        search_item.user_id = user.id
+        search_item.user_is_validated = user.email_is_validated
 
     @staticmethod
     def get_default_data(user, categories, locale_langs, geom=None):
@@ -42,7 +44,7 @@ class UserProfile(BaseModelHooks):
         return result
 
     def after_get_document(self, response: JsonResponse):
-        super().before_create_document(response)
+        super().after_get_document(response)
         query = select(DocumentSearch.user_is_validated).where(DocumentSearch.id == response.data["document"]["id"])
         result = current_api.database.session.execute(query)
         user_is_validated = list(result)[0][0]
@@ -66,3 +68,10 @@ class UserProfile(BaseModelHooks):
         user_id = list(result)[0][0]
 
         return user_id
+
+    def update_document_search_table(
+        self, document: Document, version: DocumentVersion, session=None
+    ) -> DocumentSearch:
+        search_item = super().update_document_search_table(document, version, session=session)
+
+        return search_item

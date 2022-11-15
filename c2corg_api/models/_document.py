@@ -32,7 +32,10 @@ class BaseModelHooks:
     def cook(self, document: dict, get_document):
         ...
 
-    def get_search_item(self, document: Document, session):
+    def get_search_item(self, document: Document, session=None) -> DocumentSearch:
+
+        # TODO: on remove legacy, removes session parameters
+        session = current_api.database.session if session is None else session
 
         search_item: DocumentSearch = session.query(DocumentSearch).get(document.id)
 
@@ -42,7 +45,9 @@ class BaseModelHooks:
 
         return search_item
 
-    def update_document_search_table(self, document: Document, version: DocumentVersion, user=None, session=None):
+    def update_document_search_table(
+        self, document: Document, version: DocumentVersion, session=None
+    ) -> DocumentSearch:
         # TODO: on remove legacy, removes session parameters
         session = current_api.database.session if session is None else session
 

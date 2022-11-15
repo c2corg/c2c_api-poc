@@ -6,7 +6,7 @@ from os import sync
 from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
 
-from c2corg_api.hooks import before_validate_user
+from c2corg_api.hooks import before_validate_user, before_create_user
 from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.models import MAP_TYPE, USERPROFILE_TYPE, models
 from c2corg_api.legacy.models.association import Association as LegacyAssociation
@@ -54,11 +54,11 @@ class BaseTestRest(BaseTestClass):
     def _add_global_test_data(self):
         geom = {"type": "Point", "coordinates": [0, 0]}
 
+        self._add_user("robot", "bombproof pass", locale_langs=["en"])
         self._add_user("moderator", "super pass", locale_langs=["en"], roles=["moderator"])
-        self._add_user("contributor", "super pass", locale_langs=["en", "fr"], geom=geom)
         self._add_user("contributor2", "super pass", locale_langs=["en"])
         self._add_user("contributor3", "poor pass", locale_langs=["en"])
-        self._add_user("robot", "bombproof pass", locale_langs=["en"])
+        self._add_user("contributor", "super pass", locale_langs=["en", "fr"], geom=geom)
 
         self.api.database.session.commit()
 
@@ -71,9 +71,9 @@ class BaseTestRest(BaseTestClass):
         self.api.database.session.flush()
 
         UserProfile().create(user, locale_langs=locale_langs, geom=geom, session=self.session)
+
         user.validate_email(user._email_token)
         self.api.database.session.flush()
-
         before_validate_user(user, sync_sso=False)
 
         self.global_userids[user.name] = user.id
@@ -154,9 +154,11 @@ class BaseTestRest(BaseTestClass):
             data["user_id"] = instance.id
             instance.profile._version._data = json.dumps(data)
 
-            models["profile"].update_document_search_table(
+            search_item = models["profile"].update_document_search_table(
                 instance.profile._document, instance.profile._document.last_version, session=self.session
             )
+
+            search_item.user_is_validated = instance.email_validated
 
             self.session.flush()
 

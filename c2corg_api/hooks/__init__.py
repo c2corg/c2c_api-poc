@@ -46,12 +46,9 @@ def before_create_user(user):
 def before_validate_user(user, sync_sso=True):
 
     profile_document = get_profile_document(user)
-
-    UserProfile().update_document_search_table(
-        document=profile_document,
-        version=profile_document.last_version,
-        user=user,
-    )
+    search_item = UserProfile().get_search_item(profile_document)
+    search_item.user_is_validated = True
+    UserProfile().update_document_search_table(document=profile_document, version=profile_document.last_version)
 
     if sync_sso is True:  # TODO: needs forum in dev env
         get_discourse_client(current_app.config).sync_sso(user, user._email)

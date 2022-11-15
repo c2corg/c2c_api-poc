@@ -9,8 +9,8 @@ class Article(BaseModelHooks):
     fixed_attributes = ["anonymous"]
 
     def before_create_document(self, version):
-        super().before_create_document(version)
         version.data |= {"author": {"user_id": current_user.id}}
+        super().before_create_document(version)
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
         super().before_update_document(document, old_version, new_version)
@@ -33,6 +33,6 @@ class Article(BaseModelHooks):
             if new_version.data["author"]["user_id"] != current_user.id and not current_user.is_moderator:
                 raise Forbidden("You are not allowed to edit this article")
 
-    def update_document_search_table(self, document: Document, version: DocumentVersion, user=None, session=None):
-        search_item = super().update_document_search_table(document, user, session)
+    def update_document_search_table(self, document: Document, version: DocumentVersion, session=None):
+        search_item = super().update_document_search_table(document, version, session=session)
         search_item.activities = version.data["activities"]
