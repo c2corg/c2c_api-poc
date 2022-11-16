@@ -48,7 +48,6 @@ class TestChangesDocumentRest(BaseTestRest):
         self.waypoint3 = Waypoint(
             waypoint_type="summit",
             elevation=4985,
-            redirects_to=self.waypoint1.document_id,
             geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
             locales=[
                 WaypointLocale(lang="en", title="Mont Blanc", description="...", summary="The heighest point in Europe")
@@ -89,6 +88,7 @@ class TestChangesDocumentRest(BaseTestRest):
         self.session_add(self.profile2)
         self.session.flush()
 
+    def test_counts(self):
         version_count = self.session.query(DocumentVersion).count()
         assert 4 == version_count
 

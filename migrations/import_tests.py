@@ -363,7 +363,7 @@ def convert_test_file(filename, make_replacements=True, skip_entire_module=False
                 return
 
         if skip_entire_module:
-            code = f"import pytest\npytestmark=pytest.mark.skip()\n{code}"
+            code = f"import pytest\n\npytestmark = pytest.mark.skip()\n{code}"
         else:
             code = f"import pytest\n{code}"
 

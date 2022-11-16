@@ -11,7 +11,18 @@ class OutingLocale(LegacyDocumentLocale):
 
 
 class Outing(LegacyDocument):
-    def __init__(self, activities=None, date_start=None, date_end=None, geometry=None, version=None):
+    def __init__(
+        self,
+        activities=None,
+        date_start=None,
+        date_end=None,
+        geometry=None,
+        elevation_max=None,
+        elevation_min=None,
+        height_diff_up=None,
+        height_diff_down=None,
+        version=None,
+    ):
         super().__init__(version=version)
 
         if version is None:
@@ -28,6 +39,15 @@ class Outing(LegacyDocument):
 
             if geometry is not None:
                 data["geometry"] = geometry._json
+
+            if elevation_max is not None:
+                data["elevation_max"] = elevation_max
+            if elevation_max is not None:
+                data["elevation_min"] = elevation_min
+            if elevation_max is not None:
+                data["height_diff_up"] = height_diff_up
+            if elevation_max is not None:
+                data["height_diff_down"] = height_diff_down
 
             self.create_new_model(data=data)
 
