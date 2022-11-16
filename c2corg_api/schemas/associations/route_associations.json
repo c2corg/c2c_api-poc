@@ -8,5 +8,6 @@
     "waypoint": { "$ref": "/entities/id_array.json" },
     "xreport": { "$ref": "/entities/id_array.json" }
   },
+  "required": ["waypoint"],
   "additionalProperties": false
 }

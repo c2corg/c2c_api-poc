@@ -34,17 +34,3 @@ models = {
     WAYPOINT_TYPE: Waypoint(),
     XREPORT_TYPE: Xreport(),
 }
-
-
-def get_preferred_locale(preferred_lang, locales):
-
-    if preferred_lang in locales:
-        return locales[preferred_lang]
-
-    langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
-
-    for lang in langs_priority:
-        if lang in locales:
-            return locales[lang]
-
-    return None

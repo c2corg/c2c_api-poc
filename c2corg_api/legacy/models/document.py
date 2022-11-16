@@ -198,17 +198,11 @@ class Document:
         }
 
         # print(json.dumps(document, indent=4))
-        v7_associations = document["data"].get("associations")
-        if isinstance(v7_associations, dict):
-            for name, value in v7_associations.items():
+        if "associations" in document["data"]:
+            for name, value in document["data"]["associations"].items():
                 if isinstance(value, list):
                     for document_id in value:
                         result["associations"][name + "s"].append({"document_id": document_id})
-
-        elif isinstance(v7_associations, list):  # TODO : must be removed
-            associations = document["cooked_data"].get("associations")
-            for _, associated_document in associations.items():
-                result["associations"][associated_document["data"]["type"] + "s"].append(associated_document)
 
         if "geometry" in data:
             result["geometry"] = {"version": 0}

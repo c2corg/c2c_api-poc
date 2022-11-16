@@ -127,7 +127,7 @@ class TestDocumentRevertRest(BaseTestRest):
                 "main_waypoint_id": main_waypoint_id,
                 "locales": locales,
                 "geometry": geometry,
-                "associations": {},
+                "associations": {"waypoint": []},
             }
         )
 
