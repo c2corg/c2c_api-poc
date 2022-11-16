@@ -1,16 +1,10 @@
-import pytest
-from c2corg_api.legacy.models.association import Association, AssociationLog
-from c2corg_api.legacy.models.document import DocumentGeometry, DocumentLocale, UpdateType
-from c2corg_api.legacy.models.document_history import DocumentVersion
-from c2corg_api.legacy.models.document_tag import DocumentTag, DocumentTagLog
-from c2corg_api.legacy.models.feed import update_feed_document_create, DocumentChange
-from c2corg_api.legacy.models.image import Image
+from c2corg_api.legacy.models.association import Association
+from c2corg_api.legacy.models.document import DocumentGeometry
+from c2corg_api.legacy.models.document_tag import DocumentTag
 from c2corg_api.legacy.models.route import Route, RouteLocale, ROUTE_TYPE
 from c2corg_api.legacy.models.waypoint import Waypoint, WaypointLocale
 from c2corg_api.tests.legacy.views import BaseTestRest
 from c2corg_api.legacy.views.document import DocumentRest
-from sqlalchemy.sql.expression import or_
-from httmock import all_requests, HTTMock
 
 
 class TestDocumentMergeRest(BaseTestRest):
@@ -80,13 +74,8 @@ class TestDocumentMergeRest(BaseTestRest):
         self.session.flush()
 
         DocumentRest.create_new_version(self.waypoint1, contributor_id)
-        update_feed_document_create(self.waypoint1, contributor_id)
-
         DocumentRest.create_new_version(self.route1, contributor_id)
-        update_feed_document_create(self.route1, contributor_id)
-
         DocumentRest.create_new_version(self.route2, contributor_id)
-        update_feed_document_create(self.route2, contributor_id)
 
         association = Association.create(parent_document=self.waypoint1, child_document=self.route1)
         self.session_add(association)
@@ -105,40 +94,8 @@ class TestDocumentMergeRest(BaseTestRest):
         self.session_add(association.get_log(self.global_userids["contributor"]))
         self.session.flush()
 
-        self.image1 = Image(
-            filename="image1.jpg",
-            activities=["paragliding"],
-            height=1500,
-            image_type="collaborative",
-            locales=[DocumentLocale(lang="en", title="Mont Blanc from the air", description="...")],
-        )
-        self.session_add(self.image1)
-
-        self.image2 = Image(
-            filename="image2.jpg",
-            activities=["paragliding"],
-            height=1500,
-            image_type="collaborative",
-            locales=[DocumentLocale(lang="en", title="Mont Blanc from the air", description="...")],
-        )
-        self.session_add(self.image2)
-
-        self.session.flush()
-        DocumentRest.create_new_version(self.image1, contributor_id)
-        self.session.flush()
-
-        self.image1.filename = "image1.1.jpg"
-        self.session.flush()
-        DocumentRest.update_version(self.image1, contributor_id, "changed filename", [UpdateType.FIGURES], [])
-        self.session.flush()
-
         self.session_add(
             DocumentTag(document_id=self.route1.document_id, document_type=ROUTE_TYPE, user_id=contributor_id)
-        )
-        self.session_add(
-            DocumentTagLog(
-                document_id=self.route1.document_id, document_type=ROUTE_TYPE, user_id=contributor_id, is_creation=True
-            )
         )
         self.session.commit()
 
@@ -147,8 +104,7 @@ class TestDocumentMergeRest(BaseTestRest):
         self.waypoint3 = self.get(f"/v7/document/{self.waypoint3.document_id}", status=301).json["document"]
         self.waypoint4 = self.get(f"/v7/document/{self.waypoint4.document_id}").json["document"]
         self.route1 = self.get(f"/v7/document/{self.route1.document_id}").json["document"]
-        self.image1 = self.get(f"/v7/document/{self.image1.document_id}").json["document"]
-        self.image2 = self.get(f"/v7/document/{self.image2.document_id}").json["document"]
+        self.route2 = self.get(f"/v7/document/{self.route2.document_id}").json["document"]
 
     def _post(self, body, expected_status):
         headers = self.add_authorization_header(username="moderator")
@@ -171,55 +127,13 @@ class TestDocumentMergeRest(BaseTestRest):
         waypoint = self.get(f"/v7/document/{self.waypoint1['id']}", status=301).json["document"]
         assert waypoint["redirects_to"] == self.waypoint2["id"]
 
-    @pytest.mark.xfail(reason="TODO")
-    def test_merge_image(self):
-        call = {"times": 0}
-
-        @all_requests
-        def image_service_mock(url, request):
-            call["times"] += 1
-            call["request.body"] = request.body.split("&")
-            call["request.url"] = request.url
-            return {"status_code": 200, "content": ""}
-
-        with HTTMock(image_service_mock):
-            self._post(
-                {"source_document_id": self.image1.document_id, "target_document_id": self.image2.document_id}, 200
-            )
-            assert call["times"] == 1
-            self.assertIn("filenames=image1.1.jpg", call["request.body"])
-            self.assertIn("filenames=image1.jpg", call["request.body"])
-            self.assertEqual(call["request.url"], self.settings["image_backend.url"] + "/delete")
-
-    @pytest.mark.xfail(reason="TODO")
-    def test_merge_image_error_deleting_files(self):
-        """Test that the merge request is also successful if the image files
-        cannot be deleted.
-        """
-        call = {"times": 0}
-
-        @all_requests
-        def image_service_mock(url, request):
-            call["times"] += 1
-            call["request.body"] = request.body.split("&")
-            call["request.url"] = request.url
-            return {"status_code": 500, "content": "some random error"}
-
-        with HTTMock(image_service_mock):
-            self._post(
-                {"source_document_id": self.image1.document_id, "target_document_id": self.image2.document_id}, 200
-            )
-            assert call["times"] == 1
-            self.assertIn("filenames=image1.1.jpg", call["request.body"])
-            self.assertIn("filenames=image1.jpg", call["request.body"])
-            self.assertEqual(call["request.url"], self.settings["image_backend.url"] + "/delete")
-
-    @pytest.mark.xfail(reason="TODO")
     def test_tags(self):
-        self._post({"source_document_id": self.route1.document_id, "target_document_id": self.route2.document_id}, 200)
+        tags = self.get("/v7/tags").json["tags"]
+        assert len(tags) == 1
+        assert tags[0]["document_id"] == self.route1["id"]
 
-        # Check tags and logs have been transfered from route1 to route2
-        count = self.session.query(DocumentTag).filter(DocumentTag.document_id == self.route2.document_id).count()
-        assert count == 1
-        count = self.session.query(DocumentTagLog).filter(DocumentTagLog.document_id == self.route2.document_id).count()
-        assert count == 1
+        self._post({"source_document_id": self.route1["id"], "target_document_id": self.route2["id"]}, 200)
+
+        tags = self.get("/v7/tags").json["tags"]
+        assert len(tags) == 1
+        assert tags[0]["document_id"] == self.route2["id"]

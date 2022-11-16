@@ -315,8 +315,8 @@ skipped_methods_by_file = {
     "views/test_document_merge.py": {
         "test_already_merged": "setup did not commit the data, preventing the test to success in flask-sqlalchemy model",
         "test_merge_waypoint": "PITA, rewritted",
-        "test_merge_image": "PITA, rewritted",
-        "test_merge_image_error_deleting_files": "PITA, rewritted",
+        "test_merge_image": "Nothing to test, old images must not be deleted",
+        "test_merge_image_error_deleting_files": "Nothing to test, old images must not be deleted",
         "test_tags": "PITA, rewritted",
     },
 }

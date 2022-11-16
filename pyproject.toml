@@ -17,7 +17,7 @@ dependencies = [
     "black==22.8.0",
     "bleach==4.0.0",
     "Flask-Camp==0.0.25",
-    "httmock==1.4.0",
+    "httmock==1.4.0",  # can be removed when legacy will be removed
     "Markdown==3.3.4",  # at next update, please remove replace_marker() function in toc extension 
     "pylint==2.15.4",
     "pytest==7.1.3",
