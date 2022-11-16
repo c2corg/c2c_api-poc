@@ -1,7 +1,6 @@
 from flask_camp import current_api
 from flask_camp.models import Document, DocumentVersion
 from flask_camp.utils import JsonResponse
-from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest
 
 from c2corg_api.search import DocumentSearch
@@ -25,9 +24,6 @@ class BaseModelHooks:
 
         schema_validator.validate(new_version.data, f"{document_type}.json")
         self.update_document_search_table(document, new_version)
-
-    def before_merge_document(a, b):
-        delete(DocumentSearch).where(DocumentSearch.id == a.id)
 
     def cook(self, document: dict, get_document):
         ...
