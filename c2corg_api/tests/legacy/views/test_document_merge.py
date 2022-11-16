@@ -244,7 +244,7 @@ class TestDocumentMergeRest(BaseTestRest):
         )
         assert 0 == feed_count
 
-    @pytest.mark.skip(reason="PITA, rewritted")
+    @pytest.mark.skip(reason="Nothing to test, old images must not be deleted")
     def test_merge_image(self):
         call = {"times": 0}
 
@@ -264,7 +264,7 @@ class TestDocumentMergeRest(BaseTestRest):
             self.assertIn("filenames=image1.jpg", call["request.body"])
             self.assertEqual(call["request.url"], self.settings["image_backend.url"] + "/delete")
 
-    @pytest.mark.skip(reason="PITA, rewritted")
+    @pytest.mark.skip(reason="Nothing to test, old images must not be deleted")
     def test_merge_image_error_deleting_files(self):
         """Test that the merge request is also successful if the image files
         cannot be deleted.
