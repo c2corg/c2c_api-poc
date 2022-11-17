@@ -1,14 +1,30 @@
 from flask import request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
 
-from flask_camp import allow
-from flask_camp.models import Document
+from flask_camp import allow, current_api
+from flask_camp.models import Document, User
 
-from c2corg_api.models._core import ui_url_types
+from c2corg_api.models._core import ui_url_types, OUTING_TYPE
 from c2corg_api.schemas import schema
+from c2corg_api.search import DocumentSearch
 from c2corg_api.security.discourse_client import get_discourse_client
 
 rule = "/forum/topics"
+
+
+def _invite_participants(client, profile_ids, topic_id):
+    participants = (
+        current_api.database.session.query(User.name)
+        .join(DocumentSearch, DocumentSearch.user_id == User.id)
+        .filter(DocumentSearch.id.in_(profile_ids))
+        .group_by(User.name)
+    )
+
+    for (name,) in participants:
+        try:
+            client.client.invite_user_to_topic_by_username(name, topic_id)
+        except Exception:
+            current_app.logger.exception(f"Inviting forum user {name} in topic {topic_id} failed")
 
 
 @schema("requests/post_topics.json")
@@ -41,24 +57,20 @@ def post():
         title = f"{document_id}_{lang}"
         response = client.client.create_post(content, title=title, category=category)
     except Exception as e:
-        current_app.logger.error("Error with Discourse: {}".format(str(e)), exc_info=True)
+        current_app.logger.exception("Error with Discourse: {e}")
         raise InternalServerError("Error with Discourse") from e
 
-    # if "topic_id" in response:
-    #     topic_id = response['topic_id']
+    if "topic_id" in response:
+        topic_id = response["topic_id"]
+        document.data["topics"][lang] = topic_id
+        document.clear_memory_cache()
 
-    #     locale["topic_id"] = document_topic
-    #     update_cache_version_direct(locale.document_id)
-    #     DBSession.flush()
+        current_api.database.session.commit()
 
-    #     if locale.type == document_types.OUTING_TYPE:
-    #         try:
-    #             self.invite_participants(client, locale, topic_id)
-    #         except Exception:
-    #             log.error('Inviting participants of outing {} failed'
-    #                         .format(locale.document_id),
-    #                         exc_info=True)
+        if document.last_version.data["type"] == OUTING_TYPE:
+            try:
+                _invite_participants(client, document.last_version.data["associations"]["profile"], topic_id)
+            except Exception:
+                current_app.logger.exception(f"Inviting participants of outing {document_id} failed")
 
-    # return response
-
-    return {}
+    return {"status": "ok"}

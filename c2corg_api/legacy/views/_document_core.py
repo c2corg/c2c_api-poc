@@ -1,5 +1,3 @@
-import json
-
 from flask import request
 from flask_camp import allow, current_api
 from flask_camp.views.content import documents as documents_view, document as document_view, version as version_view

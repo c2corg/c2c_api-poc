@@ -120,7 +120,6 @@ class TestForumTopicRest(BaseTestRest):
             category="Commentaires",
         )
 
-    @pytest.mark.xfail(reason="TODO")
     @patch("pydiscourse.client.DiscourseClient._post", side_effect=[{"topic_id": 10}, {}, {}])
     def test_post_invite_participants(self, _post_mock):
         """Test outing participants are invited in the topic"""
