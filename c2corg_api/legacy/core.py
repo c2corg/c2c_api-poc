@@ -10,6 +10,7 @@ from c2corg_api.legacy.views.documents import (
     unprotect as unprotect_view,
     revert as revert_view,
     merge as merge_view,
+    changes as changes_view,
 )
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
@@ -38,7 +39,7 @@ def add_legacy_modules(app, api):
     # define v6 interface
     api.add_views(app, health_view, cooker_view, search_view, url_prefix="")
 
-    api.add_views(app, protect_view, unprotect_view, revert_view, merge_view, url_prefix="")
+    api.add_views(app, protect_view, unprotect_view, revert_view, merge_view, changes_view, url_prefix="")
 
     api.add_views(
         app,
