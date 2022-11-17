@@ -1,8 +1,8 @@
 from flask import request, current_app
-from werkzeug.exceptions import BadRequest, InternalServerError
-
 from flask_camp import allow, current_api
 from flask_camp.models import Document, User
+from sqlalchemy.orm.attributes import flag_modified
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 from c2corg_api.models._core import ui_url_types, OUTING_TYPE
 from c2corg_api.schemas import schema
@@ -47,7 +47,7 @@ def post():
 
     document_path = f"/{document_type}/{document_id}/{lang}"
     title = locale.get("title", document_path) or document_path
-    content = '<a href="https://www.camptocamp.org{document_path}">{title}</a>'
+    content = f'<a href="https://www.camptocamp.org{document_path}">{title}</a>'
 
     category = current_app.config["C2C_DISCOURSE_COMMENT_CATEGORY"]
 
@@ -63,6 +63,7 @@ def post():
     if "topic_id" in response:
         topic_id = response["topic_id"]
         document.data["topics"][lang] = topic_id
+        flag_modified(document, "data")
         document.clear_memory_cache()
 
         current_api.database.session.commit()

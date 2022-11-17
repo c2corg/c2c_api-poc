@@ -20,9 +20,8 @@ from requests.exceptions import ConnectionError
 
 class TestForumTopicRest(BaseTestRest):
     def _add_test_data(self):
-        self.waypoint = Waypoint(waypoint_type="summit", elevation=2203)
         self.locale_en = WaypointLocale(lang="en", title="Mont Granier", description="...", access="yep")
-        self.waypoint.locales.append(self.locale_en)
+        self.waypoint = Waypoint(waypoint_type="summit", elevation=2203, locales=[self.locale_en])
         self.waypoint.geometry = DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)")
         self.session_add(self.waypoint)
 
@@ -67,66 +66,29 @@ class TestForumTopicRest(BaseTestRest):
         self._add_test_data()
         self.session.commit()
 
-    def test_post_document_not_exists(self):
-        json = self.post_json_with_contributor(
-            "/forum/topics", {"document_id": self.waypoint.document_id, "lang": "fr"}, status=400
-        )
-        errors = json.get("errors")
-        assert "Document not found" == errors[0].get("description")
-
-    def test_post_topic_exists(self):
-        json = self.post_json_with_contributor(
-            "/forum/topics", {"document_id": self.waypoint_with_topic.document_id, "lang": "en"}, status=400
-        )
-        errors = json.get("errors")
-        assert "Topic already exists" == errors[0].get("description")
-
-    @patch("pydiscourse.client.DiscourseClient.create_post", side_effect=ConnectionError())
-    def test_post_discourse_down(self, create_post_mock):
+    @patch("pydiscourse.client.DiscourseClient.create_post", return_value={"topic_id": 10})
+    def test_post_without_title(self, create_post_mock):
+        """Test topic link content for documents without title"""
         self.post_json_with_contributor(
-            "/forum/topics", {"document_id": self.waypoint.document_id, "lang": "en"}, status=500
+            "/forum/topics",
+            {"document_id": self.image.document_id, "lang": "en"},
+            status=200,
+        )
+
+        referer = f"https://www.camptocamp.org/images/{self.image.document_id}/en"
+        create_post_mock.assert_called_with(
+            f'<a href="{referer}">/images/{self.image.document_id}/en</a>',
+            title=f"{self.image.document_id}_en",
+            category=666,
         )
 
     @patch("pydiscourse.client.DiscourseClient.create_post", return_value={"topic_id": 10})
-    @pytest.mark.skip(reason="PITA, rewritted")
     def test_post_success(self, create_post_mock):
         version = self.locale_en.version
         json = self.post_json_with_contributor(
             "/forum/topics", {"document_id": self.waypoint.document_id, "lang": "en"}, status=200
         )
-        self.session.expire(self.locale_en)
-        assert 10 == self.locale_en.topic_id
-        assert version == self.locale_en.version
-        assert 10 == json.get("topic_id")
 
-        cache_version = self.session.query(CacheVersion).get(self.waypoint.document_id)
-        assert cache_version.version == 2
+        doc = self.get(f"/v7/document/{self.waypoint.document_id}").json["document"]
 
-    @patch("pydiscourse.client.DiscourseClient.create_post", return_value={"topic_id": 10})
-    @pytest.mark.skip(reason="PITA, rewritted")
-    def test_post_without_title(self, create_post_mock):
-        """Test topic link content for documents without title"""
-        locale = self.image_locale_en
-        referer = "https://www.camptocamp.org/images/{}/{}".format(locale.document_id, locale.lang)
-        self.post_json_with_contributor(
-            "/forum/topics",
-            {"document_id": self.image.document_id, "lang": "en"},
-            headers={"Referer": referer},
-            status=200,
-        )
-        create_post_mock.assert_called_with(
-            '<a href="{}">{}</a>'.format(referer, "/images/{}/{}".format(locale.document_id, locale.lang)),
-            title="{}_{}".format(locale.document_id, locale.lang),
-            category="Commentaires",
-        )
-
-    @patch("pydiscourse.client.DiscourseClient._post", side_effect=[{"topic_id": 10}, {}, {}])
-    def test_post_invite_participants(self, _post_mock):
-        """Test outing participants are invited in the topic"""
-        self.post_json_with_contributor(
-            "/forum/topics", {"document_id": self.outing.document_id, "lang": "en"}, status=200
-        )
-        _post_mock.assert_has_calls(
-            [call("/t/10/invite.json", user="contributor"), call("/t/10/invite.json", user="contributor2")],
-            any_order=True,
-        )
+        assert doc["metadata"]["topics"]["en"] == 10

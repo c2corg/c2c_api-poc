@@ -322,6 +322,10 @@ skipped_methods_by_file = {
         "test_merge_image_error_deleting_files": "Nothing to test, old images must not be deleted",
         "test_tags": "PITA, rewritted",
     },
+    "views/test_forum.py": {
+        "test_post_success": "PITA, rewritted",
+        "test_post_without_title": "PITA, rewritted",
+    },
 }
 
 

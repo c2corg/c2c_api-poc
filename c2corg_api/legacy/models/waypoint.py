@@ -29,7 +29,7 @@ class Waypoint(Document):
             }
 
             if locales is None:
-                data["locales"] = {"fr": {"lang": "fr", "title": "default title"}}
+                data["locales"] = {"en": {"lang": "en", "title": "default title"}}
             else:
                 data["locales"] = {locale.lang: locale._json for locale in locales}
 
