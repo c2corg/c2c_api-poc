@@ -1,6 +1,7 @@
 from flask_camp import current_api
 from flask_camp.models import Document, DocumentVersion
 from flask_camp.utils import JsonResponse
+from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.exceptions import BadRequest
 
 from c2corg_api.search import DocumentSearch
@@ -12,10 +13,12 @@ class BaseModelHooks:
     def after_get_document(self, response: JsonResponse):
         ...
 
-    def before_create_document(self, version):
+    def before_create_document(self, document, version):
+        document.data = {"topics": {}}
         document_type = version.data["type"]
         schema_validator.validate(version.data, f"{document_type}.json")
         self.update_document_search_table(version.document, version)
+        flag_modified(version, "data")
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
         document_type = old_version.data["type"]

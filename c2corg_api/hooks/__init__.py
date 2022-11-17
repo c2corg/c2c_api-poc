@@ -31,7 +31,7 @@ def after_get_document(response: JsonResponse):
 
 
 def before_create_document(document):
-    _get_model(document.last_version).before_create_document(version=document.last_version)
+    _get_model(document.last_version).before_create_document(document=document, version=document.last_version)
 
 
 def before_update_document(document: Document, old_version: DocumentVersion, new_version: DocumentVersion):

@@ -12,8 +12,7 @@
         "route_history": { "type": "string" },
         "summary": { "type": "string" },
         "title": { "type": "string" },
-        "slope": { "type": "string" },
-        "topic_id": { "type": "integer" }
+        "slope": { "type": "string" }
       },
       "required": ["lang", "title"],
       "additionalProperties": false

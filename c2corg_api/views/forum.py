@@ -24,7 +24,7 @@ def post():
     if locale is None:
         raise BadRequest("Document not found")
 
-    if locale.get("topic_id") is not None:
+    if document.data["topics"].get(lang) is not None:
         raise BadRequest("Topic already exists")
 
     document_type = ui_url_types[data["type"]]

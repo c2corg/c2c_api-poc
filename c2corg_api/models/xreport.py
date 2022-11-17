@@ -2,7 +2,6 @@ from flask import current_app
 from flask_camp.models import Document, DocumentVersion
 from flask_camp._utils import JsonResponse
 from flask_login import current_user
-from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.models._document import BaseModelHooks
@@ -22,7 +21,7 @@ class Xreport(BaseModelHooks):
             for field in self.private_fields:
                 document_data[field] = None  # overwrite it with None
 
-    def before_create_document(self, version: DocumentVersion):
+    def before_create_document(self, document, version: DocumentVersion):
 
         if version.data["anonymous"]:
             anonymous_user_id = current_app.config["ANONYMOUS_USER_ID"]
@@ -31,9 +30,7 @@ class Xreport(BaseModelHooks):
         else:
             version.data |= {"author": {"user_id": current_user.id}}
 
-        flag_modified(version, "data")
-
-        super().before_create_document(version)
+        super().before_create_document(document, version)
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
         super().before_update_document(document, old_version, new_version)

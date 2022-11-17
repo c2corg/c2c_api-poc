@@ -20,7 +20,6 @@
         "summary": { "type": "string" },
         "time_management": { "type": "string" },
         "title": { "type": "string" },
-        "topic_id": { "type": "integer" },
         "training": { "type": "string" }
       },
       "required": ["lang", "title"],

@@ -62,7 +62,9 @@ class Document:
             # print(json.dumps(data, indent=4))
             schema_validator.validate(data, f"{data['type']}.json")
 
-            self._version = Document.create(comment="Creation", data=data, author=self.default_author).last_version
+            document = Document.create(comment="Creation", data=data, author=self.default_author)
+            document.data = {"topics": {}}
+            self._version = document.last_version
             self._document.protected = protected
 
     @staticmethod
@@ -86,6 +88,7 @@ class Document:
         result = {
             "protected": legacy_document.pop("protected", False),
             "data": {},
+            "metadata": {"topics": {}},
         }
 
         legacy_type = legacy_document.pop("type", "")
@@ -108,8 +111,10 @@ class Document:
         for locale in locales:
             locale.pop("version", None)
 
-            if "topic_id" in locale and locale["topic_id"] is None:
-                del locale["topic_id"]
+            topic_id = locale.pop("topic_id", None)
+
+            if topic_id is not None:
+                result["metadata"]["topics"][locale["lang"]] = topic_id
 
             if "title_prefix" in locale:
                 del locale["title_prefix"]
@@ -160,6 +165,10 @@ class Document:
     def convert_to_legacy_doc(document):
         """Convert document (as dict) of the new model to the legacy v6 dict"""
         data = document["data"]
+        if document["metadata"]:
+            topics = document["metadata"].get("topics", {})
+        else:
+            topics = {}
 
         v7_types = {
             AREA_TYPE: "a",
@@ -180,7 +189,7 @@ class Document:
             "protected": document["protected"],
             "type": v7_types[data["type"]],
             "locales": [
-                locale | {"version": 0, "topic_id": locale.get("topic_id")} for locale in data["locales"].values()
+                locale | {"version": 0, "topic_id": topics.get(locale["lang"])} for locale in data["locales"].values()
             ],
             "available_langs": list(data["locales"].keys()),
             "associations": {
@@ -315,32 +324,6 @@ class DocumentGeometry:
         return 0
 
 
-class LocaleDictProxy:
-    def __init__(self, version):
-        self._version = version
-        self._document_type = version.data["type"]
-
-    def append(self, locale):
-        locale.set_document_type(self._document_type)
-        self._version.data["locales"][locale.lang] = locale.to_json()
-        flag_modified(self._version, "data")
-
-    def get_locale(self, lang):
-        result = self._version.data["locales"].get(lang)
-
-        return None if result is None else DocumentLocale(json=result)
-
-    def __len__(self):
-        return len(self._version.data["locales"])
-
-    def __str__(self):
-        return str(self._version.data["locales"])
-
-    def __getitem__(self, i):
-        json = list(self._version.data["locales"].values())[i]
-        return DocumentLocale(json=json)
-
-
 class DocumentLocale:
     def __init__(self, lang=None, title=None, summary=None, description="", document_topic=None, json=None, **kwargs):
         if json is not None:
@@ -353,6 +336,8 @@ class DocumentLocale:
                 self._json["summary"] = summary
 
             self._json |= kwargs
+
+        self.topic_id = self._json.pop("topic_id", None)
 
     def set_document_type(self, document_type):
         if document_type == USERPROFILE_TYPE:
@@ -386,6 +371,35 @@ class DocumentLocale:
     @property
     def place(self):
         return self._json.get("place", "")
+
+
+class LocaleDictProxy:
+    def __init__(self, version):
+        self._version = version
+        self._document_type = version.data["type"]
+
+    def append(self, locale: DocumentLocale):
+        locale.set_document_type(self._document_type)
+        self._version.data["locales"][locale.lang] = locale.to_json()
+        if locale.topic_id is not None:
+            self._version.document.data["topics"][locale.lang] = locale.topic_id
+            flag_modified(self._version.document, "data")
+        flag_modified(self._version, "data")
+
+    def get_locale(self, lang):
+        result = self._version.data["locales"].get(lang)
+
+        return None if result is None else DocumentLocale(json=result)
+
+    def __len__(self):
+        return len(self._version.data["locales"])
+
+    def __str__(self):
+        return str(self._version.data["locales"])
+
+    def __getitem__(self, i):
+        json = list(self._version.data["locales"].values())[i]
+        return DocumentLocale(json=json)
 
 
 class ArchiveDocumentLocale:

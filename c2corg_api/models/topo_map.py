@@ -6,8 +6,8 @@ from c2corg_api.models._document import BaseModelHooks
 
 
 class TopoMap(BaseModelHooks):
-    def before_create_document(self, version):
-        super().before_create_document(version)
+    def before_create_document(self, document, version):
+        super().before_create_document(document, version)
         if not current_user.is_moderator:
             raise Forbidden()
 

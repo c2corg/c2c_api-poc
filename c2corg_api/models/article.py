@@ -1,6 +1,5 @@
 from flask_camp.models import Document, DocumentVersion
 from flask_login import current_user
-from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.models._document import BaseModelHooks
@@ -9,10 +8,9 @@ from c2corg_api.models._document import BaseModelHooks
 class Article(BaseModelHooks):
     fixed_attributes = ["anonymous"]
 
-    def before_create_document(self, version):
+    def before_create_document(self, document, version):
         version.data |= {"author": {"user_id": current_user.id}}
-        flag_modified(version, "data")
-        super().before_create_document(version)
+        super().before_create_document(document, version)
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):
         super().before_update_document(document, old_version, new_version)

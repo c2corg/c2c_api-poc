@@ -52,7 +52,7 @@ class UserProfile(BaseModelHooks):
         if not user_is_validated:
             raise NotFound()
 
-    def before_create_document(self, version):
+    def before_create_document(self, document, version):
         raise BadRequest("Profile page can't be created without an user")
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):

@@ -9,8 +9,7 @@
         "description": { "type": "string" },
         "lang": { "$ref": "/attributes/default_langs.json" },
         "summary": { "type": "string" },
-        "title": { "type": "string" },
-        "topic_id": { "type": "integer" }
+        "title": { "type": "string" }
       },
       "required": ["lang", "title"],
       "additionalProperties": false
