@@ -52,8 +52,6 @@ def create_app(**config):
     api = RestApi(
         app=app,
         cooker=cooker,
-        schemas_directory="c2corg_api/schemas",
-        user_schema="user.json",
         update_search_query=hooks.update_search_query,
         url_prefix="/v7",
     )

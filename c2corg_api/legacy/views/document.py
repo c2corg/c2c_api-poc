@@ -1,9 +1,10 @@
 from copy import deepcopy
-import json
-from c2corg_api.models import ARTICLE_TYPE, XREPORT_TYPE
 
 from flask_camp.models import DocumentVersion, User
 from flask_camp import current_api
+from sqlalchemy.orm.attributes import flag_modified
+
+from c2corg_api.models import ARTICLE_TYPE, XREPORT_TYPE
 
 
 class DocumentRest:
@@ -23,9 +24,8 @@ class DocumentRest:
             DocumentRest.create_new_version_called.add(id(document))
 
             if last_version.data["type"] in (ARTICLE_TYPE, XREPORT_TYPE):
-                data = last_version.data
-                data |= {"author": {"user_id": author}}
-                last_version._data = json.dumps(data)
+                last_version.data |= {"author": {"user_id": author}}
+                flag_modified(last_version, "data")
 
         else:
             version = DocumentVersion(

@@ -1,4 +1,6 @@
 from flask_camp.models import Document
+from sqlalchemy.orm.attributes import flag_modified
+
 from c2corg_api.models import (
     USERPROFILE_TYPE,
     BOOK_TYPE,
@@ -84,7 +86,7 @@ class Association:
         else:
             raise Exception(f"Please set association map for {document_type}")
 
-        new_model.data = new_model.data  # propagagte json modification
+        flag_modified(new_model, "data")
 
     def get_log(self, _):
         return None

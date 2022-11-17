@@ -1,17 +1,19 @@
-from flask import current_app
-from flask_camp.models import Document, DocumentVersion
+from flask import request, current_app
+from flask_camp import current_api
+from flask_camp.models import Document, DocumentVersion, User
 from flask_camp.utils import JsonResponse
 from sqlalchemy import delete
-from werkzeug.exceptions import BadRequest
+from sqlalchemy.orm.attributes import flag_modified
+from werkzeug.exceptions import BadRequest, NotFound
 
 from c2corg_api.hooks._tools import check_user_name, get_profile_document
 from c2corg_api.models import models
 from c2corg_api.models.userprofile import UserProfile
+from c2corg_api.schemas import schema_validator
 from c2corg_api.search import DocumentSearch
 from c2corg_api.security.discourse_client import get_discourse_client
 
 from ._before_block_user import before_block_user
-from ._before_update_user import before_update_user
 from ._update_search_query import update_search_query
 
 
@@ -48,7 +50,30 @@ def before_merge_documents(source_document, target_document):
 
 def before_create_user(user):
     check_user_name(user.name)
+    schema_validator.validate(user.data, "user_data.json")
     UserProfile().create(user, ["fr"])
+
+
+def before_update_user(user: User, sync_sso=True):
+
+    data = request.get_json()
+
+    if "name" in data:
+        check_user_name(user.name)
+
+    follow = list(set(user.data["feed"]["follow"]))
+    user.data["feed"]["follow"] = follow  # remove duplicates
+    flag_modified(user, "data")
+
+    schema_validator.validate(user.data, "user_data.json")
+
+    if len(follow) != 0:
+        real_user_ids = [r[0] for r in current_api.database.session.query(User.id).filter(User.id.in_(follow)).all()]
+        if len(follow) != len(real_user_ids):
+            raise NotFound(f"{follow} {real_user_ids}")
+
+    if sync_sso is True:  # TODO: needs forum in dev env
+        get_discourse_client(current_app.config).sync_sso(user, user._email)
 
 
 def before_validate_user(user, sync_sso=True):

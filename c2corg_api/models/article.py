@@ -1,5 +1,6 @@
 from flask_camp.models import Document, DocumentVersion
 from flask_login import current_user
+from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.exceptions import BadRequest, Forbidden
 
 from c2corg_api.models._document import BaseModelHooks
@@ -10,6 +11,7 @@ class Article(BaseModelHooks):
 
     def before_create_document(self, version):
         version.data |= {"author": {"user_id": current_user.id}}
+        flag_modified(version, "data")
         super().before_create_document(version)
 
     def before_update_document(self, document: Document, old_version: DocumentVersion, new_version: DocumentVersion):

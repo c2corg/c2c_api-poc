@@ -1,3 +1,4 @@
+from copy import deepcopy
 from flask import request
 from flask_camp import allow
 from flask_camp.views.account import current_user as current_user_view
@@ -28,7 +29,7 @@ def get():
 @allow("authenticated", allow_blocked=True)
 def post():
     # convert v6 request to flask_camp request
-    data = current_user.data
+    data = deepcopy(current_user.data)
     feed = request.get_json()
 
     try:

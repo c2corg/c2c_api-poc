@@ -1,8 +1,7 @@
 # pylint: disable=unused-import
 
 import json
-from flask_camp import current_api
-from werkzeug.exceptions import BadRequest, NotFound
+from sqlalchemy.orm.attributes import flag_modified
 
 from c2corg_api.legacy.models.document_history import HistoryMetaData
 from c2corg_api.schemas import schema_validator
@@ -279,9 +278,8 @@ class Document:
 
     @geometry.setter
     def geometry(self, value):
-        data = self._version.data
-        data["geometry"] = value._json
-        self._version.data = data
+        self._version.data["geometry"] = value._json
+        flag_modified(self._version, "data")
 
     def get_locale(self, lang):
         return self.locales.get_locale(lang)
@@ -325,7 +323,7 @@ class LocaleDictProxy:
     def append(self, locale):
         locale.set_document_type(self._document_type)
         self._version.data["locales"][locale.lang] = locale.to_json()
-        self._version.data = self._version.data  # force update (need to find a better solution)
+        flag_modified(self._version, "data")
 
     def get_locale(self, lang):
         result = self._version.data["locales"].get(lang)

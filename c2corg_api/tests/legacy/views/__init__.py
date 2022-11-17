@@ -5,6 +5,7 @@ from os import sync
 
 from flask_camp.models import User, Document, DocumentVersion
 from sqlalchemy import select
+from sqlalchemy.orm.attributes import flag_modified
 
 from c2corg_api.hooks import before_validate_user, before_create_user
 from c2corg_api.models.userprofile import UserProfile
@@ -143,7 +144,6 @@ class BaseTestRest(BaseTestClass):
             self.session.flush()
 
             if instance._document.redirects_to is None:
-                assert json.dumps(instance._version.data) == instance._version._data
                 data = instance._version.data
                 document_type = data["type"]
                 schema_validator.validate(data, f"{document_type}.json")
@@ -154,9 +154,8 @@ class BaseTestRest(BaseTestClass):
         elif isinstance(instance, LegacyUser):
             self.session.add(instance._user)
             self.session.flush()
-            data = deepcopy(instance.profile._version.data)
-            data["user_id"] = instance.id
-            instance.profile._version._data = json.dumps(data)
+            instance.profile._version.data |= {"user_id": instance.id}
+            flag_modified(instance.profile._version, "data")
 
             search_item = models["profile"].update_document_search_table(
                 instance.profile._document, instance.profile._document.last_version, session=self.session
