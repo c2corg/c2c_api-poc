@@ -1,2 +1,6 @@
 def get_cache_key():
     ...
+
+
+class CacheVersion:
+    ...

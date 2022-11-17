@@ -46,6 +46,7 @@ def _assert_unary_replacements(old_foo, operator):
 
 def _legacy_model_replacements():
     return [
+        (r"from c2corg_api.models.common.document_types ", "from c2corg_api.models._core "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
         (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
@@ -198,6 +199,7 @@ replacements = (
             r"self\.app\.app\.registry\.anonymous_user_id =",
             'self.app.config["ANONYMOUS_USER_ID"] =',
         ),
+        (r'assert 1 == errors\[0\]\.get\("topic_id"\)\n', ""),
         (r"/sitemaps/r/", "/sitemaps/route/"),
         (r"/sitemaps/w/", "/sitemaps/waypoint/"),
         # commit after adding test data, as tst session is not query session
@@ -411,7 +413,7 @@ convert_test_file("views/test_document_revert.py")  ###########  12K
 convert_test_file("views/test_document_schema.py")  ########### 2.1K
 # convert_test_file("views/test_document_tag.py")  ############ 4.9K
 convert_test_file("views/test_feed.py")  ######################  21K
-# convert_test_file("views/test_forum.py")  ################### 6.6K
+convert_test_file("views/test_forum.py")  ##################### 6.6K
 convert_test_file("views/test_health.py")  ####################  345
 # convert_test_file("views/test_image.py")  ###################  40K
 convert_test_file("views/test_langs.py")  ##################### 4.8K

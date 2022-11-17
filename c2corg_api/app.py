@@ -6,6 +6,7 @@ from c2corg_api.legacy.core import add_legacy_modules
 from c2corg_api.models import models
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
+from c2corg_api.views import forum as forum_view
 from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
@@ -18,6 +19,14 @@ def cooker(document, get_document):
     # print(json.dumps(document, indent=4))
 
 
+def assert_config_integer(app, name):
+    try:
+        if isinstance(app.config[name], str):
+            app.config[name] = int(app.config[name])
+    except ValueError as e:
+        raise ValueError(f"Please set a numeric value for FLASK_{name}") from e
+
+
 def create_app(**config):
     app = Flask(__name__, static_folder=None)
 
@@ -28,6 +37,7 @@ def create_app(**config):
             "C2C_DISCOURSE_URL": "https://forum.camptocamp.org",
             "C2C_DISCOURSE_PUBLIC_URL": "https://forum.camptocamp.org",
             "C2C_DISCOURSE_API_KEY": "4647c0d98e8beb793da099ff103b9793d8d4f94fff7cdd52d58391c6fa025845",
+            "C2C_DISCOURSE_COMMENT_CATEGORY": "666",  # TODO
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
             "ANONYMOUS_USER_ID": "271737",
         }
@@ -36,11 +46,8 @@ def create_app(**config):
     app.config.from_prefixed_env()
     app.config.from_mapping(config)
 
-    try:
-        if isinstance(app.config["ANONYMOUS_USER_ID"], str):
-            app.config["ANONYMOUS_USER_ID"] = int(app.config["ANONYMOUS_USER_ID"])
-    except ValueError as e:
-        raise ValueError("Please set a numeric value for FLASK_ANONYMOUS_USER_ID") from e
+    assert_config_integer(app, "ANONYMOUS_USER_ID")
+    assert_config_integer(app, "C2C_DISCOURSE_COMMENT_CATEGORY")
 
     api = RestApi(
         app=app,
@@ -60,7 +67,7 @@ def create_app(**config):
     api.before_create_document(hooks.before_create_document)
     api.before_merge_documents(hooks.before_merge_documents)
 
-    api.add_views(app, health_view, cooker_view)
+    api.add_views(app, health_view, cooker_view, forum_view)
     api.add_views(app, discourse_login_url_view)
     api.add_views(app, SitemapsView())
 

@@ -1,4 +1,5 @@
 from c2corg_api.views import cooker as cooker_view
+from c2corg_api.views import forum as forum_view
 from c2corg_api.views import search as search_view
 from c2corg_api.views import health as health_view
 from c2corg_api.views.sitemap import Sitemaps as SitemapsView
@@ -37,7 +38,7 @@ from c2corg_api.legacy.views.xreports import XreportsView, XreportView, XreportV
 def add_legacy_modules(app, api):
 
     # define v6 interface
-    api.add_views(app, health_view, cooker_view, search_view, url_prefix="")
+    api.add_views(app, health_view, cooker_view, search_view, forum_view, url_prefix="")
 
     api.add_views(app, protect_view, unprotect_view, revert_view, merge_view, changes_view, url_prefix="")
 

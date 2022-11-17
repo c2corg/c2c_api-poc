@@ -344,7 +344,7 @@ class LocaleDictProxy:
 
 
 class DocumentLocale:
-    def __init__(self, lang=None, title=None, summary=None, description="", document_topic=None, json=None):
+    def __init__(self, lang=None, title=None, summary=None, description="", document_topic=None, json=None, **kwargs):
         if json is not None:
             self._json = json
         else:
@@ -353,6 +353,8 @@ class DocumentLocale:
                 self._json["topic_id"] = document_topic.topic_id
             if summary is not None:
                 self._json["summary"] = summary
+
+            self._json |= kwargs
 
     def set_document_type(self, document_type):
         if document_type == USERPROFILE_TYPE:

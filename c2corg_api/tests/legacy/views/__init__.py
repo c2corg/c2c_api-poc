@@ -105,7 +105,11 @@ class BaseTestRest(BaseTestClass):
 
     def post_json_with_contributor(self, url, json, username="contributor", status=200):
         self.optimized_login(username)
-        return self.post(url, json=json, status=status).json
+        result = self.post(url, json=json, status=status).json
+        if result["status"] != "ok" and "description" in result:
+            result["errors"] = [{"description": result["description"]}]
+
+        return result
 
     def post_json_with_token(self, url, token, **kwargs):
         return self.app_send_json("post", url, {}, **kwargs)

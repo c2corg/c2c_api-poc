@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "document_id": { "type": "integer" },
+    "lang": { "$ref": "/attributes/default_langs.json" }
+  },
+  "required": ["document_id", "lang"],
+  "additionalProperties": false
+}

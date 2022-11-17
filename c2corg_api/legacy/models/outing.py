@@ -21,6 +21,7 @@ class Outing(LegacyDocument):
         elevation_min=None,
         height_diff_up=None,
         height_diff_down=None,
+        locales=None,
         version=None,
     ):
         super().__init__(version=version)
@@ -32,10 +33,14 @@ class Outing(LegacyDocument):
                 "activities": activities,
                 "date_start": str(date_start),
                 "date_end": str(date_end),
-                "locales": {"fr": {"lang": "fr", "title": "..."}},
                 "associations": {},
                 "disable_comments": False,
             }
+
+            if locales is None:
+                data["locales"] = {"fr": {"lang": "fr", "title": "default title"}}
+            else:
+                data["locales"] = {locale.lang: locale._json for locale in locales}
 
             if geometry is not None:
                 data["geometry"] = geometry._json

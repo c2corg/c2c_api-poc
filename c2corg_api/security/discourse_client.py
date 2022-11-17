@@ -131,7 +131,7 @@ class APIDiscourseClient(object):
 c = None
 
 
-def get_discourse_client(settings):
+def get_discourse_client(settings) -> APIDiscourseClient:
     global c
     if c is None:
         c = APIDiscourseClient(settings)
