@@ -2,12 +2,20 @@ from flask import Flask
 from flask_camp import RestApi
 
 from c2corg_api import hooks
-from c2corg_api.cooker import cooker
 from c2corg_api.legacy.core import add_legacy_modules
+from c2corg_api.models import models
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views.sitemap import Sitemaps as SitemapsView
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
+
+
+def cooker(document, get_document):
+    document_type = document["data"]["type"]
+    models[document_type].cook(document, get_document)
+
+    # import json
+    # print(json.dumps(document, indent=4))
 
 
 def create_app(**config):

@@ -52,11 +52,6 @@ class BaseModelHooks:
 
         return search_item
 
-    def cook_locales(self, document: dict):
-        data = document["data"]
-        cooked_locales = {lang: markdown_cooker(locale) for lang, locale in data["locales"].items()}
-        document["cooked_data"]["locales"] = cooked_locales
-
     @staticmethod
     def get_document_without_redirection(document_id, get_document):
         # TODO flask-camp? add a folloew_redirection in get_document ?
@@ -67,23 +62,29 @@ class BaseModelHooks:
 
         return document
 
-    def cook_associations(self, document: dict, get_document):
-        associations = document["data"].get("associations")
+    def get_cooked_locales(self, locales):
+        return {lang: markdown_cooker(locale) for lang, locale in locales.items()}
 
-        if isinstance(associations, dict):
-            cooked_associations = {}
+    def get_cooked_associations(self, associations, get_document):
+        cooked_associations = {}
 
-            for name, value in associations.items():
-                if isinstance(value, int):
-                    associations[name] = BaseModelHooks.get_document_without_redirection(value, get_document)
-                else:
-                    cooked_associations[name] = {}
-                    for document_id in value:
-                        cooked_associations[name][document_id] = BaseModelHooks.get_document_without_redirection(
-                            document_id, get_document
-                        )
+        for name, value in associations.items():
+            if isinstance(value, int):
+                associations[name] = BaseModelHooks.get_document_without_redirection(value, get_document)
+            else:
+                cooked_associations[name] = {}
+                for document_id in value:
+                    cooked_associations[name][document_id] = BaseModelHooks.get_document_without_redirection(
+                        document_id, get_document
+                    )
 
-            document["cooked_data"]["associations"] = cooked_associations
+        return cooked_associations
 
     def cook(self, document: dict, get_document):
-        ...
+        data = document["data"]
+        document["cooked_data"] = {"locales": self.get_cooked_locales(data["locales"])}
+
+        associations = data.get("associations")
+
+        if isinstance(associations, dict):
+            document["cooked_data"]["associations"] = self.get_cooked_associations(associations, get_document)

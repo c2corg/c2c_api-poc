@@ -21,24 +21,18 @@ class Route(BaseModelHooks):
         search_item = super().update_document_search_table(document, version, session=session)
         search_item.activities = version.data["activities"]
 
-    def cook_associations(self, document: dict, get_document):
-        super().cook_associations(document, get_document)
-
-        data = document["data"]
-        waypoints = document["cooked_data"]["associations"]["waypoint"]
-
-        if data.get("main_waypoint_id") is not None:
-            main_waypoint_id = data["main_waypoint_id"]
-
-            if main_waypoint_id not in waypoints:
-                waypoints[main_waypoint_id] = BaseModelHooks.get_document_without_redirection(
-                    main_waypoint_id, get_document
-                )
-
     def cook(self, document: dict, get_document):
-        data = document["data"]
 
-        if data.get("main_waypoint_id") is not None:
+        data = document["data"]
+        main_waypoint_id = data.get("main_waypoint_id")
+
+        if main_waypoint_id is not None:
+            if main_waypoint_id not in data["associations"]["waypoint"]:
+                data["associations"]["waypoint"].append(main_waypoint_id)
+
+        super().cook(document, get_document)
+
+        if main_waypoint_id is not None:
             cooked_locales = document["cooked_data"]["locales"]
             main_waypoint_id = data["main_waypoint_id"]
             main_waypoint = document["cooked_data"]["associations"]["waypoint"][main_waypoint_id]

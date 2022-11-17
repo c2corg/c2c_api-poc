@@ -1,6 +1,6 @@
 import pytest
 
-pytestmark = pytest.mark.skip()
+pytestmark = pytest.mark.skip("Will probably no ported")
 import datetime
 
 from c2corg_api.legacy.models.area import Area

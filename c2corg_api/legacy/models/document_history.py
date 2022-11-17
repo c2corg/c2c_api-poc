@@ -1,5 +1,8 @@
+from flask_camp.models import DocumentVersion as NewDocumentVersion
+
+
 class DocumentVersion:
-    ...
+    new_model = NewDocumentVersion
 
 
 class HistoryMetaData:
