@@ -69,11 +69,16 @@ def _legacy_model_replacements():
         (r"from c2corg_api.tests.views.test_feed import ", "from c2corg_api.tests.legacy.views.test_feed import "),
         (r"from c2corg_api.views.document_schemas ", "from c2corg_api.legacy.views.document_schemas "),
         (r"from c2corg_api.views.document_tag ", "from c2corg_api.legacy.views.document_tag "),
+        (r"from c2corg_api.views.validation ", "from c2corg_api.legacy.views.validation "),
+        (r"from c2corg_api.tests ", "from c2corg_api.tests.legacy "),
     ]
 
 
 replacements = (
     [
+        (r"(from c2corg_api.models.sso .*\n)", "# \1\n"),
+        (r"(from c2corg_api.views.sso .*\n)", "# \1\n"),
+        (r"from cornice.errors import Errors\n", ""),
         (r"# package\n*", ""),
         (r"# -\*- coding: utf-8 -\*-\n", ""),
         # remove useless lines
@@ -348,6 +353,9 @@ skipped_classes = {
 skipped_modules = {
     "views/test_document_changes.py": "on new model, all changes are presnets, aven on outings",
     "views/test_feed.py": "Will probably no ported",
+    "views/test_validation.py": "Not a views test",
+    "views/test_sso.py": "not used anymore",
+    "views/test_association.py": "Associations are handled totally differently",
 }
 
 
@@ -412,7 +420,7 @@ def convert_test_folder(folder):
 
 # convert_test_file("views/test_area.py")  ####################  20K
 convert_test_file("views/test_article.py")  ###################  25K
-# convert_test_file("views/test_association.py")  #############  29K
+convert_test_file("views/test_association.py")  ###############  29K
 convert_test_file("views/test_book.py")  ######################  21K
 convert_test_file("views/test_cooker.py")  ####################  606
 convert_test_file("views/test_document_changes.py")  ########## 6.2K
@@ -432,7 +440,7 @@ convert_test_file("views/test_langs.py")  ##################### 4.8K
 # convert_test_file("views/test_search.py")  ################## 7.0K
 # convert_test_file("views/test_sitemap.py")  ################# 3.1K
 # convert_test_file("views/test_sitemap_xml.py")  ############# 3.6K
-# convert_test_file("views/test_sso.py")  #####################  15K
+convert_test_file("views/test_sso.py")  #######################  15K
 convert_test_file("views/test_topo_map.py")  ##################  16K
 convert_test_file("views/test_user.py")  ######################  24K
 convert_test_file("views/test_user_account.py")  ############## 6.7K
@@ -441,6 +449,6 @@ convert_test_file("views/test_user_follow.py")  ############### 6.7K
 convert_test_file("views/test_user_mailinglists.py")  ######### 3.0K
 convert_test_file("views/test_user_preferences.py")  ########## 4.7K
 convert_test_file("views/test_user_profile.py")  ##############  15K
-# convert_test_file("views/test_validation.py")  ############## 6.1K # probably not a view
+convert_test_file("views/test_validation.py")  ################ 6.1K
 # convert_test_file("views/test_waypoint.py")  ################  63K
 convert_test_file("views/test_xreport.py")  ###################  34K
