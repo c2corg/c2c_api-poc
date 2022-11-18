@@ -13,6 +13,7 @@ from c2corg_api.legacy.views.documents import (
     merge as merge_view,
     changes as changes_view,
 )
+from c2corg_api.legacy.views.document_tag import DocumentTagAdd, DocumentTagRemove, DocumentTagHas
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
@@ -79,3 +80,5 @@ def add_legacy_modules(app, api):
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
 
     api.add_views(app, SitemapsView(), url_prefix="")
+
+    api.add_views(app, DocumentTagAdd(), DocumentTagRemove(), DocumentTagHas(), url_prefix="")

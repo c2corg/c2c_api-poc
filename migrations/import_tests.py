@@ -46,12 +46,12 @@ def _assert_unary_replacements(old_foo, operator):
 
 def _legacy_model_replacements():
     return [
-        (r"from c2corg_api.models.common.document_types ", "from c2corg_api.models._core "),
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
         (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
-        (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
         (r"from c2corg_api.models.association ", "from c2corg_api.legacy.models.association "),
+        (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
         (r"from c2corg_api.models.book ", "from c2corg_api.legacy.models.book "),
+        (r"from c2corg_api.models.common.document_types ", "from c2corg_api.models._core "),
         (r"from c2corg_api.models.document ", "from c2corg_api.legacy.models.document "),
         (r"from c2corg_api.models.document_history ", "from c2corg_api.legacy.models.document_history "),
         (r"from c2corg_api.models.document_topic ", "from c2corg_api.legacy.models.document_topic "),
@@ -59,15 +59,16 @@ def _legacy_model_replacements():
         (r"from c2corg_api.models.feed ", "from c2corg_api.legacy.models.feed "),
         (r"from c2corg_api.models.image ", "from c2corg_api.legacy.models.image "),
         (r"from c2corg_api.models.mailinglist ", "from c2corg_api.legacy.models.mailinglist "),
-        (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
         (r"from c2corg_api.models.outing ", "from c2corg_api.legacy.models.outing "),
+        (r"from c2corg_api.models.route ", "from c2corg_api.legacy.models.route "),
         (r"from c2corg_api.models.topo_map ", "from c2corg_api.legacy.models.topo_map "),
         (r"from c2corg_api.models.topo_map_association ", "from c2corg_api.legacy.models.topo_map_association "),
         (r"from c2corg_api.models.user_profile ", "from c2corg_api.legacy.models.user_profile "),
         (r"from c2corg_api.models.waypoint ", "from c2corg_api.legacy.models.waypoint "),
         (r"from c2corg_api.models.xreport ", "from c2corg_api.legacy.models.xreport "),
-        (r"from c2corg_api.views.document_schemas ", "from c2corg_api.legacy.views.document_schemas "),
         (r"from c2corg_api.tests.views.test_feed import ", "from c2corg_api.tests.legacy.views.test_feed import "),
+        (r"from c2corg_api.views.document_schemas ", "from c2corg_api.legacy.views.document_schemas "),
+        (r"from c2corg_api.views.document_tag ", "from c2corg_api.legacy.views.document_tag "),
     ]
 
 
@@ -326,6 +327,11 @@ skipped_methods_by_file = {
         "test_post_success": "PITA, rewritted",
         "test_post_without_title": "PITA, rewritted",
     },
+    "views/test_document_tag.py": {
+        "test_untag_not_tagged": "It's idempotent, don't test",
+        "test_tag": "PITA, rewritted",
+        "test_untag": "PITA, rewritted",
+    },
 }
 
 
@@ -415,7 +421,7 @@ convert_test_file("views/test_document_merge.py")  ############  13K
 convert_test_file("views/test_document_protect.py")  ########## 4.7K
 convert_test_file("views/test_document_revert.py")  ###########  12K
 convert_test_file("views/test_document_schema.py")  ########### 2.1K
-# convert_test_file("views/test_document_tag.py")  ############ 4.9K
+convert_test_file("views/test_document_tag.py")  ############## 4.9K
 convert_test_file("views/test_feed.py")  ######################  21K
 convert_test_file("views/test_forum.py")  ##################### 6.6K
 convert_test_file("views/test_health.py")  ####################  345
