@@ -79,7 +79,7 @@ def before_update_user(user: User, sync_sso=True):
 def before_validate_user(user, sync_sso=True):
 
     profile_document = get_profile_document(user)
-    search_item = UserProfile().get_search_item(profile_document)
+    search_item, _ = UserProfile().get_search_items(profile_document, langs=[])
     search_item.user_is_validated = True
     UserProfile().update_document_search_table(document=profile_document, version=profile_document.last_version)
 

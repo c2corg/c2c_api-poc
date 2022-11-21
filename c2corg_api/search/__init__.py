@@ -24,6 +24,14 @@ class DocumentSearch(BaseModel):
     event_activity = Column(String, index=True, nullable=True)  # for xreports
 
 
+class DocumentLocaleSearch(BaseModel):
+    id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=True, primary_key=True)
+    lang = Column(String, index=True)
+    title = Column(String, index=True)
+
+    # TODO : primary key with lang
+
+
 def search(document_type=None, id=None, user_id=None):
     criterions = []
 

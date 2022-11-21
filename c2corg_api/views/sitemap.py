@@ -8,12 +8,12 @@ from flask import Response, request
 from flask_camp import current_api, allow
 from sqlalchemy.sql.functions import func
 
-# from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import BadRequest
 
 # from c2corg_api.models.document import Document, DocumentLocale
 # from c2corg_api.models.route import RouteLocale
 from c2corg_api.search import DocumentSearch
-from c2corg_api.models import USERPROFILE_TYPE, ROUTE_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, ROUTE_TYPE, models as document_types
 
 
 log = logging.getLogger(__name__)
@@ -78,13 +78,21 @@ class Sitemaps(object):
         return result
 
 
-# class Sitemap(object):
-#     rule = "/sitemaps/<str:document_type>/<int:page>"
+class Sitemap(object):
+    rule = "/sitemaps/<string:document_type>/<int:page>"
 
-#     def get(self, document_type, page):
-#         """Returns the information needed to generate a sitemap for a given
-#         type and sitemap page number.
-#         """
+    @allow("anonymous")
+    def get(self, document_type, page):
+        """Returns the information needed to generate a sitemap for a given
+        type and sitemap page number.
+        """
+
+        if document_type not in document_types:
+            raise BadRequest("Invalid document type")
+
+        return {}
+
+
 #         doc_type = self.request.validated["doc_type"]
 #         i = self.request.validated["i"]
 

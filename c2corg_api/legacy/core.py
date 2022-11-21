@@ -2,7 +2,7 @@ from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views import forum as forum_view
 from c2corg_api.views import search as search_view
 from c2corg_api.views import health as health_view
-from c2corg_api.views.sitemap import Sitemaps as SitemapsView
+from c2corg_api.views.sitemap import Sitemaps as SitemapsView, Sitemap as SitemapView
 
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
@@ -79,6 +79,6 @@ def add_legacy_modules(app, api):
     api.add_views(app, WaypointsView(), WaypointView(), WaypointVersionView(), url_prefix="")
     api.add_views(app, XreportsView(), XreportView(), XreportVersionView(), url_prefix="")
 
-    api.add_views(app, SitemapsView(), url_prefix="")
+    api.add_views(app, SitemapsView(), SitemapView(), url_prefix="")
 
     api.add_views(app, DocumentTagAdd(), DocumentTagRemove(), DocumentTagHas(), url_prefix="")

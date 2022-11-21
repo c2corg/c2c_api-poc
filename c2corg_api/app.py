@@ -7,7 +7,7 @@ from c2corg_api.models import models
 from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views import forum as forum_view
-from c2corg_api.views.sitemap import Sitemaps as SitemapsView
+from c2corg_api.views.sitemap import Sitemaps as SitemapsView, Sitemap as SitemapView
 from c2corg_api.views.discourse import login_url as discourse_login_url_view
 
 
@@ -67,7 +67,7 @@ def create_app(**config):
 
     api.add_views(app, health_view, cooker_view, forum_view)
     api.add_views(app, discourse_login_url_view)
-    api.add_views(app, SitemapsView())
+    api.add_views(app, SitemapsView(), SitemapView())
 
     add_legacy_modules(app, api)  # TODO rename to add_legacy_views
 

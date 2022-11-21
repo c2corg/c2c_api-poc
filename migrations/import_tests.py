@@ -438,7 +438,7 @@ convert_test_file("views/test_langs.py")  ##################### 4.8K
 # convert_test_file("views/test_outing.py")  ##################  54K
 # convert_test_file("views/test_route.py")  ###################  50K
 # convert_test_file("views/test_search.py")  ################## 7.0K
-# convert_test_file("views/test_sitemap.py")  ################# 3.1K
+convert_test_file("views/test_sitemap.py")  ################### 3.1K
 # convert_test_file("views/test_sitemap_xml.py")  ############# 3.6K
 convert_test_file("views/test_sso.py")  #######################  15K
 convert_test_file("views/test_topo_map.py")  ##################  16K
