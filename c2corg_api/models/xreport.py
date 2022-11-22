@@ -51,5 +51,5 @@ class Xreport(BaseModelHooks):
                 raise BadRequest(f"You cannot modify {attribute}")
 
     def update_document_search_table(self, document: Document, version: DocumentVersion, session=None):
-        search_item = super().update_document_search_table(document, version, session=session)
+        search_item, _ = super().update_document_search_table(document, version, session=session)
         search_item.event_activity = version.data["event_activity"]

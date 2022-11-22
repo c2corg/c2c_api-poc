@@ -1,3 +1,4 @@
+from flask_camp import current_api
 from flask_camp.models import Document, DocumentVersion
 from c2corg_api.models._document import BaseModelHooks
 
@@ -18,8 +19,14 @@ def get_preferred_locale(preferred_lang, locales):
 
 class Route(BaseModelHooks):
     def update_document_search_table(self, document: Document, version: DocumentVersion, session=None):
-        search_item = super().update_document_search_table(document, version, session=session)
+        search_item, search_locale_items = super().update_document_search_table(document, version, session=session)
         search_item.activities = version.data["activities"]
+
+        if (main_waypoint_id := version.data.get("main_waypoint_id")) is not None:
+            main_waypoint = current_api.get_document(main_waypoint_id)
+            for lang, locale in search_locale_items.items():
+                waypoint_locale = get_preferred_locale(lang, main_waypoint["data"]["locales"])
+                locale.title_prefix = waypoint_locale["title"]
 
     def cook(self, document: dict, get_document):
 

@@ -208,6 +208,14 @@ replacements = (
         (r'assert 1 == errors\[0\]\.get\("topic_id"\)\n', ""),
         (r"/sitemaps/r/", "/sitemaps/route/"),
         (r"/sitemaps/w/", "/sitemaps/waypoint/"),
+        (r'"/r/(\d)"', r'"/route/\1"'),
+        (r'"/w/(\d)"', r'"/waypoint/\1"'),
+        (r'"/a/-123", status=400', '"/area/-123", status=404'),
+        (r'(errors = response.json\["errors"\])\n( *)(self.assertError\(errors, "i", "invalid i"\))', r"# \1\n\2# \3"),
+        (
+            r'(errors = response.json\["errors"\])\n( *)(self.assertError\(errors, "doc_type", "invalid doc_type"\))',
+            r'errors = response.json["description"]\n\2assert "Invalid document type" in errors',
+        ),
         # commit after adding test data, as tst session is not query session
         (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
         # Function that are totally replaced
@@ -337,6 +345,7 @@ skipped_methods_by_file = {
         "test_tag": "PITA, rewritted",
         "test_untag": "PITA, rewritted",
     },
+    "views/test_sitemap.py": {"test_get_waypoint_sitemap_no_pages": "Simple 200 with empty response"},
 }
 
 

@@ -34,5 +34,5 @@ class Article(BaseModelHooks):
                 raise Forbidden("You are not allowed to edit this article")
 
     def update_document_search_table(self, document: Document, version: DocumentVersion, session=None):
-        search_item = super().update_document_search_table(document, version, session=session)
+        search_item, _ = super().update_document_search_table(document, version, session=session)
         search_item.activities = version.data["activities"]

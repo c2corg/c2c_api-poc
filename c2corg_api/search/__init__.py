@@ -1,6 +1,6 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document, User
-from sqlalchemy import Column, ForeignKey, String, select, Boolean, UniqueConstraint, and_
+from sqlalchemy import Column, ForeignKey, String, Boolean, DateTime, UniqueConstraint, select, and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
@@ -13,20 +13,26 @@ class DocumentSearch(BaseModel):
     # index is very import, obviously
     document_type = Column(String(16), index=True)
 
+    timestamp = Column(DateTime(timezone=True), nullable=False)
+
+    available_langs = Column(ARRAY(String()), index=True, default=[])
+
     # for profile document
     user_id = Column(ForeignKey(User.id, ondelete="CASCADE"), index=True, nullable=True)
     user_is_validated = Column(Boolean, index=True, default=False, nullable=True)
 
-    available_langs = Column(ARRAY(String()), index=True, default=[])
-
+    # for xreports
     activities = Column(ARRAY(String()), index=True, default=[])
-    event_activity = Column(String, index=True, nullable=True)  # for xreports
+    event_activity = Column(String, index=True, nullable=True)
 
 
 class DocumentLocaleSearch(BaseModel):
     id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=True, primary_key=True)
     lang = Column(String, index=True, primary_key=True)
     title = Column(String, index=True)
+
+    # for route
+    title_prefix = Column(String)
 
     __table_args__ = (UniqueConstraint("id", "lang", name="_document_locale_search_uc"),)
 

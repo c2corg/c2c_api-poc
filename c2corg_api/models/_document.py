@@ -63,10 +63,11 @@ class BaseModelHooks:
         for lang in langs:
             search_locale_items[lang].title = version.data["locales"][lang].get("title", "")
 
+        search_item.timestamp = version.timestamp
         search_item.available_langs = langs
         search_item.document_type = version.data["type"]
 
-        return search_item
+        return search_item, search_locale_items
 
     @staticmethod
     def get_document_without_redirection(document_id, get_document):

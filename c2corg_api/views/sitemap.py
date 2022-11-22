@@ -7,7 +7,6 @@ from math import ceil
 from flask import Response, request
 from flask_camp import current_api, allow
 from sqlalchemy.sql.functions import func
-
 from werkzeug.exceptions import BadRequest
 
 # from c2corg_api.models.document import Document, DocumentLocale
@@ -86,14 +85,18 @@ class Sitemap(object):
         if document_type not in document_types:
             raise BadRequest("Invalid document type")
 
-        fields = [DocumentSearch.id, DocumentLocaleSearch.lang, DocumentLocaleSearch.title, DocumentSearch.last_updated]
+        fields = [
+            DocumentSearch.id,
+            DocumentLocaleSearch.lang,
+            DocumentLocaleSearch.title_prefix,
+            DocumentLocaleSearch.title,
+            DocumentSearch.timestamp,
+        ]
 
-        #     # include `title_prefix` for routes
+        # include `title_prefix` for routes
         is_route = document_type == ROUTE_TYPE
-        #     if is_route:
-        #         fields.append(RouteLocale.title_prefix)
 
-        document_locales = (
+        query = (
             current_api.database.session.query(*fields)
             .select_from(DocumentLocaleSearch)
             .join(DocumentSearch, DocumentSearch.id == DocumentLocaleSearch.id)
@@ -101,10 +104,11 @@ class Sitemap(object):
             .order_by(DocumentLocaleSearch.id, DocumentLocaleSearch.lang)
             .limit(PAGES_PER_SITEMAP)
             .offset(PAGES_PER_SITEMAP * page)
-            .all()
         )
 
-        data = {"pages": [_format_page(locale, is_route) for locale in document_locales]}
+        document_locales = query.all()
+
+        data = {"pages": [_format_page(is_route, *locale) for locale in document_locales]}
 
         result = Response(response=json.dumps(data), content_type="application/json")
         result.add_etag()  # TODO : compute it only one time per day
@@ -120,12 +124,7 @@ class Sitemap(object):
 #         return "{}-{}".format(date.today().isoformat(), caching.CACHE_VERSION)
 
 
-def _format_page(document_locale, is_route):
-    if not is_route:
-        doc_id, lang, title, last_updated = document_locale
-    else:
-        doc_id, lang, title, last_updated, title_prefix = document_locale
-
+def _format_page(is_route, doc_id, lang, title, title_prefix, last_updated):
     page = {"document_id": doc_id, "lang": lang, "title": title, "lastmod": last_updated.isoformat()}
 
     if is_route:
