@@ -47,6 +47,7 @@ class BaseModelHooks:
             if lang not in search_locale_items:
                 # TODO: possible integrity error here
                 search_locale_items[lang] = DocumentLocaleSearch(id=document.id, lang=lang)
+                session.add(search_locale_items[lang])
 
         return search_item, search_locale_items
 

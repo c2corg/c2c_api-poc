@@ -43,12 +43,12 @@ class TestSitemapRest(BaseTestRest):
         assert "Invalid document type" in errors
 
     def test_get_sitemap_invalid_page(self):
-        response = self.get(self._prefix + "/a/-123", status=400)
-        errors = response.json["description"]
-        assert "invalid i" in errors
+        response = self.get(self._prefix + "/area/-123", status=404)
+        # errors = response.json["description"]
+        # assert "invalid i" in errors
 
     def test_get_waypoint_sitemap(self):
-        response = self.get(self._prefix + "/w/0", status=200)
+        response = self.get(self._prefix + "/waypoint/0", status=200)
         body = response.json
 
         pages = body["pages"]

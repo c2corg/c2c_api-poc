@@ -1,7 +1,6 @@
 from flask_camp import current_api
 from flask_camp.models import BaseModel, Document, User
-from sqlalchemy import Column, ForeignKey, String, select, Boolean
-from sqlalchemy import and_
+from sqlalchemy import Column, ForeignKey, String, select, Boolean, UniqueConstraint, and_
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
@@ -26,10 +25,10 @@ class DocumentSearch(BaseModel):
 
 class DocumentLocaleSearch(BaseModel):
     id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=True, primary_key=True)
-    lang = Column(String, index=True)
+    lang = Column(String, index=True, primary_key=True)
     title = Column(String, index=True)
 
-    # TODO : primary key with lang
+    __table_args__ = (UniqueConstraint("id", "lang", name="_document_locale_search_uc"),)
 
 
 def search(document_type=None, id=None, user_id=None):

@@ -12,7 +12,7 @@ from werkzeug.exceptions import BadRequest
 
 # from c2corg_api.models.document import Document, DocumentLocale
 # from c2corg_api.models.route import RouteLocale
-from c2corg_api.search import DocumentSearch
+from c2corg_api.search import DocumentSearch, DocumentLocaleSearch
 from c2corg_api.models import USERPROFILE_TYPE, ROUTE_TYPE, models as document_types
 
 
@@ -55,18 +55,16 @@ class Sitemaps(object):
         """
 
         document_locales_per_type = (
-            current_api.database.session.query(
-                DocumentSearch.document_type,
-                func.sum(func.array_length(DocumentSearch.available_langs, 1)).label("count"),
-            )
+            current_api.database.session.query(DocumentSearch.document_type, func.count().label("count"))
+            .join(DocumentLocaleSearch, DocumentSearch.id == DocumentLocaleSearch.id)
             .filter(DocumentSearch.document_type != USERPROFILE_TYPE)
             .group_by(DocumentSearch.document_type)
             .all()
         )
 
         sitemaps = []
-        for doc_type, count in document_locales_per_type:
-            num_sitemaps = ceil(count / PAGES_PER_SITEMAP)
+        for doc_type, doc_count in document_locales_per_type:
+            num_sitemaps = ceil(doc_count / PAGES_PER_SITEMAP)
             sitemaps += [
                 {"url": f"/sitemaps/{doc_type}/{i}", "doc_type": doc_type, "i": i} for i in range(0, num_sitemaps)
             ]
@@ -83,23 +81,36 @@ class Sitemap(object):
 
     @allow("anonymous")
     def get(self, document_type, page):
-        """Returns the information needed to generate a sitemap for a given
-        type and sitemap page number.
-        """
+        """Returns the information needed to generate a sitemap for a given type and sitemap page number."""
 
         if document_type not in document_types:
             raise BadRequest("Invalid document type")
 
-        return {}
+        fields = [DocumentSearch.id, DocumentLocaleSearch.lang, DocumentLocaleSearch.title, DocumentSearch.last_updated]
 
+        #     # include `title_prefix` for routes
+        is_route = document_type == ROUTE_TYPE
+        #     if is_route:
+        #         fields.append(RouteLocale.title_prefix)
 
-#         doc_type = self.request.validated["doc_type"]
-#         i = self.request.validated["i"]
+        document_locales = (
+            current_api.database.session.query(*fields)
+            .select_from(DocumentLocaleSearch)
+            .join(DocumentSearch, DocumentSearch.id == DocumentLocaleSearch.id)
+            .filter(DocumentSearch.document_type == document_type)
+            .order_by(DocumentLocaleSearch.id, DocumentLocaleSearch.lang)
+            .limit(PAGES_PER_SITEMAP)
+            .offset(PAGES_PER_SITEMAP * page)
+            .all()
+        )
 
-#         cache_key = _get_cache_key(doc_type, i)
-#         etag_cache(self.request, cache_key)
+        data = {"pages": [_format_page(locale, is_route) for locale in document_locales]}
 
-#         return get_or_create(cache_sitemap, cache_key, functools.partial(_get_sitemap, doc_type, i))
+        result = Response(response=json.dumps(data), content_type="application/json")
+        result.add_etag()  # TODO : compute it only one time per day
+        result.make_conditional(request)
+
+        return result
 
 
 # def _get_cache_key(doc_type=None, i=None):
@@ -109,51 +120,15 @@ class Sitemap(object):
 #         return "{}-{}".format(date.today().isoformat(), caching.CACHE_VERSION)
 
 
-# def _get_sitemap(doc_type, i):
-#     fields = [Document.document_id, DocumentLocale.lang, DocumentLocale.title, CacheVersion.last_updated]
+def _format_page(document_locale, is_route):
+    if not is_route:
+        doc_id, lang, title, last_updated = document_locale
+    else:
+        doc_id, lang, title, last_updated, title_prefix = document_locale
 
-#     # include `title_prefix` for routes
-#     is_route = doc_type == ROUTE_TYPE
-#     if is_route:
-#         fields.append(RouteLocale.title_prefix)
+    page = {"document_id": doc_id, "lang": lang, "title": title, "lastmod": last_updated.isoformat()}
 
-#     base_query = (
-#         DBSession.query(*fields)
-#         .select_from(Document)
-#         .join(DocumentLocale, Document.document_id == DocumentLocale.document_id)
-#     )
+    if is_route:
+        page["title_prefix"] = title_prefix
 
-#     if is_route:
-#         # joining on `RouteLocale.__table_` instead of `RouteLocale` to
-#         # avoid that SQLAlchemy create an additional join on DocumentLocale
-#         base_query = base_query.join(RouteLocale.__table__, DocumentLocale.id == RouteLocale.id)
-
-#     base_query = (
-#         base_query.join(CacheVersion, Document.document_id == CacheVersion.document_id)
-#         .filter(Document.redirects_to.is_(None))
-#         .filter(Document.type == doc_type)
-#         .order_by(Document.document_id, DocumentLocale.lang)
-#         .limit(PAGES_PER_SITEMAP)
-#         .offset(PAGES_PER_SITEMAP * i)
-#     )
-
-#     document_locales = base_query.all()
-
-#     if not document_locales:
-#         raise HTTPNotFound()
-
-#     return {"pages": [_format_page(locale, is_route) for locale in document_locales]}
-
-
-# def _format_page(document_locale, is_route):
-#     if not is_route:
-#         doc_id, lang, title, last_updated = document_locale
-#     else:
-#         doc_id, lang, title, last_updated, title_prefix = document_locale
-
-#     page = {"document_id": doc_id, "lang": lang, "title": title, "lastmod": last_updated.isoformat()}
-
-#     if is_route:
-#         page["title_prefix"] = title_prefix
-
-#     return page
+    return page

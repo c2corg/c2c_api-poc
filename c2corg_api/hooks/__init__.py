@@ -10,7 +10,7 @@ from c2corg_api.hooks._tools import check_user_name, get_profile_document
 from c2corg_api.models import models
 from c2corg_api.models.userprofile import UserProfile
 from c2corg_api.schemas import schema_validator
-from c2corg_api.search import DocumentSearch
+from c2corg_api.search import DocumentSearch, DocumentLocaleSearch
 from c2corg_api.security.discourse_client import get_discourse_client
 
 from ._before_block_user import before_block_user
@@ -46,6 +46,7 @@ def before_merge_documents(source_document, target_document):
         raise BadRequest()
 
     delete(DocumentSearch).where(DocumentSearch.id == source_document.id)
+    delete(DocumentLocaleSearch).where(DocumentLocaleSearch.id == source_document.id)
 
 
 def before_create_user(user):
