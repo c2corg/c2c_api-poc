@@ -296,6 +296,9 @@ class BaseTestRest(BaseTestClass):
     def assertIsNotNone(self, value):
         assert value is not None
 
+    def assertEqual(self, a, b):
+        assert a == b, f"{a} == {b}"
+
 
 class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):

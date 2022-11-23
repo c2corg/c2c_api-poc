@@ -210,7 +210,10 @@ replacements = (
         (r"/sitemaps/w/", "/sitemaps/waypoint/"),
         (r'"/r/(\d)"', r'"/route/\1"'),
         (r'"/w/(\d)"', r'"/waypoint/\1"'),
+        (r'"/r/(\d)\.xml"', r'"/route/\1.xml"'),
+        (r'"/w/(\d)\.xml"', r'"/waypoint/\1.xml"'),
         (r'"/a/-123", status=400', '"/area/-123", status=404'),
+        (r'"/a/-123.xml", status=400', '"/area/-123.xml", status=404'),
         (r'(errors = response.json\["errors"\])\n( *)(self.assertError\(errors, "i", "invalid i"\))', r"# \1\n\2# \3"),
         (
             r'(errors = response.json\["errors"\])\n( *)(self.assertError\(errors, "doc_type", "invalid doc_type"\))',
@@ -346,6 +349,7 @@ skipped_methods_by_file = {
         "test_untag": "PITA, rewritted",
     },
     "views/test_sitemap.py": {"test_get_waypoint_sitemap_no_pages": "Simple 200 with empty response"},
+    "views/test_sitemap_xml.py": {"test_get_waypoint_sitemap_no_pages": "Simple 200 with empty response"},
 }
 
 
@@ -448,7 +452,7 @@ convert_test_file("views/test_langs.py")  ##################### 4.8K
 # convert_test_file("views/test_route.py")  ###################  50K
 # convert_test_file("views/test_search.py")  ################## 7.0K
 convert_test_file("views/test_sitemap.py")  ################### 3.1K
-# convert_test_file("views/test_sitemap_xml.py")  ############# 3.6K
+convert_test_file("views/test_sitemap_xml.py")  ############### 3.6K
 convert_test_file("views/test_sso.py")  #######################  15K
 convert_test_file("views/test_topo_map.py")  ##################  16K
 convert_test_file("views/test_user.py")  ######################  24K
