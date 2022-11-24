@@ -7,20 +7,24 @@ class ArchiveBook:
 
 
 class Book(LegacyDocument):
-    def __init__(self, activities=None, book_types=None, version=None):
+    def __init__(self, activities=None, book_types=None, locales=None, version=None):
         super().__init__(version=version)
 
         if version is None:
-            self.create_new_model(
-                data={
-                    "type": BOOK_TYPE,
-                    "quality": "draft",
-                    "activities": activities,
-                    "book_types": book_types,
-                    "locales": {"fr": {"lang": "fr", "title": "..."}},
-                    "associations": {},
-                }
-            )
+            data = {
+                "type": BOOK_TYPE,
+                "quality": "draft",
+                "activities": activities,
+                "book_types": book_types,
+                "associations": {},
+            }
+
+            if locales is None:
+                data["locales"] = {"fr": {"lang": "fr", "title": "..."}}
+            else:
+                data["locales"] = {locale.lang: locale._json for locale in locales}
+
+            self.create_new_model(data)
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):

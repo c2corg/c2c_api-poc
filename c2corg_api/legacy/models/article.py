@@ -7,22 +7,26 @@ class ArchiveArticle:
 
 
 class Article(LegacyDocument):
-    def __init__(self, categories=None, activities=None, article_type=None, version=None):
+    def __init__(self, categories=None, activities=None, article_type=None, locales=None, version=None):
         super().__init__(version=version)
 
         if version is None:
-            self.create_new_model(
-                data={
-                    "type": ARTICLE_TYPE,
-                    "quality": "draft",
-                    "categories": categories,
-                    "activities": activities,
-                    "article_type": article_type,
-                    "locales": {"fr": {"lang": "fr", "title": "..."}},
-                    "associations": {},
-                    "author": {"user_id": 666},
-                }
-            )
+            data = {
+                "type": ARTICLE_TYPE,
+                "quality": "draft",
+                "categories": categories,
+                "activities": activities,
+                "article_type": article_type,
+                "associations": {},
+                "author": {"user_id": 666},
+            }
+
+            if locales is None:
+                data["locales"] = {"fr": {"lang": "fr", "title": "..."}}
+            else:
+                data["locales"] = {locale.lang: locale._json for locale in locales}
+
+            self.create_new_model(data)
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):
