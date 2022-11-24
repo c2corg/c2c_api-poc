@@ -34,7 +34,6 @@ class TestSitemapXml(BaseTestRest):
 
     def test_get(self):
         response = self.get(self._prefix, status=200)
-
         from xml.etree import ElementTree
 
         sitemaps = ElementTree.fromstring(response.data)
@@ -62,7 +61,6 @@ class TestSitemapXml(BaseTestRest):
 
     def test_get_waypoint_sitemap(self):
         response = self.get(self._prefix + "/waypoint/0.xml", status=200)
-
         from xml.etree import ElementTree
 
         urlset = ElementTree.fromstring(response.data)
@@ -82,7 +80,6 @@ class TestSitemapXml(BaseTestRest):
 
     def test_get_route_sitemap(self):
         response = self.get(self._prefix + "/route/0.xml", status=200)
-
         from xml.etree import ElementTree
 
         urlset = ElementTree.fromstring(response.data)

@@ -219,6 +219,15 @@ replacements = (
             r'(errors = response.json\["errors"\])\n( *)(self.assertError\(errors, "doc_type", "invalid doc_type"\))',
             r'errors = response.json["description"]\n\2assert "Invalid document type" in errors',
         ),
+        (
+            r'(locales=\[RouteLocale\(lang="fr", title="Mont Blanc du ciel", title_prefix="Mont Blanc"\)\],\n)',
+            r"            main_waypoint_id=self.waypoint2.document_id,\n\1",
+        ),
+        (
+            r"(\w+) = response.xml\n",
+            r"from xml.etree import ElementTree\n        \1 = ElementTree.fromstring(response.data)\n",
+        ),
+        (r'"\{\}/(waypoint|route)s/\{\}/fr/', r'"{}/\1/{}/fr/'),
         # commit after adding test data, as tst session is not query session
         (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
         # Function that are totally replaced

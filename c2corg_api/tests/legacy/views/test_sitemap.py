@@ -24,6 +24,7 @@ class TestSitemapRest(BaseTestRest):
             activities=["skitouring"],
             elevation_max=1500,
             elevation_min=700,
+            main_waypoint_id=self.waypoint2.document_id,
             locales=[RouteLocale(lang="fr", title="Mont Blanc du ciel", title_prefix="Mont Blanc")],
         )
         self.session_add(self.route)
