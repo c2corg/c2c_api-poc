@@ -4,9 +4,10 @@ from flask_camp import RestApi
 from c2corg_api import hooks
 from c2corg_api.legacy.core import add_legacy_modules
 from c2corg_api.models import models
-from c2corg_api.views import health as health_view
 from c2corg_api.views import cooker as cooker_view
+from c2corg_api.views import health as health_view
 from c2corg_api.views import forum as forum_view
+from c2corg_api.views import search as search_view
 from c2corg_api.views.sitemap import (
     SitemapsRest as SitemapsRestView,
     SitemapRest as SitemapRestView,
@@ -70,7 +71,7 @@ def create_app(**config):
     api.before_create_document(hooks.before_create_document)
     api.before_merge_documents(hooks.before_merge_documents)
 
-    api.add_views(app, health_view, cooker_view, forum_view)
+    api.add_views(app, health_view, cooker_view, forum_view, search_view)
     api.add_views(app, discourse_login_url_view)
     api.add_views(app, SitemapsXmlView(), SitemapXmlView(), SitemapsRestView(), SitemapRestView())
 

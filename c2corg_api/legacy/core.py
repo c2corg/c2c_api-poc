@@ -1,6 +1,5 @@
 from c2corg_api.views import cooker as cooker_view
 from c2corg_api.views import forum as forum_view
-from c2corg_api.views import search as search_view
 from c2corg_api.views import health as health_view
 from c2corg_api.views.sitemap import (
     SitemapsRest as SitemapsRestView,
@@ -9,6 +8,7 @@ from c2corg_api.views.sitemap import (
     SitemapXml as SitemapXmlView,
 )
 
+from c2corg_api.legacy.views import search as search_view
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
 from c2corg_api.legacy.views.documents import (

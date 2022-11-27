@@ -61,7 +61,7 @@ class BaseModelHooks:
         search_item, search_locale_items = self.get_search_items(document, langs, session)
 
         for lang in langs:
-            search_locale_items[lang].title = version.data["locales"][lang].get("title", "")
+            search_locale_items[lang].set_title(version.data["locales"][lang].get("title", ""))
 
         search_item.timestamp = version.timestamp
         search_item.available_langs = langs

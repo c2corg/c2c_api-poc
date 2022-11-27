@@ -299,6 +299,9 @@ class BaseTestRest(BaseTestClass):
     def assertEqual(self, a, b):
         assert a == b, f"{a} == {b}"
 
+    def assertTrue(self, a):
+        assert a is True
+
 
 class BaseDocumentTestRest(BaseTestRest):
     def set_prefix_and_model(self, prefix, document_type, document_class, archive_class, locale_class):

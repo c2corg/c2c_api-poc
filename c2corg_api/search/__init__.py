@@ -4,6 +4,10 @@ from sqlalchemy import Column, ForeignKey, String, Boolean, DateTime, UniqueCons
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
+def slugify(title, lang=None):
+    return title.lower()
+
+
 class DocumentSearch(BaseModel):
     # Define a one-to-one relationship with document table
     # ondelete is mandatory, as a deletion of the document must delete the search item
@@ -30,11 +34,16 @@ class DocumentLocaleSearch(BaseModel):
     id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=True, primary_key=True)
     lang = Column(String, index=True, primary_key=True)
     title = Column(String, index=True)
+    slugified_title = Column(String, index=True)
 
     # for route
     title_prefix = Column(String)
 
     __table_args__ = (UniqueConstraint("id", "lang", name="_document_locale_search_uc"),)
+
+    def set_title(self, title):
+        self.title = title
+        self.slugified_title = slugify(self.title, self.lang)
 
 
 def search(document_type=None, id=None, user_id=None):
