@@ -9,6 +9,7 @@ from c2corg_api.views.sitemap import (
 )
 
 from c2corg_api.legacy.views import search as search_view
+from c2corg_api.legacy.views.areas import AreasView, AreaView, AreaVersionView
 from c2corg_api.legacy.views.articles import ArticlesView, ArticleView, ArticleVersionView
 from c2corg_api.legacy.views.books import BooksView, BookVersionView, BookView
 from c2corg_api.legacy.views.documents import (
@@ -75,6 +76,7 @@ def add_legacy_modules(app, api):
         url_prefix="",
     )
 
+    api.add_views(app, AreasView(), AreaView(), AreaVersionView(), url_prefix="")
     api.add_views(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
     api.add_views(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
     api.add_views(app, MapsView(), MapView(), MapVersionView(), url_prefix="")
