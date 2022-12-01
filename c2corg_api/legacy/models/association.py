@@ -83,6 +83,10 @@ class Association:
         elif document_type in (IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE, ROUTE_TYPE, WAYPOINT_TYPE):
             add_association(associated_document_type, associated_document.id)
 
+        elif document_type == AREA_TYPE:
+            # Nothing can be association with areas
+            pass
+
         else:
             raise Exception(f"Please set association map for {document_type}")
 

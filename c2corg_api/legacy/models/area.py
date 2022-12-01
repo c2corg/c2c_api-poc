@@ -3,12 +3,21 @@ from c2corg_api.legacy.models.document import Document as LegacyDocument
 
 
 class Area(LegacyDocument):
-    def __init__(self, area_type, locales):
+    def __init__(self, area_type, locales=None):
         super().__init__()
         data = {
             "type": AREA_TYPE,
             "area_type": area_type,
-            "locales": {locale.lang: locale.to_json() for locale in locales},
             "associations": {},
         }
+
+        if locales is None:
+            data["locales"] = {"fr": {"lang": "fr", "title": "..."}}
+        else:
+            data["locales"] = {locale.lang: locale._json for locale in locales}
+
         self.create_new_model(data=data)
+
+
+class ArchiveArea:
+    ...

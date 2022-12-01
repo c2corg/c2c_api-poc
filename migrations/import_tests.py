@@ -47,6 +47,7 @@ def _assert_unary_replacements(old_foo, operator):
 def _legacy_model_replacements():
     return [
         (r"from c2corg_api.models.area ", "from c2corg_api.legacy.models.area "),
+        (r"from c2corg_api.models.area_association ", "from c2corg_api.legacy.models.area_association "),
         (r"from c2corg_api.models.article ", "from c2corg_api.legacy.models.article "),
         (r"from c2corg_api.models.association ", "from c2corg_api.legacy.models.association "),
         (r"from c2corg_api.models.cache_version ", "from c2corg_api.legacy.models.cache_version "),
@@ -445,7 +446,7 @@ def convert_test_folder(folder):
 # convert_test_folder("markdown")   # ok
 
 
-# convert_test_file("views/test_area.py")  ####################  20K
+convert_test_file("views/test_area.py")  ######################  20K
 convert_test_file("views/test_article.py")  ###################  25K
 convert_test_file("views/test_association.py")  ###############  29K
 convert_test_file("views/test_book.py")  ######################  21K
