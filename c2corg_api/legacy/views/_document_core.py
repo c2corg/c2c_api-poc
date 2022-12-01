@@ -5,61 +5,9 @@ from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import BadRequest, UnsupportedMediaType, NotFound
 
 from c2corg_api.legacy.converter import convert_to_legacy_doc, convert_from_legacy_doc
-from c2corg_api.models import USERPROFILE_TYPE, MAP_TYPE
 
 
-def get_preferred_locale(preferred_lang, locales):
-
-    if preferred_lang in locales:
-        return locales[preferred_lang]
-
-    langs_priority = ["fr", "en", "it", "de", "es", "ca", "eu", "zh"]
-
-    for lang in langs_priority:
-        if lang in locales:
-            return locales[lang]
-
-    return None
-
-
-class LegacyView:
-    document_type = None
-
-    @staticmethod
-    def _get_preferred_locale(preferred_lang, locales):
-        result = get_preferred_locale(preferred_lang, locales)
-        return [] if result is None else [result]
-
-    @classmethod
-    def _get_legacy_doc(cls, document, collection_view=False, preferred_lang=None, lang=None, cook_lang=None):
-
-        result = convert_to_legacy_doc(document)
-
-        locales = {locale["lang"]: locale for locale in result["locales"]}
-
-        if lang is not None:
-            if lang in locales:
-                result["locales"] = [locales[lang]]
-            else:
-                result["locales"] = []
-
-        if preferred_lang is not None:
-            result["locales"] = cls._get_preferred_locale(preferred_lang, locales)
-
-        if cook_lang is not None:
-            cooked_locales = document["cooked_data"]["locales"]
-            result["locales"] = cls._get_preferred_locale(cook_lang, locales)
-            cooked = cls._get_preferred_locale(cook_lang, cooked_locales)
-            result["cooked"] = None if len(cooked) == 0 else cooked[0]
-
-        if collection_view and document["data"]["type"] in (USERPROFILE_TYPE, MAP_TYPE):
-            if "geometry" in result:
-                del result["geometry"]
-
-        return result
-
-
-class DocumentCollectionView(LegacyView):
+class DocumentCollectionView:
     document_type = NotImplemented
 
     def get(self):
@@ -78,7 +26,7 @@ class DocumentCollectionView(LegacyView):
         return {
             "total": result.data["count"],
             "documents": [
-                self._get_legacy_doc(
+                convert_to_legacy_doc(
                     document,
                     collection_view=True,
                     preferred_lang=request.args.get("pl"),
@@ -105,15 +53,17 @@ class DocumentCollectionView(LegacyView):
 
         r = documents_view.post()
 
-        return self._get_legacy_doc(r.data["document"])
+        return convert_to_legacy_doc(r.data["document"])
 
 
-class DocumentView(LegacyView):
+class DocumentView:
+    document_type = NotImplemented
+
     @allow("anonymous", "authenticated")
     def get(self, document_id):
         result = document_view.get(document_id)
 
-        result.data = self._get_legacy_doc(
+        result.data = convert_to_legacy_doc(
             result.data["document"],
             lang=request.args.get("l"),
             cook_lang=request.args.get("cook"),
@@ -151,13 +101,13 @@ class DocumentView(LegacyView):
         return result
 
 
-class VersionView(LegacyView):
+class VersionView:
     @allow("anonymous", "authenticated")
     def get(self, document_id, lang, version_id):
         response = version_view.get(version_id)
         document = response.data["document"]
         legacy_content = {
-            "document": self._get_legacy_doc(document, cook_lang=lang),
+            "document": convert_to_legacy_doc(document, cook_lang=lang),
             "previous_version_id": None,  # TODO
             "next_version_id": None,  # TODO
             "version": {
