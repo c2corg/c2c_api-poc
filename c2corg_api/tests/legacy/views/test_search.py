@@ -153,7 +153,7 @@ class TestSearchRest(BaseTestRest):
         assert "outings" not in body
         assert "users" not in body
 
-    @pytest.mark.xfail(reason="TODO")
+    @pytest.mark.skip(reason="Not used by the API")
     def test_search_by_document_id(self):
         response = self.get(self._prefix + "?q=" + str(self.waypoint1.document_id), status=200)
         body = response.json
