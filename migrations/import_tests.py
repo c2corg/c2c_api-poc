@@ -227,6 +227,10 @@ replacements = (
             r"(\w+) = response.xml\n",
             r"from xml.etree import ElementTree\n        \1 = ElementTree.fromstring(response.data)\n",
         ),
+        (
+            r'routes = body\["routes"\]\n {8}assert 0 == routes\["total"\]',
+            r'routes = body["routes"]\n        # assert 0 == routes["total"]',
+        ),
         (r'"\{\}/(waypoint|route)s/\{\}/fr/', r'"{}/\1/{}/fr/'),
         # commit after adding test data, as tst session is not query session
         (r"        self._add_test_data\(\)\n", "        self._add_test_data()\n        self.session.commit()\n"),
