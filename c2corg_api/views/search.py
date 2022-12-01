@@ -12,6 +12,7 @@ rule = "/search"
 @allow("anonymous", "authenticated")
 def get():
     q = request.args.get("q")
+    types = request.args.get("types")
 
     if q is None:
         raise BadRequest("q parameter is not defined")
@@ -22,7 +23,13 @@ def get():
         .filter(DocumentLocaleSearch.slugified_title.like("%{}%".format(slugify(q))))
     )
 
-    result = {document_type: set() for document_type in models}
+    if types is not None:
+        types = types.split(",")
+        query = query.filter(DocumentSearch.document_type.in_(types))
+    else:
+        types = models
+
+    result = {document_type: set() for document_type in types}
 
     for document_id, document_type in current_api.database.session.execute(query):
         result[document_type].add(document_id)

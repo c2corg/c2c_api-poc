@@ -19,6 +19,32 @@ from c2corg_api.models import (
     WAYPOINT_TYPE,
 )
 
+legacy_types = {
+    "a": AREA_TYPE,
+    "c": ARTICLE_TYPE,
+    "b": BOOK_TYPE,
+    "i": IMAGE_TYPE,
+    "m": MAP_TYPE,
+    "o": OUTING_TYPE,
+    "r": ROUTE_TYPE,
+    "u": USERPROFILE_TYPE,
+    "w": WAYPOINT_TYPE,
+    "x": XREPORT_TYPE,
+}
+
+v7_types = {
+    AREA_TYPE: "a",
+    ARTICLE_TYPE: "c",
+    BOOK_TYPE: "b",
+    IMAGE_TYPE: "i",
+    MAP_TYPE: "m",
+    OUTING_TYPE: "o",
+    ROUTE_TYPE: "r",
+    USERPROFILE_TYPE: "u",
+    WAYPOINT_TYPE: "w",
+    XREPORT_TYPE: "x",
+}
+
 
 class _AlwaysTrue:
     def __eq__(self, o):
@@ -71,19 +97,6 @@ class Document:
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):
 
         legacy_document.pop("available_langs", None)
-
-        legacy_types = {
-            "a": AREA_TYPE,
-            "c": ARTICLE_TYPE,
-            "b": BOOK_TYPE,
-            "i": IMAGE_TYPE,
-            "m": MAP_TYPE,
-            "o": OUTING_TYPE,
-            "r": ROUTE_TYPE,
-            "u": USERPROFILE_TYPE,
-            "w": WAYPOINT_TYPE,
-            "x": XREPORT_TYPE,
-        }
 
         result = {
             "protected": legacy_document.pop("protected", False),
@@ -169,19 +182,6 @@ class Document:
             topics = document["metadata"].get("topics", {})
         else:
             topics = {}
-
-        v7_types = {
-            AREA_TYPE: "a",
-            ARTICLE_TYPE: "c",
-            BOOK_TYPE: "b",
-            IMAGE_TYPE: "i",
-            MAP_TYPE: "m",
-            OUTING_TYPE: "o",
-            ROUTE_TYPE: "r",
-            USERPROFILE_TYPE: "u",
-            WAYPOINT_TYPE: "w",
-            XREPORT_TYPE: "x",
-        }
 
         result = {
             "document_id": document["id"],

@@ -139,7 +139,6 @@ class TestSearchRest(BaseTestRest):
 
         assert "users" not in body
 
-    @pytest.mark.xfail(reason="TODO")
     def test_search_limit_types(self):
         response = self.get(self._prefix + "?q=crolles&t=w,r,c,b", status=200)
         body = response.json
