@@ -109,7 +109,6 @@ class TestSearchRest(BaseTestRest):
         assert len(books) == 2
         assert books["total"] != 0
 
-    @pytest.mark.xfail(reason="TODO")
     def test_search_lang(self):
         response = self.get(self._prefix + "?q=crolles&pl=fr", status=200)
         body = response.json
@@ -123,7 +122,6 @@ class TestSearchRest(BaseTestRest):
         locales = waypoints["documents"][0]["locales"]
         assert len(locales) == 1
 
-    @pytest.mark.xfail(reason="TODO")
     def test_search_authenticated(self):
         """Tests that user results are included when authenticated."""
         headers = self.add_authorization_header(username="contributor")
