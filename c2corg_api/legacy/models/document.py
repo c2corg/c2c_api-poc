@@ -141,7 +141,7 @@ class Document:
 
         result["data"]["locales"] = previous_data.get("locales", {}) | {locale["lang"]: locale for locale in locales}
 
-        if document_type not in (MAP_TYPE, ):
+        if document_type not in (MAP_TYPE,):
             # convert associations
             legacy_associations = legacy_document.pop("associations", {})
             legacy_associations.pop("all_routes", None)
@@ -175,6 +175,8 @@ class Document:
 
             if result["data"]["geometry"] == {}:
                 del result["data"]["geometry"]
+        elif "geometry" in previous_data:
+            result["data"]["geometry"] = previous_data["geometry"]
 
         return result
 

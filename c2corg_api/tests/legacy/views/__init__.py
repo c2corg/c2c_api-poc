@@ -221,6 +221,10 @@ class BaseTestRest(BaseTestClass):
             doc = self.session.query(Document).get(parameter_value)
             return LegacyDocument(version=doc.last_version)
 
+        if klass is LegacyArea:
+            doc = self.session.query(Document).get(parameter_value)
+            return LegacyArea(version=doc.last_version)
+
         raise NotImplementedError(f"TODO...: {klass}")
 
     def extract_nonce(self, _send_mail, key):

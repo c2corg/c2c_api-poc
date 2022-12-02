@@ -54,7 +54,7 @@ class Association:
         document_type = new_model.data["type"]
         associated_document_type = associated_document.last_version.data["type"]
 
-        if document_type in (MAP_TYPE, ):
+        if document_type in (MAP_TYPE,):
             return
 
         if "associations" not in new_model.data:
@@ -84,7 +84,7 @@ class Association:
             add_association(associated_document_type, associated_document.id)
 
         elif document_type == AREA_TYPE:
-            if associated_document_type in (IMAGE_TYPE, ):
+            if associated_document_type in (IMAGE_TYPE,):
                 add_association(associated_document_type, associated_document.id)
 
         else:

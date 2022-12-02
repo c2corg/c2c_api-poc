@@ -219,7 +219,6 @@ class TestAreaRest(BaseDocumentTestRest):
     def test_put_no_document(self):
         self.put_put_no_document(self.area1.document_id)
 
-    @pytest.mark.xfail(reason="TODO")
     def test_put_update_geometry_fail(self):
         body = {
             "message": "Update",
@@ -236,15 +235,14 @@ class TestAreaRest(BaseDocumentTestRest):
         }
         headers = self.add_authorization_header(username="contributor")
         response = self.app_put_json(
-            self._prefix + "/" + str(self.area1.document_id), body, headers=headers, status=400
+            self._prefix + "/" + str(self.area1.document_id), body, headers=headers, status=403
         )
 
         body = response.json
         assert body["status"] == "error"
-        assert body["name"] == "Bad Request"
-        assert body["errors"][0]["description"] == "No permission to change the geometry"
+        assert body["name"] == "Forbidden"
+        assert body["description"] == "No permission to change the geometry"
 
-    @pytest.mark.xfail(reason="TODO")
     def test_put_success_all(self):
         body = {
             "message": "Update",
@@ -365,7 +363,6 @@ class TestAreaRest(BaseDocumentTestRest):
         assert len(links) == 1
         self.assertEqual(links[0].document_id, self.waypoint2.document_id)
 
-    @pytest.mark.xfail(reason="TODO")
     def test_put_success_new_lang(self):
         """Test updating a document by adding a new locale."""
         body = {
