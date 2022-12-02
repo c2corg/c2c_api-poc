@@ -29,6 +29,9 @@ class DocumentSearch(BaseModel):
     activities = Column(ARRAY(String()), index=True, default=[])
     event_activity = Column(String, index=True, nullable=True)
 
+    # for areas
+    area_type = Column(String(), index=True)
+
 
 class DocumentLocaleSearch(BaseModel):
     id = Column(ForeignKey(Document.id, ondelete="CASCADE"), index=True, nullable=True, primary_key=True)

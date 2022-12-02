@@ -38,7 +38,8 @@ class TopoMap(LegacyDocument):
         elif "geometry" in previous_data:
             result["data"]["geometry"] = previous_data["geometry"]
 
-        del result["data"]["associations"]
+        if "associations" in result["data"]:
+            del result["data"]["associations"]
 
         return result
 

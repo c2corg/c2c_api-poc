@@ -54,7 +54,7 @@ class Association:
         document_type = new_model.data["type"]
         associated_document_type = associated_document.last_version.data["type"]
 
-        if document_type == MAP_TYPE:
+        if document_type in (MAP_TYPE, AREA_TYPE):
             return
 
         if "associations" not in new_model.data:
@@ -82,10 +82,6 @@ class Association:
 
         elif document_type in (IMAGE_TYPE, OUTING_TYPE, XREPORT_TYPE, ROUTE_TYPE, WAYPOINT_TYPE):
             add_association(associated_document_type, associated_document.id)
-
-        elif document_type == AREA_TYPE:
-            # Nothing can be association with areas
-            pass
 
         else:
             raise Exception(f"Please set association map for {document_type}")

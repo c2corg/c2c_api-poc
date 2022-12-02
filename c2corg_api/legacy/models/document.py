@@ -104,6 +104,9 @@ class Document:
             "metadata": {"topics": {}},
         }
 
+        if document_type in (AREA_TYPE, ROUTE_TYPE, WAYPOINT_TYPE):
+            result["data"]["quality"] = legacy_document.pop("quality", previous_data.get("quality", "draft"))
+
         legacy_type = legacy_document.pop("type", "")
 
         if legacy_type == "":
@@ -138,27 +141,28 @@ class Document:
 
         result["data"]["locales"] = previous_data.get("locales", {}) | {locale["lang"]: locale for locale in locales}
 
-        # convert associations
-        legacy_associations = legacy_document.pop("associations", {})
-        legacy_associations.pop("all_routes", None)
-        legacy_associations.pop("recent_outings", None)
-        associations = {}
+        if document_type not in (AREA_TYPE, MAP_TYPE):
+            # convert associations
+            legacy_associations = legacy_document.pop("associations", {})
+            legacy_associations.pop("all_routes", None)
+            legacy_associations.pop("recent_outings", None)
+            associations = {}
 
-        for v6_key, array in legacy_associations.items():
-            type_associations = set()
-            if len(array) != 0:
-                for document in array:
-                    type_associations.add(document["document_id"])
+            for v6_key, array in legacy_associations.items():
+                type_associations = set()
+                if len(array) != 0:
+                    for document in array:
+                        type_associations.add(document["document_id"])
 
-                if v6_key == "users":
-                    v7_key = "profile"
-                elif v6_key == "waypoint_children":
-                    v7_key = "waypoint_children"
-                else:
-                    v7_key = v6_key[:-1]
-                associations[v7_key] = list(type_associations)
+                    if v6_key == "users":
+                        v7_key = "profile"
+                    elif v6_key == "waypoint_children":
+                        v7_key = "waypoint_children"
+                    else:
+                        v7_key = v6_key[:-1]
+                    associations[v7_key] = list(type_associations)
 
-        result["data"]["associations"] = associations
+            result["data"]["associations"] = associations
 
         # convert geometry
         geometry = legacy_document.pop("geometry", None)

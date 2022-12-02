@@ -1,0 +1,17 @@
+{
+  "propertyNames": { "$ref": "/attributes/default_langs.json" },
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "lang": { "$ref": "/attributes/default_langs.json" },
+        "summary": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["lang", "title"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

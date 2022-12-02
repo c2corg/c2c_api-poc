@@ -1,3 +1,4 @@
+from .area import Area
 from .article import Article
 from .book import Book
 from .route import Route
@@ -23,7 +24,7 @@ from ._core import (
 )
 
 models = {
-    AREA_TYPE: BaseModelHooks(),
+    AREA_TYPE: Area(),
     ARTICLE_TYPE: Article(),
     BOOK_TYPE: Book(),
     IMAGE_TYPE: Image(),

@@ -48,7 +48,6 @@ class TestAreaRest(BaseDocumentTestRest):
     def test_get_collection_lang(self):
         self.get_collection_lang()
 
-    @pytest.mark.xfail(reason="TODO")
     def test_get_collection_search(self):
         reset_search_index(self.session)
 
