@@ -5,7 +5,7 @@ from c2corg_api.legacy.models.document import Document as LegacyDocument
 class Area(LegacyDocument):
     def __init__(self, area_type, locales=None):
         super().__init__()
-        data = {"type": AREA_TYPE, "area_type": area_type, "quality": "draft"}
+        data = {"type": AREA_TYPE, "area_type": area_type, "quality": "draft", "associations": {}}
 
         if locales is None:
             data["locales"] = {"fr": {"lang": "fr", "title": "..."}}

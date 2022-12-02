@@ -1,11 +1,12 @@
 {
   "properties": {
     "area_type": { "$ref": "attributes/area_types.json" },
+    "associations": { "$ref": "associations/area_associations.json" },
     "geometry": { "$ref": "geometries/area_geometry.json" },
     "locales": { "$ref": "locales/area_locales.json" },
     "quality": { "$ref": "attributes/quality_types.json" },
     "type": { "const": "area" }
   },
-  "required": ["area_type", "locales", "quality", "type"],
+  "required": ["area_type", "associations", "locales", "quality", "type"],
   "additionalProperties": false
 }

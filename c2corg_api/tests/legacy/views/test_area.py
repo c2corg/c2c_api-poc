@@ -57,7 +57,6 @@ class TestAreaRest(BaseDocumentTestRest):
 
         self.assertResultsEqual(self.get_collection_search({"atyp": "admin_limits"}), [self.area4.document_id], 1)
 
-    @pytest.mark.xfail(reason="TODO")
     def test_get(self):
         body = self.get_custom(self.area1)
         self._assert_geometry(body)
@@ -106,7 +105,6 @@ class TestAreaRest(BaseDocumentTestRest):
         self.assertCorniceRequired(errors[1], "geometry")
         self.assertCorniceRequired(errors[2], "area_type")
 
-    @pytest.mark.xfail(reason="TODO")
     def test_post_missing_title(self):
         body_post = {
             "area_type": "range",

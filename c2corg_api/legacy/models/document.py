@@ -141,7 +141,7 @@ class Document:
 
         result["data"]["locales"] = previous_data.get("locales", {}) | {locale["lang"]: locale for locale in locales}
 
-        if document_type not in (AREA_TYPE, MAP_TYPE):
+        if document_type not in (MAP_TYPE, ):
             # convert associations
             legacy_associations = legacy_document.pop("associations", {})
             legacy_associations.pop("all_routes", None)

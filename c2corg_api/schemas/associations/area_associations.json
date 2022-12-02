@@ -1,0 +1,7 @@
+{
+  "type": "object",
+  "properties": {
+    "image": { "$ref": "/entities/id_array.json" }
+  },
+  "additionalProperties": false
+}
