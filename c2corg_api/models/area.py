@@ -13,7 +13,7 @@ class Area(BaseModelHooks):
         old_geometry = old_version.data["geometry"]
         new_geometry = new_version.data["geometry"]
 
-        if not current_user.is_admin:
+        if not current_user.is_moderator:
             if old_geometry != new_geometry:
                 raise Forbidden("No permission to change the geometry")
 

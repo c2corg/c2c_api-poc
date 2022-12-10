@@ -371,6 +371,11 @@ skipped_methods_by_file = {
         "test_post_error": "useless test: empty payload...",
         "test_put_wrong_locale_version": "Locales are not versionned in the new model",
         "test_get_associations_history": "This view is not relevant in new model",
+        "test_post_success": "Association is not automatically computed in the new model",
+        "test_put_success_all_as_moderator": "Association is not automatically computed in the new model",
+        "test_put_success_figures_only": "Association is not automatically computed in the new model",
+        "test_put_success_lang_only": "Association is not automatically computed in the new model",
+        "test_put_update_geometry_fail": "error nmodel is not the same, rewritted",
     },
 }
 
