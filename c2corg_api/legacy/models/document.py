@@ -416,7 +416,14 @@ class DocumentArchive:
     ...
 
 
+class ArchiveDocumentGeometry:
+    ...
+
+
 class UpdateType:  # it'san enum in v6
     FIGURES = "figures"
     GEOM = "geom"
     LANG = "lang"
+
+
+DOCUMENT_TYPE = None

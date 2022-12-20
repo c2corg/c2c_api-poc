@@ -10,6 +10,10 @@ class OutingLocale(LegacyDocumentLocale):
     ...
 
 
+class ArchiveOutingLocale:
+    ...
+
+
 class Outing(LegacyDocument):
     def __init__(
         self,

@@ -8,6 +8,14 @@ class RouteLocale(DocumentLocale):
         self._json["gear"] = gear
 
 
+class ArchiveRoute:
+    ...
+
+
+class ArchiveRouteLocale:
+    ...
+
+
 class Route(LegacyDocument):
     def __init__(
         self,
