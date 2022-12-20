@@ -120,6 +120,18 @@ class Outing(LegacyDocument):
 
         return result
 
+    @staticmethod
+    def convert_to_legacy_doc(document):
+        result = LegacyDocument.convert_to_legacy_doc(document)
+        data = document["data"]
+
+        result |= {
+            "condition_rating": data.get("condition_rating"),
+            "activities": data.get("activities"),
+        }
+
+        return result
+
     @property
     def activities(self):
         return self._version.data["activities"]
