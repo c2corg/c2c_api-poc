@@ -20,6 +20,7 @@ from c2corg_api.legacy.views.documents import (
     changes as changes_view,
 )
 from c2corg_api.legacy.views.document_tag import DocumentTagAdd, DocumentTagRemove, DocumentTagHas
+from c2corg_api.legacy.views.images import ImagesView, ImageVersionView, ImageView
 from c2corg_api.legacy.views.maps import MapsView, MapVersionView, MapView
 from c2corg_api.legacy.views.outings import OutingsView, OutingVersionView, OutingView
 from c2corg_api.legacy.views.profiles import ProfilesView, ProfileView
@@ -79,6 +80,7 @@ def add_legacy_modules(app, api):
     api.add_views(app, AreasView(), AreaView(), AreaVersionView(), url_prefix="")
     api.add_views(app, ArticlesView(), ArticleView(), ArticleVersionView(), url_prefix="")
     api.add_views(app, BooksView(), BookView(), BookVersionView(), url_prefix="")
+    api.add_views(app, ImageView(), ImagesView(), ImageVersionView(), url_prefix="")
     api.add_views(app, MapsView(), MapView(), MapVersionView(), url_prefix="")
     api.add_views(app, OutingsView(), OutingView(), OutingVersionView(), url_prefix="")
     api.add_views(app, ProfilesView(), ProfileView(), url_prefix="")

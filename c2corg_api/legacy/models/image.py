@@ -37,3 +37,7 @@ class Image(LegacyDocument):
             del result["data"]["areas"]  # TODO
 
         return result
+
+
+class ArchiveImage:
+    ...
