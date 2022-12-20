@@ -1,7 +1,7 @@
 from flask_camp import current_api
 
 from c2corg_api.legacy.utils import get_legacy_model
-from c2corg_api.models import USERPROFILE_TYPE, MAP_TYPE
+from c2corg_api.models import USERPROFILE_TYPE, MAP_TYPE, AREA_TYPE
 
 
 def _get_preferred_locale_as_array(preferred_lang, locales):
@@ -45,9 +45,10 @@ def convert_to_legacy_doc(document, collection_view=False, preferred_lang=None, 
         cooked = _get_preferred_locale_as_array(cook_lang, cooked_locales)
         result["cooked"] = None if len(cooked) == 0 else cooked[0]
 
-    if collection_view and document["data"]["type"] in (USERPROFILE_TYPE, MAP_TYPE):
-        if "geometry" in result:
-            del result["geometry"]
+    if collection_view:
+        if document["data"]["type"] in (USERPROFILE_TYPE, MAP_TYPE, AREA_TYPE):
+            if "geometry" in result:
+                del result["geometry"]
 
     return result
 
