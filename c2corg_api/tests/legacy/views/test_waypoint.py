@@ -1327,7 +1327,6 @@ class TestWaypointRest(BaseDocumentTestRest):
         self.waypoint5 = Waypoint(
             waypoint_type="summit",
             elevation=3,
-            redirects_to=self.waypoint.document_id,
             geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
         )
         self.waypoint5.locales.append(WaypointLocale(lang="en", title="Mont Granier", description="...", access="yep"))
@@ -1363,7 +1362,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         self.session_add(self.route1)
         self.session.flush()
         self.route2 = Route(
-            redirects_to=self.route1.document_id,
+            # redirects_to=self.route1.document_id,
             activities=["skitouring"],
             elevation_max=1500,
             elevation_min=700,
@@ -1424,7 +1423,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         self._add_association(Association.create(parent_document=self.route1, child_document=self.outing1), user_id)
 
         self.outing2 = Outing(
-            redirects_to=self.outing1.document_id,
+            # redirects_to=self.outing1.document_id,
             activities=["skitouring"],
             date_start=datetime.date(2016, 1, 1),
             date_end=datetime.date(2016, 1, 1),
@@ -1460,7 +1459,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         self.session.flush()
         self.session_add(
             TopoMap(
-                redirects_to=self.topo_map1.document_id,
+                # redirects_to=self.topo_map1.document_id,
                 code="3232ET",
                 editor="IGN",
                 scale="25000",

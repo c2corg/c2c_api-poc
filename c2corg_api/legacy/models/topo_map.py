@@ -1,5 +1,5 @@
 import json
-from c2corg_api.legacy.models.document import Document as LegacyDocument
+from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentGeometry
 from c2corg_api.models import MAP_TYPE
 
 
@@ -8,18 +8,21 @@ class ArchiveTopoMap:
 
 
 class TopoMap(LegacyDocument):
-    def __init__(self, editor=None, scale=None, code=None, version=None):
+    def __init__(self, editor=None, scale=None, code=None, locales=None, geometry=None, version=None):
         super().__init__(version=version)
 
         if version is None:
+            if geometry is None:
+                geometry = DocumentGeometry(json={"geom_detail": {"type": "Polygon", "coordinates": []}})
+
             super().create_new_model(
                 {
                     "type": MAP_TYPE,
                     "editor": editor,
-                    "geometry": {"geom_detail": {"type": "Polygon", "coordinates": []}},
+                    "geometry": geometry._json,
                     "scale": scale,
                     "code": code,
-                    "locales": {},
+                    "locales": {} if locales is None else {locale.lang: locale._json for locale in locales},
                 }
             )
 
