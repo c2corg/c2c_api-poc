@@ -232,20 +232,25 @@ class TestOutingRest(BaseDocumentTestRest):
     def test_get_404(self):
         self.get_404()
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.outing)
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.outing, "en")
         assert locale.get("lang") == "en"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_best_lang(self):
         body, locale = self.get_info(self.outing, "es")
         assert locale.get("lang") == "fr"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_404(self):
         self.get_info_404()
 
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({})
         errors = body.get("errors")
@@ -659,6 +664,7 @@ class TestOutingRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.outing.document_id, user="moderator")
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -1101,6 +1107,7 @@ class TestOutingRest(BaseDocumentTestRest):
     def test_history_no_doc(self):
         self.get("/document/99999/history/es", status=404)
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         logs = self._get_association_logs(self.outing)
 

@@ -191,21 +191,26 @@ class TestRouteRest(BaseDocumentTestRest):
         assert "images" not in associations
         assert "users" not in associations
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.route)
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.route, "en")
         assert locale.get("lang") == "en"
         assert locale.get("title_prefix") == self.locale_en.title_prefix
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_best_lang(self):
         body, locale = self.get_info(self.route, "es")
         assert locale.get("lang") == "fr"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_404(self):
         self.get_info_404()
 
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({})
         errors = body.get("errors")
@@ -612,6 +617,7 @@ class TestRouteRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.route.document_id)
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -965,6 +971,7 @@ class TestRouteRest(BaseDocumentTestRest):
         assert locale_es.version == 1
         assert locale_es.title_prefix == self.waypoint.get_locale("fr").title
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.route)
 

@@ -242,6 +242,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         headers = {"If-None-Match": etag}
         self.get(url, status=304, headers=headers)
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_version_caching(self):
         url = "{0}/{1}/en/{2}".format(self._prefix, str(self.waypoint.document_id), str(self.waypoint_version.id))
         cache_key = "{0}-{1}".format(
@@ -302,6 +303,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         headers = {"If-None-Match": etag}
         response = self.get(self._prefix + "/" + str(self.waypoint.document_id), status=304, headers=headers)
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.waypoint)
 
@@ -337,14 +339,17 @@ class TestWaypointRest(BaseDocumentTestRest):
             assert fn1.called is False
             assert fn2.called is False
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.waypoint, "en")
         assert locale.get("lang") == "en"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_best_lang(self):
         body, locale = self.get_info(self.waypoint, "es")
         assert locale.get("lang") == "fr"
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info_404(self):
         self.get_info_404()
 
@@ -356,6 +361,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         assert body["redirects_to"] == self.waypoint.document_id
         assert set(body["available_langs"]) == set(["en", "fr"])
 
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({})
         errors = body.get("errors")
@@ -626,6 +632,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         }
         self.put_wrong_version(body, self.waypoint.document_id)
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -1277,6 +1284,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         assert documents[0]["document_id"] == self.waypoint.document_id
         assert documents[1]["document_id"] == self.waypoint2.document_id
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.waypoint)
 
@@ -1327,6 +1335,7 @@ class TestWaypointRest(BaseDocumentTestRest):
         self.waypoint5 = Waypoint(
             waypoint_type="summit",
             elevation=3,
+            # redirects_to=self.waypoint.document_id,
             geometry=DocumentGeometry(geom="SRID=3857;POINT(635956 5723604)"),
         )
         self.waypoint5.locales.append(WaypointLocale(lang="en", title="Mont Granier", description="...", access="yep"))

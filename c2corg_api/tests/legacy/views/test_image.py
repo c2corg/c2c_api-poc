@@ -270,14 +270,17 @@ class TestImageRest(BaseTestImage):
         assert "users" in associations
         assert "articles" in associations
 
+    @pytest.mark.skip(reason="useless test: empty payload...")
     def test_post_error(self):
         body = self.post_error({})
         errors = body.get("errors")
         self.assertCorniceRequired(errors[0], "filename")
 
+    @pytest.mark.skip(reason="caching is handled and tested in flask-camp")
     def test_get_caching(self):
         self.get_caching(self.image)
 
+    @pytest.mark.skip(reason="test_get_info is not used in UI")
     def test_get_info(self):
         body, locale = self.get_info(self.image, "en")
         assert locale.get("lang") == "en"
@@ -403,6 +406,7 @@ class TestImageRest(BaseTestImage):
         }
         self.put_wrong_version(body, self.image.document_id)
 
+    @pytest.mark.skip(reason="Locales are not versionned in the new model")
     def test_put_wrong_locale_version(self):
         body = {
             "document": {
@@ -758,6 +762,7 @@ class TestImageRest(BaseTestImage):
         headers = self.add_authorization_header(username="contributor")
         self.app_put_json(self._prefix + "/" + str(self.image4.document_id), body, headers=headers, status=200)
 
+    @pytest.mark.skip(reason="This view is not relevant in new model")
     def test_get_associations_history(self):
         self._get_association_logs(self.image)
 
