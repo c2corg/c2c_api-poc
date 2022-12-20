@@ -4,24 +4,34 @@ from c2corg_api.models import IMAGE_TYPE
 
 class Image(LegacyDocument):
     def __init__(
-        self, filename=None, activities=None, height=1500, image_type="collaborative", locales=None, version=None
+        self,
+        filename=None,
+        activities=None,
+        height=1500,
+        image_type="collaborative",
+        locales=None,
+        geometry=None,
+        version=None,
     ):
         super().__init__(version=version)
 
         if version is None:
-            self.create_new_model(
-                data={
-                    "type": IMAGE_TYPE,
-                    "quality": "draft",
-                    "activities": activities,
-                    "height": height,
-                    "width": None,
-                    "filename": filename,
-                    "locales": {} if locales is None else {l.lang: l._json for l in locales},
-                    "associations": {},
-                    "image_type": image_type,
-                }
-            )
+            data = {
+                "type": IMAGE_TYPE,
+                "quality": "draft",
+                "activities": activities if activities is not None else [],
+                "height": height,
+                "width": None,
+                "filename": filename,
+                "locales": {} if locales is None else {l.lang: l._json for l in locales},
+                "associations": {},
+                "image_type": image_type,
+            }
+
+            if geometry is not None:
+                data["geometry"] = geometry._json
+
+            self.create_new_model(data=data)
 
     @staticmethod
     def convert_from_legacy_doc(legacy_document, document_type, previous_data):

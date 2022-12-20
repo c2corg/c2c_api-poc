@@ -1,4 +1,8 @@
-from c2corg_api.legacy.models.document import Document as LegacyDocument, DocumentLocale as LegacyDocumentLocale
+from c2corg_api.legacy.models.document import (
+    Document as LegacyDocument,
+    DocumentLocale as LegacyDocumentLocale,
+    DocumentGeometry,
+)
 from c2corg_api.models import OUTING_TYPE
 
 
@@ -21,8 +25,10 @@ class Outing(LegacyDocument):
         date_start=None,
         date_end=None,
         geometry=None,
+        condition_rating=None,
         elevation_max=None,
         elevation_min=None,
+        elevation_access=None,
         height_diff_up=None,
         height_diff_down=None,
         locales=None,
@@ -49,14 +55,20 @@ class Outing(LegacyDocument):
 
             if geometry is not None:
                 data["geometry"] = geometry._json
+            else:
+                data["geometry"] = DocumentGeometry(geom="SRID=3857;POINT(0 0)")._json
 
+            if condition_rating is not None:
+                data["condition_rating"] = condition_rating
+            if elevation_access is not None:
+                data["elevation_access"] = elevation_access
             if elevation_max is not None:
                 data["elevation_max"] = elevation_max
-            if elevation_max is not None:
+            if elevation_min is not None:
                 data["elevation_min"] = elevation_min
-            if elevation_max is not None:
+            if height_diff_up is not None:
                 data["height_diff_up"] = height_diff_up
-            if elevation_max is not None:
+            if height_diff_down is not None:
                 data["height_diff_down"] = height_diff_down
             if public_transport is not None:
                 data["public_transport"] = public_transport

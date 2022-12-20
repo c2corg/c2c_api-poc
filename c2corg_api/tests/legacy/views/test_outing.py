@@ -1162,7 +1162,9 @@ class TestOutingRest(BaseDocumentTestRest):
         self.outing.locales.append(self.locale_en)
         self.outing.locales.append(self.locale_fr)
 
-        self.outing.geometry = DocumentGeometry(geom_detail="SRID=3857;LINESTRING(635956 5723604, 635966 5723644)")
+        self.outing.geometry = DocumentGeometry(
+            geom_detail="SRID=3857;LINESTRING(635956 5723604, 635966 5723644)", geom="SRID=3857;POINT(635956 5723604)"
+        )
 
         self.session_add(self.outing)
         self.session.flush()
