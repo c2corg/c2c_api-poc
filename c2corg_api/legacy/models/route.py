@@ -3,8 +3,20 @@ from c2corg_api.models import ROUTE_TYPE
 
 
 class RouteLocale(DocumentLocale):
-    def __init__(self, lang=None, title="", summary=None, description="", gear="", title_prefix="", json=None):
-        super().__init__(lang=lang, title=title, summary=summary, description=description, json=json)
+    def __init__(
+        self,
+        lang=None,
+        title="",
+        summary=None,
+        description="",
+        gear="",
+        title_prefix="",
+        document_topic=None,
+        json=None,
+    ):
+        super().__init__(
+            lang=lang, title=title, summary=summary, description=description, json=json, document_topic=document_topic
+        )
         self._json["gear"] = gear
 
 
@@ -28,6 +40,7 @@ class Route(LegacyDocument):
         locales=None,
         geometry: DocumentGeometry = None,
         main_waypoint_id=None,
+        climbing_outdoor_type=None,
         version=None,
     ):
         super().__init__(version=version)
@@ -49,6 +62,8 @@ class Route(LegacyDocument):
             else:
                 data["geometry"] = DocumentGeometry(geom="SRID=3857;POINT(0 0)")._json
 
+            if climbing_outdoor_type is not None:
+                data["climbing_outdoor_type"] = climbing_outdoor_type
             if main_waypoint_id is not None:
                 data["main_waypoint_id"] = main_waypoint_id
             if elevation_max is not None:

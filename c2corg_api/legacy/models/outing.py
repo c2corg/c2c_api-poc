@@ -26,6 +26,7 @@ class Outing(LegacyDocument):
         height_diff_up=None,
         height_diff_down=None,
         locales=None,
+        public_transport=None,
         version=None,
     ):
         super().__init__(version=version)
@@ -57,6 +58,8 @@ class Outing(LegacyDocument):
                 data["height_diff_up"] = height_diff_up
             if elevation_max is not None:
                 data["height_diff_down"] = height_diff_down
+            if public_transport is not None:
+                data["public_transport"] = public_transport
 
             self.create_new_model(data=data)
 

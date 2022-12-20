@@ -6,6 +6,7 @@
       "type": "object",
       "properties": {
         "access": { "type": "string" },
+        "access_period": { "type": "string" },
         "description": { "type": "string" },
         "lang": { "$ref": "/attributes/default_langs.json" },
         "summary": { "type": "string" },

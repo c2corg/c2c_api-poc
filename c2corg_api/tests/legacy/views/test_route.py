@@ -1119,7 +1119,7 @@ class TestRouteRest(BaseDocumentTestRest):
         self._add_association(Association.create(parent_document=self.route, child_document=self.outing1), user_id)
 
         self.outing2 = Outing(
-            redirects_to=self.outing1.document_id,
+            # redirects_to=self.outing1.document_id,
             activities=["skitouring"],
             date_start=datetime.date(2016, 1, 1),
             date_end=datetime.date(2016, 1, 1),
