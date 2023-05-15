@@ -24,7 +24,7 @@ dependencies = [
     "pytest-cov==3.0.0",
     "pylint==2.15.4",
     "python-slugify==7.0.0",
-    "pymdown-extensions==8.2",
+    "pymdown-extensions==10.0",
 
     "pydiscourse @ https://github.com/c2corg/pydiscourse/archive/ea03a3a.zip",
 
